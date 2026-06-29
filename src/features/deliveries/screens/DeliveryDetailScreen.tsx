@@ -1,18 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, TextInput, Modal, Linking, Image,
+  Animated,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import api from '../../../core/api/client';
 import type { DriverDelivery } from '../../../core/api/types';
 import type { RootStackParamList, RootStackNav } from '../../../navigation/types';
-import StatusBadge from '../../../shared/components/StatusBadge';
+import Card from '../../../shared/components/Card';
+import Skeleton from '../../../shared/components/Skeleton';
 import { formatDateTime, getStatusColor, timeAgo } from '../../../core/utils/helpers';
+import { colors } from '../../../shared/theme';
 
 type DetailRoute = RouteProp<RootStackParamList, 'DeliveryDetail'>;
 type Nav = RootStackNav;
+
+function DetailSkeletons() {
+  return (
+    <View style={{ padding: 16, gap: 12 }}>
+      {[1, 2, 3, 4].map((i) => (
+        <Card key={i} padding={16} style={{ gap: 10 }}>
+          <Skeleton width="40%" height={12} borderRadius={4} />
+          <Skeleton width="80%" height={16} />
+          <Skeleton width="60%" height={14} />
+        </Card>
+      ))}
+    </View>
+  );
+}
 
 export default function DeliveryDetailScreen() {
   const route = useRoute<DetailRoute>();
@@ -22,6 +39,7 @@ export default function DeliveryDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [showIssueModal, setShowIssueModal] = useState(false);
   const [issueReason, setIssueReason] = useState('');
+  const cardAnims = useRef([0, 1, 2, 3, 4, 5].map(() => new Animated.Value(0))).current;
 
   useEffect(() => {
     fetchDetail();
@@ -30,7 +48,12 @@ export default function DeliveryDetailScreen() {
   async function fetchDetail() {
     try {
       const res = await api.get(`/driver/deliveries/${orderId}`);
-      if (res.data?.success && res.data?.data) setDelivery(res.data.data);
+      if (res.data?.success && res.data?.data) {
+        setDelivery(res.data.data);
+        Animated.stagger(100, cardAnims.map((a) =>
+          Animated.timing(a, { toValue: 1, duration: 300, useNativeDriver: true })
+        )).start();
+      }
     } catch (err: any) {
       Alert.alert('Error', err?.message || 'Failed to load');
     } finally {
@@ -59,39 +82,47 @@ export default function DeliveryDetailScreen() {
     switch (status.toUpperCase()) {
       case 'ASSIGNED':
         return [
-          { label: 'Picked Up', action: () => updateStatus('PICKED_UP'), color: '#FFC107' },
-          { label: 'Report Issue', action: () => setShowIssueModal(true), color: '#D32F2F' },
+          { label: 'Picked Up', action: () => updateStatus('PICKED_UP'), color: colors.accent },
+          { label: 'Report Issue', action: () => setShowIssueModal(true), color: colors.danger },
         ];
       case 'PICKED_UP':
         return [
-          { label: 'In Transit', action: () => updateStatus('IN_TRANSIT'), color: '#FFA000' },
-          { label: 'Report Issue', action: () => setShowIssueModal(true), color: '#D32F2F' },
+          { label: 'In Transit', action: () => updateStatus('IN_TRANSIT'), color: colors.warning },
+          { label: 'Report Issue', action: () => setShowIssueModal(true), color: colors.danger },
         ];
       case 'IN_TRANSIT':
         return [
-          { label: 'Complete Delivery', action: () => navigation.navigate('DeliveryComplete', { orderId }), color: '#388E3C' },
-          { label: 'Report Issue', action: () => setShowIssueModal(true), color: '#D32F2F' },
+          { label: 'Complete Delivery', action: () => navigation.navigate('DeliveryComplete', { orderId }), color: colors.success },
+          { label: 'Report Issue', action: () => setShowIssueModal(true), color: colors.danger },
         ];
       case 'FAILED':
         return [
-          { label: 'Retry (Pick Up)', action: () => updateStatus('PICKED_UP'), color: '#FFC107' },
+          { label: 'Retry (Pick Up)', action: () => updateStatus('PICKED_UP'), color: colors.accent },
         ];
       default:
         return [];
     }
   }
 
+  function AnimatedCard({ children, index, style }: { children: React.ReactNode; index: number; style?: any }) {
+    const opacity = cardAnims[index] || 1;
+    return (
+      <Animated.View style={{ opacity, transform: [{ translateY: cardAnims[index]?.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) || 0 }] }}>
+        <Card padding={16} style={style}>{children}</Card>
+      </Animated.View>
+    );
+  }
+
   if (loading) {
-    return <View style={styles.center}><Text>Loading...</Text></View>;
+    return <ScrollView style={styles.container}><DetailSkeletons /></ScrollView>;
   }
   if (!delivery) {
     return <View style={styles.center}><Text>Delivery not found</Text></View>;
   }
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Customer Card */}
-      <View style={styles.card}>
+    <ScrollView style={styles.container} contentContainerStyle={{ padding: 16 }}>
+      <AnimatedCard index={0}>
         <Text style={styles.cardTitle}>Customer</Text>
         <View style={styles.customerRow}>
           <View style={styles.avatar}>
@@ -102,50 +133,55 @@ export default function DeliveryDetailScreen() {
             {delivery.customer.district && <Text style={styles.district}>{delivery.customer.district}</Text>}
           </View>
         </View>
-        <TouchableOpacity onPress={() => Linking.openURL(`tel:${delivery.customer.phone}`)}>
-          <Text style={styles.phone}>📞 {delivery.customer.phone}</Text>
+        <TouchableOpacity onPress={() => Linking.openURL(`tel:${delivery.customer.phone}`)} style={styles.linkRow}>
+          <Ionicons name="call-outline" size={16} color={colors.accent} />
+          <Text style={styles.linkText}> {delivery.customer.phone}</Text>
         </TouchableOpacity>
-        <Text style={styles.address}>📍 {delivery.customer.address}</Text>
-      </View>
+        <View style={styles.linkRow}>
+          <Ionicons name="location-outline" size={16} color={colors.textSecondary} />
+          <Text style={[styles.linkText, { color: colors.textPrimary }]}> {delivery.customer.address}</Text>
+        </View>
+      </AnimatedCard>
 
-      {/* Order Info */}
-      <View style={styles.card}>
+      <AnimatedCard index={1}>
         <Text style={styles.cardTitle}>Order Info</Text>
         <InfoRow label="Order #" value={delivery.orderInfo.orderNumber} />
-        <InfoRow label="Total" value={`$${delivery.orderInfo.total.toFixed(2)}`} />
-        <InfoRow label="Paid" value={`$${delivery.orderInfo.paid.toFixed(2)}`} valueColor="#388E3C" />
-        <InfoRow label="Outstanding" value={`$${delivery.orderInfo.outstanding.toFixed(2)}`} valueColor="#D32F2F" />
+        <InfoRow label="Total" value={`LKR ${delivery.orderInfo.total.toFixed(2)}`} />
+        <InfoRow label="Paid" value={`LKR ${delivery.orderInfo.paid.toFixed(2)}`} valueColor={colors.success} />
+        <InfoRow label="Outstanding" value={`LKR ${delivery.orderInfo.outstanding.toFixed(2)}`} valueColor={colors.danger} />
         <InfoRow label="Payment" value={delivery.orderInfo.paymentStatus.replace(/_/g, ' ')} />
-      </View>
+      </AnimatedCard>
 
-      {/* Items */}
-      <View style={styles.card}>
+      <AnimatedCard index={2}>
         <Text style={styles.cardTitle}>Items ({delivery.items.length})</Text>
         {delivery.items.map((item, idx) => (
           <View key={idx} style={styles.itemRow}>
-            <Text style={{ flex: 1 }}>{item.name}</Text>
-            <Text style={{ marginRight: 16 }}>x{item.quantity}</Text>
-            <Text style={{ fontWeight: '600' }}>${(item.unitPrice * item.quantity).toFixed(2)}</Text>
+            <Text style={{ flex: 1, color: colors.textPrimary }}>{item.name}</Text>
+            <Text style={{ marginRight: 16, color: colors.textSecondary }}>x{item.quantity}</Text>
+            <Text style={{ fontWeight: '600', color: colors.textPrimary }}>LKR {(item.unitPrice * item.quantity).toFixed(2)}</Text>
           </View>
         ))}
-      </View>
+      </AnimatedCard>
 
-      {/* Timeline */}
-      <View style={styles.card}>
+      <AnimatedCard index={3}>
         <Text style={styles.cardTitle}>Status Timeline</Text>
         {delivery.timeline.map((entry, idx) => (
           <View key={idx} style={styles.timelineItem}>
-            <View style={[styles.dot, { backgroundColor: getStatusColor(entry.status) }]} />
+            <View style={styles.timelineDotCol}>
+              <View style={[styles.timelineDot, { backgroundColor: getStatusColor(entry.status) }]} />
+              {idx < delivery.timeline.length - 1 && <View style={styles.timelineLine} />}
+            </View>
             <View style={styles.timelineContent}>
-              <Text style={{ fontWeight: '600' }}>{entry.status.replace(/_/g, ' ')}</Text>
+              <Text style={{ fontWeight: '600', color: colors.textPrimary }}>
+                {entry.status.replace(/_/g, ' ')}
+              </Text>
               <Text style={styles.timelineTime}>{formatDateTime(entry.timestamp)}</Text>
               {entry.note && <Text style={styles.timelineNote}>{entry.note}</Text>}
             </View>
           </View>
         ))}
-      </View>
+      </AnimatedCard>
 
-      {/* Action Buttons */}
       {getActions(delivery.status).map((btn, idx) => (
         <TouchableOpacity
           key={idx}
@@ -156,36 +192,39 @@ export default function DeliveryDetailScreen() {
         </TouchableOpacity>
       ))}
 
-      {/* Delivery Proof */}
       {delivery.status.toUpperCase() === 'DELIVERED' && (delivery.photoUrl || delivery.signatureUrl) && (
-        <View style={styles.card}>
+        <AnimatedCard index={4}>
           <Text style={styles.cardTitle}>Delivery Proof</Text>
           {delivery.photoUrl && (
-            <TouchableOpacity onPress={() => Linking.openURL(delivery.photoUrl!)}>
+            <TouchableOpacity onPress={() => Linking.openURL(delivery.photoUrl!)} style={{ marginBottom: 8 }}>
               <Image source={{ uri: delivery.photoUrl }} style={styles.proofImage} />
-              <Text style={styles.proofLink}>📷 Tap to open photo</Text>
+              <View style={styles.linkRow}>
+                <Ionicons name="camera-outline" size={16} color={colors.accent} />
+                <Text style={styles.linkText}> Tap to open photo</Text>
+              </View>
             </TouchableOpacity>
           )}
           {delivery.signatureUrl && (
             <TouchableOpacity onPress={() => Linking.openURL(delivery.signatureUrl!)}>
               <Image source={{ uri: delivery.signatureUrl }} style={styles.proofImage} />
-              <Text style={styles.proofLink}>✍️ Tap to open signature</Text>
+              <View style={styles.linkRow}>
+                <Ionicons name="create-outline" size={16} color={colors.accent} />
+                <Text style={styles.linkText}> Tap to open signature</Text>
+              </View>
             </TouchableOpacity>
           )}
-        </View>
+        </AnimatedCard>
       )}
 
-      {/* Driver Notes */}
       {delivery.driverNotes && (
-        <View style={styles.card}>
+        <AnimatedCard index={5}>
           <Text style={styles.cardTitle}>Driver Notes</Text>
-          <Text>{delivery.driverNotes}</Text>
-        </View>
+          <Text style={{ color: colors.textPrimary }}>{delivery.driverNotes}</Text>
+        </AnimatedCard>
       )}
 
       <View style={{ height: 40 }} />
 
-      {/* Report Issue Modal */}
       <Modal visible={showIssueModal} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -193,11 +232,12 @@ export default function DeliveryDetailScreen() {
             <TextInput
               style={styles.modalInput}
               placeholder="Describe the issue..."
+              placeholderTextColor={colors.textMuted}
               value={issueReason}
               onChangeText={setIssueReason}
               multiline
             />
-            <TouchableOpacity style={styles.modalButton} onPress={handleReportIssue}>
+            <TouchableOpacity style={[styles.modalButton, { backgroundColor: colors.danger }]} onPress={handleReportIssue}>
               <Text style={styles.modalButtonText}>Submit Report</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setShowIssueModal(false)}>
@@ -220,35 +260,35 @@ function InfoRow({ label, value, valueColor }: { label: string; value: string; v
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5', padding: 16 },
+  container: { flex: 1, backgroundColor: colors.canvas },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  card: { backgroundColor: '#fff', borderRadius: 12, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 3, elevation: 1 },
-  cardTitle: { fontSize: 12, fontWeight: '600', color: '#999', marginBottom: 12, textTransform: 'uppercase' },
+  cardTitle: { fontSize: 12, fontWeight: '600', color: colors.textMuted, marginBottom: 12, textTransform: 'uppercase' },
   customerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#000000', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
-  avatarText: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
-  customerName: { fontSize: 16, fontWeight: '600' },
-  district: { fontSize: 12, color: '#666' },
-  phone: { fontSize: 14, color: '#FFC107', marginBottom: 8 },
-  address: { fontSize: 14, color: '#333' },
+  avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  avatarText: { color: colors.textOnPrimary, fontSize: 20, fontWeight: 'bold' },
+  customerName: { fontSize: 16, fontWeight: '600', color: colors.textPrimary },
+  district: { fontSize: 12, color: colors.textSecondary },
+  linkRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
+  linkText: { fontSize: 14, color: colors.accent },
   infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 },
-  infoLabel: { color: '#666' },
-  infoValue: { fontWeight: '600' },
-  itemRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#f5f5f5' },
-  timelineItem: { flexDirection: 'row', marginBottom: 16 },
-  dot: { width: 12, height: 12, borderRadius: 6, marginTop: 4, marginRight: 12 },
-  timelineContent: { flex: 1 },
-  timelineTime: { fontSize: 12, color: '#999', marginTop: 2 },
-  timelineNote: { fontSize: 13, color: '#666', marginTop: 4 },
-  actionButton: { borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 8 },
-  actionButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  infoLabel: { fontSize: 14, color: colors.textSecondary },
+  infoValue: { fontSize: 14, fontWeight: '600', color: colors.textPrimary },
+  itemRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.canvas },
+  timelineItem: { flexDirection: 'row', marginBottom: 4 },
+  timelineDotCol: { alignItems: 'center', width: 20, marginRight: 12 },
+  timelineDot: { width: 12, height: 12, borderRadius: 6, marginTop: 4 },
+  timelineLine: { width: 2, flex: 1, backgroundColor: colors.border, marginVertical: 4 },
+  timelineContent: { flex: 1, paddingBottom: 16 },
+  timelineTime: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
+  timelineNote: { fontSize: 13, color: colors.textSecondary, marginTop: 4 },
+  actionButton: { borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 8, marginHorizontal: 16 },
+  actionButtonText: { color: colors.textOnPrimary, fontSize: 16, fontWeight: '600' },
   proofImage: { width: '100%', height: 120, borderRadius: 8, marginBottom: 4 },
-  proofLink: { fontSize: 14, color: '#FFC107', marginBottom: 8 },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24 },
-  modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 16 },
-  modalInput: { backgroundColor: '#F5F5F5', borderRadius: 12, padding: 14, fontSize: 16, minHeight: 100, textAlignVertical: 'top', marginBottom: 16 },
-  modalButton: { backgroundColor: '#D32F2F', borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 12 },
-  modalButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  cancelText: { textAlign: 'center', color: '#666', fontSize: 14 },
+  modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
+  modalContent: { backgroundColor: colors.card, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24 },
+  modalTitle: { fontSize: 20, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 16 },
+  modalInput: { backgroundColor: colors.canvas, borderRadius: 12, padding: 14, fontSize: 16, color: colors.textPrimary, minHeight: 100, textAlignVertical: 'top', marginBottom: 16 },
+  modalButton: { borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 12 },
+  modalButtonText: { color: colors.textOnPrimary, fontSize: 16, fontWeight: '600' },
+  cancelText: { textAlign: 'center', color: colors.textSecondary, fontSize: 14 },
 });

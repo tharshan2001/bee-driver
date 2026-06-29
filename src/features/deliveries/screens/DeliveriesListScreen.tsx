@@ -1,21 +1,46 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  View, Text, FlatList, TouchableOpacity, RefreshControl, StyleSheet, ActivityIndicator, Alert,
+  View, Text, FlatList, TouchableOpacity, RefreshControl, StyleSheet, ActivityIndicator,
+  Animated, LayoutAnimation, Platform, UIManager,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../../../core/api/client';
 import { cacheData, getCachedData } from '../../../core/storage/storage';
 import type { PageResponse } from '../../../core/api/types';
-import type { RootStackParamList, RootStackNav } from '../../../navigation/types';
+import type { RootStackNav } from '../../../navigation/types';
 import StatusBadge from '../../../shared/components/StatusBadge';
+import Card from '../../../shared/components/Card';
+import Skeleton from '../../../shared/components/Skeleton';
 import EmptyState from '../../../shared/components/EmptyState';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
 import { timeAgo } from '../../../core/utils/helpers';
+import { colors } from '../../../shared/theme';
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 type Nav = RootStackNav;
 
 const statusFilters: (string | null)[] = [null, 'ASSIGNED', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED', 'FAILED'];
+
+function DeliverySkeletons() {
+  return (
+    <View style={{ padding: 16, paddingTop: 8, gap: 8 }}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <Card key={i} style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ flex: 1, gap: 6 }}>
+            <Skeleton width="60%" height={14} />
+            <Skeleton width="40%" height={12} />
+          </View>
+          <Skeleton width={70} height={22} borderRadius={8} />
+        </Card>
+      ))}
+    </View>
+  );
+}
 
 export default function DeliveriesListScreen() {
   const navigation = useNavigation<Nav>();
@@ -28,6 +53,7 @@ export default function DeliveriesListScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const fadeAnims = useRef<Animated.Value[]>([]);
 
   const fetchDeliveries = useCallback(async (pageNum: number, append = false) => {
     setError(null);
@@ -42,6 +68,7 @@ export default function DeliveriesListScreen() {
           setData((prev) => [...prev, ...pageData.content]);
         } else {
           setData(pageData.content);
+          fadeAnims.current = pageData.content.map(() => new Animated.Value(0));
         }
         setHasMore(!pageData.last);
         cacheData(cacheKey, pageData);
@@ -83,26 +110,51 @@ export default function DeliveriesListScreen() {
     fetchDeliveries(nextPage, true);
   };
 
-  const renderItem = ({ item }: { item: any }) => (
-    <TouchableOpacity
-      style={styles.item}
-      onPress={() => navigation.navigate('DeliveryDetail', { orderId: item.orderId })}
-    >
-      <View style={styles.itemLeft}>
-        <Text style={styles.orderNumber}>{item.orderNumber}</Text>
-        <Text style={styles.customerName}>{item.customerName}</Text>
-      </View>
-      <StatusBadge status={item.status} />
-      <Text style={styles.timeAgo}>{timeAgo(item.createdAt)}</Text>
-    </TouchableOpacity>
-  );
+  function handleFilter(newFilter: string | null) {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setFilter(newFilter);
+  }
+
+  function renderItem({ item, index }: { item: any; index: number }) {
+    const anim = fadeAnims.current[index];
+    const scale = anim?.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0.95, 1],
+    }) || 1;
+    const opacity = anim ?? 1;
+
+    if (anim) {
+      Animated.timing(anim, {
+        toValue: 1,
+        duration: 300,
+        delay: index * 60,
+        useNativeDriver: true,
+      }).start();
+    }
+
+    return (
+      <Animated.View style={{ opacity, transform: [{ scale }] }}>
+        <Card
+          onPress={() => navigation.navigate('DeliveryDetail', { orderId: item.orderId })}
+          style={styles.item}
+        >
+          <View style={styles.itemLeft}>
+            <Text style={styles.orderNumber}>{item.orderNumber}</Text>
+            <Text style={styles.customerName}>{item.customerName}</Text>
+          </View>
+          <StatusBadge status={item.status} />
+          <Text style={styles.timeAgo}>{timeAgo(item.createdAt)}</Text>
+        </Card>
+      </Animated.View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <View style={styles.header}>
         <Text style={styles.headerTitle}>My Deliveries</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
-          <Text style={styles.bell}>🔔</Text>
+          <Ionicons name="notifications-outline" size={22} color={colors.textOnPrimary} />
         </TouchableOpacity>
       </View>
 
@@ -115,7 +167,7 @@ export default function DeliveriesListScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={[styles.filterChip, filter === item && styles.filterChipActive]}
-            onPress={() => setFilter(item)}
+            onPress={() => handleFilter(item)}
           >
             <Text style={[styles.filterText, filter === item && styles.filterTextActive]}>
               {item?.replace(/_/g, ' ') || 'All'}
@@ -124,7 +176,9 @@ export default function DeliveriesListScreen() {
         )}
       />
 
-      {error && data.length === 0 ? (
+      {loading ? (
+        <DeliverySkeletons />
+      ) : error && data.length === 0 ? (
         <ErrorScreen message={error} onRetry={() => { setLoading(true); fetchDeliveries(0); }} />
       ) : (
         <FlatList
@@ -134,7 +188,7 @@ export default function DeliveriesListScreen() {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           onEndReached={loadMore}
           onEndReachedThreshold={0.3}
-          ListEmptyComponent={loading ? null : <EmptyState icon="📭" title="No deliveries" />}
+          ListEmptyComponent={<EmptyState icon="📭" title="No deliveries" />}
           ListFooterComponent={loadingMore ? <ActivityIndicator style={{ padding: 16 }} /> : null}
           contentContainerStyle={data.length === 0 ? { flex: 1 } : { padding: 16, paddingTop: 8, paddingBottom: insets.bottom + 16 }}
         />
@@ -144,25 +198,25 @@ export default function DeliveriesListScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
+  container: { flex: 1, backgroundColor: colors.canvas },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: 20, backgroundColor: '#000000',
+    padding: 20, backgroundColor: colors.header,
   },
-  headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#fff' },
-  bell: { fontSize: 22 },
+  headerTitle: { fontSize: 22, fontWeight: 'bold', color: colors.textOnPrimary },
   filterContainer: { padding: 16, paddingBottom: 8, gap: 8 },
-  filterChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd' },
-  filterChipActive: { backgroundColor: '#000000', borderColor: '#000000' },
-  filterText: { fontSize: 13, color: '#666' },
-  filterTextActive: { color: '#fff', fontWeight: '600' },
+  filterChip: {
+    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20,
+    backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border,
+  },
+  filterChipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+  filterText: { fontSize: 13, color: colors.textSecondary },
+  filterTextActive: { color: colors.textOnPrimary, fontWeight: '600' },
   item: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff',
-    marginBottom: 8, padding: 14, borderRadius: 12,
-    shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 3, elevation: 1,
+    flexDirection: 'row', alignItems: 'center', marginBottom: 8,
   },
   itemLeft: { flex: 1 },
-  orderNumber: { fontWeight: '600', fontSize: 14, color: '#333' },
-  customerName: { fontSize: 12, color: '#666', marginTop: 2 },
-  timeAgo: { fontSize: 11, color: '#999', marginLeft: 8 },
+  orderNumber: { fontWeight: '600', fontSize: 14, color: colors.textPrimary },
+  customerName: { fontSize: 12, color: colors.textSecondary, marginTop: 2 },
+  timeAgo: { fontSize: 11, color: colors.textMuted, marginLeft: 8 },
 });
