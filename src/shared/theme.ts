@@ -1,45 +1,52 @@
-/* PickMe-inspired design tokens for bee-driver */
+/* Wise-inspired design tokens for bee-driver */
 
 export const colors = {
   /* Brand */
-  primary: '#000000',
-  primaryLight: '#1a1a1a',
+  primary: '#FFC800',
+  primaryActive: '#FFE066',
+  primaryNeutral: '#FFE699',
+  primaryPale: '#FFF5D6',
 
-  /* Accent */
-  accent: '#FFC107',
-  accentLight: '#FFF8E1',
+  /* Accent (same as brand) */
+  accent: '#FFC800',
+  accentLight: '#FFF5D6',
 
   /* Status */
-  success: '#388E3C',
-  successLight: '#E8F5E9',
-  warning: '#FFA000',
-  warningLight: '#FFF8E1',
-  danger: '#D32F2F',
-  dangerLight: '#FFEBEE',
-  info: '#F57C00',
-  infoLight: '#FFF3E0',
+  success: '#2ead4b',
+  successLight: '#e2f6d5',
+  successDeep: '#054d28',
+  warning: '#F59E0B',
+  warningLight: '#FEF3C7',
+  warningDeep: '#B45309',
+  warningContent: '#78350F',
+  danger: '#d03238',
+  dangerLight: '#fce8e8',
+  dangerDeep: '#a72027',
+  dangerDarkest: '#a7000d',
+  info: '#38c8ff',
+  infoLight: '#e0f7ff',
 
   /* Surfaces */
-  canvas: '#F5F5F5',
-  card: '#FFFFFF',
-  header: '#000000',
+  canvas: '#e8ebe6',
+  card: '#ffffff',
+  header: '#ffffff',
 
   /* Text */
-  textPrimary: '#333333',
-  textSecondary: '#666666',
-  textMuted: '#999999',
-  textOnPrimary: '#FFFFFF',
+  textPrimary: '#0e0f0c',
+  textSecondary: '#454745',
+  textMuted: '#868685',
+  textOnPrimary: '#0e0f0c',
 
   /* Borders */
-  border: '#DDDDDD',
-  borderLight: '#E2E8F0',
+  border: '#d3d7d1',
+  borderLight: '#e8ebe6',
 
   /* Tab bar */
-  tabActive: '#000000',
-  tabInactive: '#94A3B8',
-  tabBarBg: '#FFFFFF',
+  tabActive: '#FFC800',
+  tabInactive: '#868685',
+  tabBarBg: '#ffffff',
 
   /* Misc */
-  overlay: 'rgba(0, 0, 0, 0.5)',
-  shadow: '#000000',
+  overlay: 'rgba(14, 15, 12, 0.5)',
+  shadow: '#0e0f0c',
 }

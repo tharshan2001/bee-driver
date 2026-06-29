@@ -17,7 +17,7 @@ export default function Card({
   padding = 14,
   style,
 }: CardProps) {
-  const bgMap = { default: colors.card, accent: colors.accentLight, elevated: colors.card };
+  const bgMap = { default: colors.card, accent: colors.primaryPale, elevated: colors.card };
   const inner = (
     <View style={[styles.base, { backgroundColor: bgMap[variant], padding }, variant === 'elevated' && styles.elevated, style]}>
       {children}
@@ -29,15 +29,17 @@ export default function Card({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 12,
+    borderRadius: 24,
     shadowColor: colors.shadow,
-    shadowOpacity: 0.03,
-    shadowRadius: 3,
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
     elevation: 1,
   },
   elevated: {
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
     elevation: 2,
   },
 });

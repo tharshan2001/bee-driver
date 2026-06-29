@@ -25,6 +25,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 },
   icon: { fontSize: 48, marginBottom: 16 },
   message: { fontSize: 16, textAlign: 'center', color: colors.textSecondary, marginBottom: 24 },
-  button: { backgroundColor: colors.primary, paddingHorizontal: 32, paddingVertical: 12, borderRadius: 8 },
+  button: { backgroundColor: colors.primary, paddingHorizontal: 32, paddingVertical: 12, borderRadius: 24 },
   buttonText: { color: colors.textOnPrimary, fontWeight: '600' },
 });

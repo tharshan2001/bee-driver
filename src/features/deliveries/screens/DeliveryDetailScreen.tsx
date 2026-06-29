@@ -82,22 +82,22 @@ export default function DeliveryDetailScreen() {
     switch (status.toUpperCase()) {
       case 'ASSIGNED':
         return [
-          { label: 'Picked Up', action: () => updateStatus('PICKED_UP'), color: colors.accent },
-          { label: 'Report Issue', action: () => setShowIssueModal(true), color: colors.danger },
+          { label: 'Picked Up', action: () => updateStatus('PICKED_UP'), color: colors.primary, textColor: colors.textOnPrimary },
+          { label: 'Report Issue', action: () => setShowIssueModal(true), color: colors.danger, textColor: '#ffffff' },
         ];
       case 'PICKED_UP':
         return [
-          { label: 'In Transit', action: () => updateStatus('IN_TRANSIT'), color: colors.warning },
-          { label: 'Report Issue', action: () => setShowIssueModal(true), color: colors.danger },
+          { label: 'In Transit', action: () => updateStatus('IN_TRANSIT'), color: colors.warning, textColor: colors.warningContent },
+          { label: 'Report Issue', action: () => setShowIssueModal(true), color: colors.danger, textColor: '#ffffff' },
         ];
       case 'IN_TRANSIT':
         return [
-          { label: 'Complete Delivery', action: () => navigation.navigate('DeliveryComplete', { orderId }), color: colors.success },
-          { label: 'Report Issue', action: () => setShowIssueModal(true), color: colors.danger },
+          { label: 'Complete Delivery', action: () => navigation.navigate('DeliveryComplete', { orderId }), color: colors.primary, textColor: colors.textOnPrimary },
+          { label: 'Report Issue', action: () => setShowIssueModal(true), color: colors.danger, textColor: '#ffffff' },
         ];
       case 'FAILED':
         return [
-          { label: 'Retry (Pick Up)', action: () => updateStatus('PICKED_UP'), color: colors.accent },
+          { label: 'Retry (Pick Up)', action: () => updateStatus('PICKED_UP'), color: colors.primary, textColor: colors.textOnPrimary },
         ];
       default:
         return [];
@@ -182,13 +182,13 @@ export default function DeliveryDetailScreen() {
         ))}
       </AnimatedCard>
 
-      {getActions(delivery.status).map((btn, idx) => (
+      {getActions(delivery.status).map((btn: any, idx: number) => (
         <TouchableOpacity
           key={idx}
           style={[styles.actionButton, { backgroundColor: btn.color }]}
           onPress={btn.action}
         >
-          <Text style={styles.actionButtonText}>{btn.label}</Text>
+          <Text style={[styles.actionButtonText, { color: btn.textColor }]}>{btn.label}</Text>
         </TouchableOpacity>
       ))}
 
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
   customerName: { fontSize: 16, fontWeight: '600', color: colors.textPrimary },
   district: { fontSize: 12, color: colors.textSecondary },
   linkRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-  linkText: { fontSize: 14, color: colors.accent },
+  linkText: { fontSize: 14, color: colors.successDeep },
   infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 },
   infoLabel: { fontSize: 14, color: colors.textSecondary },
   infoValue: { fontSize: 14, fontWeight: '600', color: colors.textPrimary },
@@ -281,14 +281,14 @@ const styles = StyleSheet.create({
   timelineContent: { flex: 1, paddingBottom: 16 },
   timelineTime: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
   timelineNote: { fontSize: 13, color: colors.textSecondary, marginTop: 4 },
-  actionButton: { borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 8, marginHorizontal: 16 },
-  actionButtonText: { color: colors.textOnPrimary, fontSize: 16, fontWeight: '600' },
-  proofImage: { width: '100%', height: 120, borderRadius: 8, marginBottom: 4 },
+  actionButton: { borderRadius: 24, padding: 16, alignItems: 'center', marginBottom: 8, marginHorizontal: 16 },
+  actionButtonText: { fontSize: 16, fontWeight: '600' },
+  proofImage: { width: '100%', height: 120, borderRadius: 12, marginBottom: 4 },
   modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: colors.card, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24 },
+  modalContent: { backgroundColor: colors.card, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24 },
   modalTitle: { fontSize: 20, fontWeight: 'bold', color: colors.textPrimary, marginBottom: 16 },
   modalInput: { backgroundColor: colors.canvas, borderRadius: 12, padding: 14, fontSize: 16, color: colors.textPrimary, minHeight: 100, textAlignVertical: 'top', marginBottom: 16 },
-  modalButton: { borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 12 },
-  modalButtonText: { color: colors.textOnPrimary, fontSize: 16, fontWeight: '600' },
+  modalButton: { borderRadius: 24, padding: 16, alignItems: 'center', marginBottom: 12 },
+  modalButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
   cancelText: { textAlign: 'center', color: colors.textSecondary, fontSize: 14 },
 });

@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     height: 180, borderWidth: 2, borderColor: colors.border, borderRadius: 12,
     borderStyle: 'dashed', justifyContent: 'center', alignItems: 'center', backgroundColor: colors.card, width: '100%',
   },
-  uploadText: { fontSize: 16, color: colors.accent, fontWeight: '600' },
+  uploadText: { fontSize: 16, color: colors.successDeep, fontWeight: '600' },
   previewImage: { width: '100%', height: 200, borderRadius: 12, marginBottom: 8 },
   signatureContainer: { flex: 1, minHeight: 250 },
   signaturePad: { height: 250, borderRadius: 12, borderWidth: 1, borderColor: colors.border },
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   notesInput: { borderRadius: 12, padding: 14, fontSize: 16, minHeight: 120, textAlignVertical: 'top', color: colors.textPrimary },
   navRow: { flexDirection: 'row', gap: 12, marginTop: 24, marginBottom: 40 },
   navButton: {
-    flex: 1, borderRadius: 12, padding: 16, alignItems: 'center', justifyContent: 'center',
+    flex: 1, borderRadius: 24, padding: 16, alignItems: 'center', justifyContent: 'center',
     backgroundColor: colors.card, flexDirection: 'row',
   },
   navButtonPrimary: { backgroundColor: colors.primary },

@@ -15,9 +15,9 @@ export default function MoreScreen() {
         <Text style={styles.headerTitle}>More</Text>
       </View>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 16 }}>
-        <MenuItem icon="👤" label="Profile" color={colors.accent} onPress={() => navigation.navigate('Profile')} />
-        <MenuItem icon="🧾" label="Expenses" color={colors.warning} onPress={() => navigation.navigate('Expenses')} />
-        <MenuItem icon="📊" label="Statistics" color="#7B1FA2" onPress={() => navigation.navigate('Stats')} />
+        <MenuItem icon="👤" label="Profile" color={colors.primary} onPress={() => navigation.navigate('Profile')} />
+        <MenuItem icon="🧾" label="Expenses" color={colors.warningDeep} onPress={() => navigation.navigate('Expenses')} />
+        <MenuItem icon="📊" label="Statistics" color={colors.info} onPress={() => navigation.navigate('Stats')} />
       </ScrollView>
     </View>
   );
@@ -39,12 +39,12 @@ function MenuItem({ icon, label, color, onPress }: {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.canvas },
-  header: { padding: 20, backgroundColor: colors.primary },
-  headerTitle: { fontSize: 22, fontWeight: 'bold', color: colors.textOnPrimary },
+  header: { padding: 20, backgroundColor: colors.header },
+  headerTitle: { fontSize: 22, fontWeight: 'bold', color: colors.textPrimary },
   menuItem: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card,
-    padding: 16, borderRadius: 12, marginBottom: 8,
-    shadowColor: colors.shadow, shadowOpacity: 0.03, shadowRadius: 3, elevation: 1,
+    padding: 16, borderRadius: 24, marginBottom: 8,
+    shadowColor: colors.shadow, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 1,
   },
   menuIcon: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center', marginRight: 14 },
   menuIconText: { fontSize: 22 },

@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   receiptPreview: { width: '100%', height: 150, borderRadius: 12, marginBottom: 8 },
   removeText: { color: colors.danger, textAlign: 'center' },
   uploadBtn: { backgroundColor: colors.card, borderRadius: 12, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderStyle: 'dashed' },
-  uploadBtnText: { fontSize: 14, color: colors.accent },
-  submitBtn: { backgroundColor: colors.primary, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 32 },
+  uploadBtnText: { fontSize: 14, color: colors.successDeep },
+  submitBtn: { backgroundColor: colors.primary, borderRadius: 24, padding: 16, alignItems: 'center', marginTop: 32 },
   submitBtnText: { color: colors.textOnPrimary, fontSize: 16, fontWeight: '600' },
 });

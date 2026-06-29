@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   filterChipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
   filterText: { fontSize: 13, color: colors.textSecondary },
   filterTextActive: { color: colors.textOnPrimary, fontWeight: '600' },
-  item: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, padding: 14, borderRadius: 12, marginBottom: 8 },
+  item: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, padding: 14, borderRadius: 24, marginBottom: 8, shadowColor: colors.shadow, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 1 },
   categoryIcon: { fontSize: 24, marginRight: 12 },
   itemContent: { flex: 1 },
   description: { fontWeight: '600', fontSize: 14, color: colors.textPrimary },

@@ -14,7 +14,7 @@ export default function App() {
       <HeroUINativeProvider>
         <SafeAreaProvider>
           <AuthProvider>
-            <StatusBar backgroundColor="#000000" barStyle="light-content" />
+            <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
             <RootNavigator />
           </AuthProvider>
         </SafeAreaProvider>

@@ -152,7 +152,7 @@ export default function DeliveriesListScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>My Deliveries</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
-          <Ionicons name="notifications-outline" size={22} color={colors.textOnPrimary} />
+          <Ionicons name="notifications-outline" size={22} color={colors.textPrimary} />
         </TouchableOpacity>
       </View>
 
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 22, fontWeight: 'bold', color: colors.textOnPrimary },
   filterContainer: { padding: 16, paddingBottom: 8, gap: 8 },
   filterChip: {
-    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20,
+    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999,
     backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border,
   },
   filterChipActive: { backgroundColor: colors.primary, borderColor: colors.primary },

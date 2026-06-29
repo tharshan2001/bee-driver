@@ -40,15 +40,15 @@ import { colors } from '../../shared/theme';
 
 export function getStatusColor(status: string): string {
   const map: Record<string, string> = {
-    PENDING: '#9E9E9E',
-    ASSIGNED: colors.accent,
+    PENDING: colors.textMuted,
+    ASSIGNED: colors.success,
     PICKED_UP: colors.warning,
     IN_TRANSIT: colors.info,
     DELIVERED: colors.success,
     FAILED: colors.danger,
-    FAILED_PERMANENT: '#B71C1C',
+    FAILED_PERMANENT: colors.dangerDeep,
     APPROVED: colors.success,
     REJECTED: colors.danger,
   };
-  return map[status.toUpperCase()] || '#9E9E9E';
+  return map[status.toUpperCase()] || colors.textMuted;
 }

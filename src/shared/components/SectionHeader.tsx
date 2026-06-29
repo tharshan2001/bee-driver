@@ -31,5 +31,5 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   title: { fontSize: 16, fontWeight: '600', color: colors.textPrimary },
-  action: { fontSize: 13, fontWeight: '600', color: colors.accent },
+  action: { fontSize: 13, fontWeight: '600', color: colors.successDeep },
 });

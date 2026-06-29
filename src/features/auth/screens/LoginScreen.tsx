@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.canvas },
   content: { flexGrow: 1, justifyContent: 'center', padding: 24 },
   icon: { fontSize: 64, textAlign: 'center', marginBottom: 8 },
-  title: { fontSize: 28, fontWeight: 'bold', color: colors.primary, textAlign: 'center' },
+  title: { fontSize: 28, fontWeight: 'bold', color: colors.textPrimary, textAlign: 'center' },
   subtitle: { fontSize: 16, color: colors.textSecondary, textAlign: 'center', marginBottom: 40 },
   form: { width: '100%' },
   label: { fontSize: 14, fontWeight: '600', color: colors.textPrimary, marginBottom: 6, marginTop: 12 },
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   errorText: { color: colors.danger, fontSize: 12, marginTop: 4 },
   button: {
     backgroundColor: colors.primary,
-    borderRadius: 12,
+    borderRadius: 24,
     padding: 16,
     alignItems: 'center',
     marginTop: 32,

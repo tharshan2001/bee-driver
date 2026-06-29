@@ -61,7 +61,7 @@ export function useLocationTracking(isActive: boolean) {
       foregroundService: {
         notificationTitle: 'Bee Driver',
         notificationBody: 'Sharing your live location',
-        notificationColor: '#000000',
+        notificationColor: '#FFC800',
       },
       activityType: Location.ActivityType.AutomotiveNavigation,
     });

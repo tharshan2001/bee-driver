@@ -82,10 +82,10 @@ export default function DashboardScreen() {
       <View style={[styles.header, { paddingTop: 20 }]}>
         <View style={styles.headerRight}>
           <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
-            <Ionicons name="notifications-outline" size={24} color={colors.textOnPrimary} />
+            <Ionicons name="notifications-outline" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-            <Ionicons name="person-outline" size={24} color={colors.textOnPrimary} />
+            <Ionicons name="person-outline" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -108,8 +108,8 @@ export default function DashboardScreen() {
             value={availability}
             onValueChange={toggleAvailability}
             disabled={hasActiveDeliveries}
-            trackColor={{ false: colors.border, true: colors.successLight }}
-            thumbColor={hasActiveDeliveries ? colors.warning : (availability ? colors.success : '#f4f3f4')}
+            trackColor={{ false: colors.border, true: colors.primary }}
+            thumbColor={hasActiveDeliveries ? colors.warning : (availability ? colors.card : colors.card)}
           />
         </View>
       </Card>
@@ -133,15 +133,15 @@ export default function DashboardScreen() {
 
       <View style={styles.actionsRow}>
         <Card onPress={() => navigation.navigate('MainTabs')} style={styles.actionCard}>
-          <Ionicons name="car-outline" size={28} color={colors.accent} style={{ marginBottom: 8 }} />
+          <Ionicons name="car-outline" size={28} color={colors.primary} style={{ marginBottom: 8 }} />
           <Text style={styles.actionLabel}>Deliveries</Text>
         </Card>
         <Card onPress={() => navigation.navigate('CreateExpense')} style={styles.actionCard}>
-          <Ionicons name="cash-outline" size={28} color={colors.warning} style={{ marginBottom: 8 }} />
+          <Ionicons name="cash-outline" size={28} color={colors.warningDeep} style={{ marginBottom: 8 }} />
           <Text style={styles.actionLabel}>New Expense</Text>
         </Card>
         <Card onPress={() => navigation.navigate('Stats')} style={styles.actionCard}>
-          <Ionicons name="bar-chart-outline" size={28} color="#7B1FA2" style={{ marginBottom: 8 }} />
+          <Ionicons name="bar-chart-outline" size={28} color={colors.info} style={{ marginBottom: 8 }} />
           <Text style={styles.actionLabel}>My Stats</Text>
         </Card>
       </View>

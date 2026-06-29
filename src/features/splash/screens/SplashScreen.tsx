@@ -2,6 +2,7 @@ import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View, Text, Dimensions } from 'react-native';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { useNavigation, CommonActions } from '@react-navigation/native';
+import { colors } from '../../../shared/theme';
 
 const { width } = Dimensions.get('window');
 const MASCOT_SIZE = Math.min(width * 0.45, 180);
@@ -54,7 +55,7 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.canvas,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
     height: MASCOT_SIZE,
     borderRadius: MASCOT_SIZE / 2,
     overflow: 'hidden',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: colors.primaryPale,
   },
   video: {
     width: MASCOT_SIZE,
@@ -78,13 +79,13 @@ const styles = StyleSheet.create({
   welcome: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#FFC107',
+    color: colors.primary,
     letterSpacing: 1,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 15,
-    color: '#666',
+    color: colors.textSecondary,
     letterSpacing: 2,
     textTransform: 'uppercase',
   },

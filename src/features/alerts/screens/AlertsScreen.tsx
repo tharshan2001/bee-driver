@@ -105,8 +105,8 @@ export default function AlertsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.canvas },
   markAllBtn: { padding: 12, alignItems: 'flex-end', paddingRight: 16 },
-  markAllText: { color: colors.accent, fontSize: 13, fontWeight: '600' },
-  item: { flexDirection: 'row', backgroundColor: colors.card, padding: 14, borderRadius: 12, marginBottom: 8, alignItems: 'center' },
+  markAllText: { color: colors.successDeep, fontSize: 13, fontWeight: '600' },
+  item: { flexDirection: 'row', backgroundColor: colors.card, padding: 14, borderRadius: 24, marginBottom: 8, alignItems: 'center', shadowColor: colors.shadow, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 1 },
   itemUnread: { borderLeftWidth: 3, borderLeftColor: colors.primary },
   icon: { fontSize: 24, marginRight: 12 },
   content: { flex: 1 },

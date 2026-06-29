@@ -35,16 +35,36 @@ function MainTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarIcon: ({ focused, color, size }) => {
+        tabBarIcon: ({ focused }) => {
           const icons = tabIcons[route.name];
-          return <Ionicons name={focused ? icons.active : icons.inactive} size={size} color={color} />;
+          return (
+            <View
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 999,
+                backgroundColor: focused ? colors.primary : 'transparent',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <Ionicons
+                name={focused ? icons.active : icons.inactive}
+                size={22}
+                color={focused ? colors.textOnPrimary : colors.textMuted}
+              />
+            </View>
+          );
         },
-        tabBarActiveTintColor: colors.tabActive,
-        tabBarInactiveTintColor: colors.tabInactive,
+        tabBarActiveTintColor: colors.textPrimary,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
           backgroundColor: colors.tabBarBg,
           borderTopWidth: 1,
           borderTopColor: colors.borderLight,
+          height: 64,
+          paddingBottom: 8,
+          paddingTop: 8,
         },
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
       })}

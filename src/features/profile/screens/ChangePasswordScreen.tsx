@@ -62,6 +62,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.canvas },
   content: { padding: 24 },
   input: { backgroundColor: colors.card, borderRadius: 12, padding: 14, fontSize: 16, marginBottom: 16, borderWidth: 1, borderColor: colors.border },
-  button: { backgroundColor: colors.primary, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 8 },
+  button: { backgroundColor: colors.primary, borderRadius: 24, padding: 16, alignItems: 'center', marginTop: 8 },
   buttonText: { color: colors.textOnPrimary, fontSize: 16, fontWeight: '600' },
 });
