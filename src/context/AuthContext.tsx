@@ -2,12 +2,15 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { getTokens, clearTokens, saveTokens, saveDriverId, getDriverId, saveAvailability } from '../core/storage/storage';
 import api, { onAuthExpired } from '../core/api/client';
 import type { LoginResponse } from '../core/api/types';
+import { useLocationTracking } from '../features/location/hooks/useLocationTracking';
+import { registerFcmToken } from '../core/notifications/registerFcmToken';
 
 interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
   driverId: string | null;
   availability: boolean;
+  isTracking: boolean;
 }
 
 interface AuthContextType extends AuthState {
@@ -25,12 +28,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isAuthenticated: false,
     driverId: null,
     availability: false,
+    isTracking: false,
   });
+
+  const { isTracking } = useLocationTracking(state.isAuthenticated);
+
+  useEffect(() => {
+    setState((prev) => ({ ...prev, isTracking }));
+  }, [isTracking]);
 
   useEffect(() => {
     checkAuth();
     const unsub = onAuthExpired(() => {
-      setState({ isLoading: false, isAuthenticated: false, driverId: null, availability: false });
+      setState({ isLoading: false, isAuthenticated: false, driverId: null, availability: false, isTracking: false });
     });
     return unsub;
   }, []);
@@ -48,12 +58,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             await saveTokens(data.token, data.refreshToken);
             await saveDriverId(data.driverId);
             await saveAvailability(data.availability);
-            setState({
+            setState((prev) => ({
+              ...prev,
               isLoading: false,
               isAuthenticated: true,
               driverId: data.driverId,
               availability: data.availability,
-            });
+            }));
             return;
           }
         } catch {
@@ -61,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
     } catch {}
-    setState({ isLoading: false, isAuthenticated: false, driverId: null, availability: false });
+    setState({ isLoading: false, isAuthenticated: false, driverId: null, availability: false, isTracking: false });
   }
 
   const login = useCallback(async (email: string, password: string) => {
@@ -75,19 +86,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await saveDriverId(data.driverId);
     await saveAvailability(data.availability);
 
-    setState({
+    setState((prev) => ({
+      ...prev,
       isLoading: false,
       isAuthenticated: true,
       driverId: data.driverId,
       availability: data.availability,
-    });
+    }));
     console.log('[Auth] Login successful, driverId:', data.driverId);
+
+    registerFcmToken();
   }, []);
 
   const logout = useCallback(async () => {
     try { await api.post('/auth/logout'); } catch {}
     await clearTokens();
-    setState({ isLoading: false, isAuthenticated: false, driverId: null, availability: false });
+    setState({ isLoading: false, isAuthenticated: false, driverId: null, availability: false, isTracking: false });
   }, []);
 
   const setAvailability = useCallback(async (available: boolean) => {

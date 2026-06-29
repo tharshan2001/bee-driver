@@ -1,21 +1,26 @@
 import React, { useCallback, useEffect } from 'react';
 import {
-  View, Text, ScrollView, RefreshControl, StyleSheet, TouchableOpacity, Switch, Alert,
+  View, Text, TouchableOpacity, RefreshControl, StyleSheet, Switch, Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../context/AuthContext';
 import api from '../../../core/api/client';
 import type { DriverDashboard } from '../../../core/api/types';
-import type { RootStackParamList, RootStackNav } from '../../../navigation/types';
+import type { RootStackNav } from '../../../navigation/types';
 import StatusBadge from '../../../shared/components/StatusBadge';
+import Card from '../../../shared/components/Card';
+import SectionHeader from '../../../shared/components/SectionHeader';
+import ScreenContainer from '../../../shared/components/ScreenContainer';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
 import { timeAgo } from '../../../core/utils/helpers';
+import { colors } from '../../../shared/theme';
 
 type Nav = RootStackNav;
 
 export default function DashboardScreen() {
   const navigation = useNavigation<Nav>();
-  const { availability, setAvailability } = useAuth();
+  const { availability, setAvailability, isTracking } = useAuth();
   const [dashboard, setDashboard] = React.useState<DriverDashboard | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -66,79 +71,94 @@ export default function DashboardScreen() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-    >
-      <View style={styles.header}>
+    <ScreenContainer scroll refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+      <View style={[styles.header, { paddingTop: 20 }]}>
         <Text style={styles.greeting}>Hi, {dashboard?.driverName?.split(' ')[0] || 'Driver'}</Text>
         <View style={styles.headerRight}>
           <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
-            <Text style={styles.iconButton}>🔔</Text>
+            <Ionicons name="notifications-outline" size={24} color="#fff" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-            <Text style={styles.iconButton}>👤</Text>
+            <Ionicons name="person-outline" size={24} color="#fff" />
           </TouchableOpacity>
         </View>
       </View>
 
-      <View style={styles.availabilityCard}>
-        <View>
-          <Text style={styles.cardLabel}>Availability</Text>
-          <Text style={[styles.statusText, { color: availability ? '#388E3C' : '#D32F2F' }]}>
-            {availability ? 'You are ONLINE' : 'You are OFFLINE'}
-          </Text>
+      <Card padding={16} style={styles.availabilityCard}>
+        <View style={styles.availabilityInner}>
+          <View>
+            <Text style={styles.cardLabel}>Availability</Text>
+            <Text style={[styles.statusText, { color: availability ? colors.success : colors.danger }]}>
+              {availability ? 'You are ONLINE' : 'You are OFFLINE'}
+            </Text>
+          </View>
+          <Switch
+            value={availability}
+            onValueChange={toggleAvailability}
+            trackColor={{ false: '#ddd', true: '#A5D6A7' }}
+            thumbColor={availability ? colors.success : '#f4f3f4'}
+          />
         </View>
-        <Switch
-          value={availability}
-          onValueChange={toggleAvailability}
-          trackColor={{ false: '#ddd', true: '#A5D6A7' }}
-          thumbColor={availability ? '#388E3C' : '#f4f3f4'}
-        />
-      </View>
+      </Card>
+
+      <Card variant="accent" style={styles.trackingCard}>
+        <View style={styles.trackingInner}>
+          <Ionicons name="locate-outline" size={22} color={colors.primary} style={{ marginRight: 12 }} />
+          <View style={{ flex: 1 }}>
+            <Text style={styles.trackingLabel}>Live Tracking</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <View style={[styles.trackingDot, { backgroundColor: isTracking ? colors.success : colors.danger }]} />
+              <Text style={[styles.trackingStatus, { color: isTracking ? colors.success : colors.danger }]}>
+                {isTracking ? 'Sharing location' : 'Location sharing disabled'}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </Card>
 
       <View style={styles.statsRow}>
-        <View style={[styles.statCard, { backgroundColor: '#E3F2FD' }]}>
-          <Text style={styles.statIcon}>🚚</Text>
-          <Text style={[styles.statValue, { color: '#1976D2' }]}>{dashboard?.activeDeliveries ?? 0}</Text>
+        <View style={[styles.statCard, { backgroundColor: colors.accentLight }]}>
+          <Ionicons name="car-outline" size={24} color={colors.accent} style={{ marginBottom: 8 }} />
+          <Text style={[styles.statValue, { color: colors.accent }]}>{dashboard?.activeDeliveries ?? 0}</Text>
           <Text style={styles.statLabel}>Active</Text>
         </View>
-        <View style={[styles.statCard, { backgroundColor: '#E8F5E9' }]}>
-          <Text style={styles.statIcon}>✅</Text>
-          <Text style={[styles.statValue, { color: '#388E3C' }]}>{dashboard?.completedToday ?? 0}</Text>
+        <View style={[styles.statCard, { backgroundColor: colors.successLight }]}>
+          <Ionicons name="checkmark-circle-outline" size={24} color={colors.success} style={{ marginBottom: 8 }} />
+          <Text style={[styles.statValue, { color: colors.success }]}>{dashboard?.completedToday ?? 0}</Text>
           <Text style={styles.statLabel}>Completed</Text>
         </View>
-        <View style={[styles.statCard, { backgroundColor: '#FFEBEE' }]}>
-          <Text style={styles.statIcon}>❌</Text>
-          <Text style={[styles.statValue, { color: '#D32F2F' }]}>{dashboard?.failedToday ?? 0}</Text>
+        <View style={[styles.statCard, { backgroundColor: colors.dangerLight }]}>
+          <Ionicons name="close-circle-outline" size={24} color={colors.danger} style={{ marginBottom: 8 }} />
+          <Text style={[styles.statValue, { color: colors.danger }]}>{dashboard?.failedToday ?? 0}</Text>
           <Text style={styles.statLabel}>Failed</Text>
         </View>
       </View>
 
-      <Text style={styles.sectionTitle}>Quick Actions</Text>
+      <SectionHeader title="Quick Actions" />
+
       <View style={styles.actionsRow}>
-        <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('MainTabs')}>
-          <Text style={[styles.actionIcon, { color: '#1976D2' }]}>🚚</Text>
+        <Card onPress={() => navigation.navigate('MainTabs')} style={styles.actionCard}>
+          <Ionicons name="car-outline" size={28} color={colors.accent} style={{ marginBottom: 8 }} />
           <Text style={styles.actionLabel}>Deliveries</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('CreateExpense')}>
-          <Text style={[styles.actionIcon, { color: '#FFA000' }]}>💰</Text>
+        </Card>
+        <Card onPress={() => navigation.navigate('CreateExpense')} style={styles.actionCard}>
+          <Ionicons name="cash-outline" size={28} color={colors.warning} style={{ marginBottom: 8 }} />
           <Text style={styles.actionLabel}>New Expense</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionCard} onPress={() => navigation.navigate('Stats')}>
-          <Text style={[styles.actionIcon, { color: '#7B1FA2' }]}>📊</Text>
+        </Card>
+        <Card onPress={() => navigation.navigate('Stats')} style={styles.actionCard}>
+          <Ionicons name="bar-chart-outline" size={28} color="#7B1FA2" style={{ marginBottom: 8 }} />
           <Text style={styles.actionLabel}>My Stats</Text>
-        </TouchableOpacity>
+        </Card>
       </View>
 
       {dashboard?.recentDeliveries && dashboard.recentDeliveries.length > 0 && (
         <>
-          <Text style={styles.sectionTitle}>Recent Deliveries</Text>
+          <SectionHeader title="Recent Deliveries" />
           {dashboard.recentDeliveries.slice(0, 5).map((delivery) => (
-            <TouchableOpacity
+            <Card
               key={delivery.orderId}
-              style={styles.deliveryItem}
               onPress={() => navigation.navigate('DeliveryDetail', { orderId: delivery.orderId })}
+              style={styles.deliveryItem}
             >
               <View style={styles.deliveryLeft}>
                 <Text style={styles.orderNumber}>{delivery.orderNumber}</Text>
@@ -146,53 +166,52 @@ export default function DashboardScreen() {
               </View>
               <StatusBadge status={delivery.status} />
               <Text style={styles.timeAgo}>{timeAgo(delivery.createdAt)}</Text>
-            </TouchableOpacity>
+            </Card>
           ))}
         </>
       )}
-    </ScrollView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: 20, paddingTop: 60, backgroundColor: '#1A237E',
+    paddingHorizontal: 20, paddingBottom: 20, backgroundColor: colors.header,
   },
-  greeting: { fontSize: 24, fontWeight: 'bold', color: '#fff' },
+  greeting: { fontSize: 24, fontWeight: 'bold', color: colors.textOnPrimary },
   headerRight: { flexDirection: 'row', gap: 12 },
-  iconButton: { fontSize: 24 },
-  availabilityCard: {
+  availabilityCard: { marginHorizontal: 16, marginTop: 16 },
+  availabilityInner: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    backgroundColor: '#fff', margin: 16, padding: 16, borderRadius: 12,
-    shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4, elevation: 2,
   },
-  cardLabel: { fontSize: 12, color: '#999', fontWeight: '600', marginBottom: 4 },
+  cardLabel: { fontSize: 12, color: colors.textMuted, fontWeight: '600', marginBottom: 4 },
   statusText: { fontSize: 18, fontWeight: 'bold' },
+  trackingCard: { marginHorizontal: 16, marginTop: 0, marginBottom: 8 },
+  trackingInner: {
+    flexDirection: 'row', alignItems: 'center',
+  },
+  trackingLabel: { fontSize: 12, color: colors.textMuted, fontWeight: '600', marginBottom: 2 },
+  trackingDot: { width: 8, height: 8, borderRadius: 4 },
+  trackingStatus: { fontSize: 13, fontWeight: '500' },
   statsRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8 },
   statCard: {
     flex: 1, padding: 16, borderRadius: 12, alignItems: 'center',
   },
-  statIcon: { fontSize: 24, marginBottom: 8 },
   statValue: { fontSize: 22, fontWeight: 'bold' },
-  statLabel: { fontSize: 12, color: '#666', marginTop: 4 },
-  sectionTitle: { fontSize: 16, fontWeight: '600', color: '#333', margin: 16, marginBottom: 8 },
+  statLabel: { fontSize: 12, color: colors.textSecondary, marginTop: 4 },
   actionsRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8 },
   actionCard: {
-    flex: 1, backgroundColor: '#fff', padding: 16, borderRadius: 12, alignItems: 'center',
-    shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 4, elevation: 2,
+    flex: 1, alignItems: 'center', padding: 16,
   },
-  actionIcon: { fontSize: 28, marginBottom: 8 },
-  actionLabel: { fontSize: 12, fontWeight: '600', color: '#333' },
+  actionLabel: { fontSize: 12, fontWeight: '600', color: colors.textPrimary },
   deliveryItem: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff',
-    marginHorizontal: 16, marginBottom: 8, padding: 14, borderRadius: 12,
-    shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 3, elevation: 1,
+    flexDirection: 'row', alignItems: 'center',
+    marginHorizontal: 16, marginBottom: 8,
   },
   deliveryLeft: { flex: 1 },
-  orderNumber: { fontWeight: '600', fontSize: 14, color: '#333' },
-  customerName: { fontSize: 12, color: '#666', marginTop: 2 },
-  timeAgo: { fontSize: 11, color: '#999', marginLeft: 8 },
+  orderNumber: { fontWeight: '600', fontSize: 14, color: colors.textPrimary },
+  customerName: { fontSize: 12, color: colors.textSecondary, marginTop: 2 },
+  timeAgo: { fontSize: 11, color: colors.textMuted, marginLeft: 8 },
 });

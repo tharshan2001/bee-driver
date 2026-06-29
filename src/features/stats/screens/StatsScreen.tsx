@@ -29,7 +29,7 @@ export default function StatsScreen() {
     fetchStats();
   }, [fetchStats]);
 
-  if (loading) return <View style={styles.center}><ActivityIndicator size="large" color="#1A237E" /></View>;
+  if (loading) return <View style={styles.center}><ActivityIndicator size="large" color="#000000" /></View>;
   if (error) return <ErrorScreen message={error} onRetry={() => setLoading(true)} />;
   if (!stats) return null;
 
@@ -46,7 +46,7 @@ export default function StatsScreen() {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
-      <StatCard icon="🚚" label="Total Deliveries" value={`${stats.totalDeliveries}`} color="#1976D2" />
+      <StatCard icon="🚚" label="Total Deliveries" value={`${stats.totalDeliveries}`} color="#FFC107" />
       <View style={styles.row}>
         <StatCard icon="✅" label="Completed" value={`${stats.completedDeliveries}`} color="#388E3C" flex={1} />
         <View style={{ width: 8 }} />

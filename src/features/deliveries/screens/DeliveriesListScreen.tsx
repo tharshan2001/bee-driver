@@ -3,6 +3,7 @@ import {
   View, Text, FlatList, TouchableOpacity, RefreshControl, StyleSheet, ActivityIndicator, Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../../../core/api/client';
 import { cacheData, getCachedData } from '../../../core/storage/storage';
 import type { PageResponse } from '../../../core/api/types';
@@ -18,6 +19,7 @@ const statusFilters: (string | null)[] = [null, 'ASSIGNED', 'PICKED_UP', 'IN_TRA
 
 export default function DeliveriesListScreen() {
   const navigation = useNavigation<Nav>();
+  const insets = useSafeAreaInsets();
   const [data, setData] = useState<any[]>([]);
   const [filter, setFilter] = useState<string | null>(null);
   const [page, setPage] = useState(0);
@@ -97,7 +99,7 @@ export default function DeliveriesListScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
         <Text style={styles.headerTitle}>My Deliveries</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
           <Text style={styles.bell}>🔔</Text>
@@ -134,7 +136,7 @@ export default function DeliveriesListScreen() {
           onEndReachedThreshold={0.3}
           ListEmptyComponent={loading ? null : <EmptyState icon="📭" title="No deliveries" />}
           ListFooterComponent={loadingMore ? <ActivityIndicator style={{ padding: 16 }} /> : null}
-          contentContainerStyle={data.length === 0 ? { flex: 1 } : { padding: 16, paddingTop: 8 }}
+          contentContainerStyle={data.length === 0 ? { flex: 1 } : { padding: 16, paddingTop: 8, paddingBottom: insets.bottom + 16 }}
         />
       )}
     </View>
@@ -145,13 +147,13 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F5F5' },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: 20, paddingTop: 60, backgroundColor: '#1A237E',
+    padding: 20, backgroundColor: '#000000',
   },
   headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#fff' },
   bell: { fontSize: 22 },
   filterContainer: { padding: 16, paddingBottom: 8, gap: 8 },
   filterChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd' },
-  filterChipActive: { backgroundColor: '#1A237E', borderColor: '#1A237E' },
+  filterChipActive: { backgroundColor: '#000000', borderColor: '#000000' },
   filterText: { fontSize: 13, color: '#666' },
   filterTextActive: { color: '#fff', fontWeight: '600' },
   item: {

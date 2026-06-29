@@ -59,7 +59,7 @@ export default function DeliveryDetailScreen() {
     switch (status.toUpperCase()) {
       case 'ASSIGNED':
         return [
-          { label: 'Picked Up', action: () => updateStatus('PICKED_UP'), color: '#1976D2' },
+          { label: 'Picked Up', action: () => updateStatus('PICKED_UP'), color: '#FFC107' },
           { label: 'Report Issue', action: () => setShowIssueModal(true), color: '#D32F2F' },
         ];
       case 'PICKED_UP':
@@ -74,7 +74,7 @@ export default function DeliveryDetailScreen() {
         ];
       case 'FAILED':
         return [
-          { label: 'Retry (Pick Up)', action: () => updateStatus('PICKED_UP'), color: '#1976D2' },
+          { label: 'Retry (Pick Up)', action: () => updateStatus('PICKED_UP'), color: '#FFC107' },
         ];
       default:
         return [];
@@ -225,11 +225,11 @@ const styles = StyleSheet.create({
   card: { backgroundColor: '#fff', borderRadius: 12, padding: 16, marginBottom: 12, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 3, elevation: 1 },
   cardTitle: { fontSize: 12, fontWeight: '600', color: '#999', marginBottom: 12, textTransform: 'uppercase' },
   customerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#1A237E', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#000000', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
   avatarText: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
   customerName: { fontSize: 16, fontWeight: '600' },
   district: { fontSize: 12, color: '#666' },
-  phone: { fontSize: 14, color: '#1976D2', marginBottom: 8 },
+  phone: { fontSize: 14, color: '#FFC107', marginBottom: 8 },
   address: { fontSize: 14, color: '#333' },
   infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 },
   infoLabel: { color: '#666' },
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   actionButton: { borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 8 },
   actionButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
   proofImage: { width: '100%', height: 120, borderRadius: 8, marginBottom: 4 },
-  proofLink: { fontSize: 14, color: '#1976D2', marginBottom: 8 },
+  proofLink: { fontSize: 14, color: '#FFC107', marginBottom: 8 },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalContent: { backgroundColor: '#fff', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24 },
   modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 16 },

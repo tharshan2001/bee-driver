@@ -39,7 +39,7 @@ export function timeAgo(date: Date | string): string {
 export function getStatusColor(status: string): string {
   const colors: Record<string, string> = {
     PENDING: '#9E9E9E',
-    ASSIGNED: '#1976D2',
+    ASSIGNED: '#FFC107',
     PICKED_UP: '#FFA000',
     IN_TRANSIT: '#F57C00',
     DELIVERED: '#388E3C',

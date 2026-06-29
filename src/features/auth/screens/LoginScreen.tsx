@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F5F5' },
   content: { flexGrow: 1, justifyContent: 'center', padding: 24 },
   icon: { fontSize: 64, textAlign: 'center', marginBottom: 8 },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#1A237E', textAlign: 'center' },
+  title: { fontSize: 28, fontWeight: 'bold', color: '#000000', textAlign: 'center' },
   subtitle: { fontSize: 16, color: '#666', textAlign: 'center', marginBottom: 40 },
   form: { width: '100%' },
   label: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 6, marginTop: 12 },
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   inputError: { borderColor: '#D32F2F' },
   errorText: { color: '#D32F2F', fontSize: 12, marginTop: 4 },
   button: {
-    backgroundColor: '#1A237E',
+    backgroundColor: '#000000',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',

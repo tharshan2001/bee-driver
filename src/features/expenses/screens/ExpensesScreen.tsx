@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F5F5' },
   filterContainer: { padding: 16, paddingBottom: 8, gap: 8 },
   filterChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd' },
-  filterChipActive: { backgroundColor: '#1A237E', borderColor: '#1A237E' },
+  filterChipActive: { backgroundColor: '#000000', borderColor: '#000000' },
   filterText: { fontSize: 13, color: '#666' },
   filterTextActive: { color: '#fff', fontWeight: '600' },
   item: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 14, borderRadius: 12, marginBottom: 8 },
@@ -105,6 +105,6 @@ const styles = StyleSheet.create({
   meta: { fontSize: 12, color: '#999', marginTop: 2 },
   itemRight: { alignItems: 'flex-end', gap: 4 },
   amount: { fontWeight: 'bold', fontSize: 16, color: '#333' },
-  fab: { position: 'absolute', bottom: 24, right: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: '#1A237E', justifyContent: 'center', alignItems: 'center', elevation: 4, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 4 },
+  fab: { position: 'absolute', bottom: 24, right: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: '#000000', justifyContent: 'center', alignItems: 'center', elevation: 4, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 4 },
   fabText: { fontSize: 28, color: '#fff', fontWeight: '300', marginTop: -2 },
 });

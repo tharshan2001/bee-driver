@@ -7,8 +7,8 @@ interface StatusBadgeProps {
 
 const statusColors: Record<string, { bg: string; text: string }> = {
   PENDING: { bg: '#F5F5F5', text: '#9E9E9E' },
-  ASSIGNED: { bg: '#E3F2FD', text: '#1976D2' },
-  PICKED_UP: { bg: '#FFF8E1', text: '#FFA000' },
+  ASSIGNED: { bg: '#FFF8E1', text: '#FFC107' },
+  PICKED_UP: { bg: '#FFF3E0', text: '#FFA000' },
   IN_TRANSIT: { bg: '#FFF3E0', text: '#F57C00' },
   DELIVERED: { bg: '#E8F5E9', text: '#388E3C' },
   FAILED: { bg: '#FFEBEE', text: '#D32F2F' },

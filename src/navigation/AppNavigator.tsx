@@ -1,7 +1,8 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import DashboardScreen from '../features/dashboard/screens/DashboardScreen';
 import DeliveriesListScreen from '../features/deliveries/screens/DeliveriesListScreen';
@@ -19,36 +20,41 @@ import type { RootStackParamList, TabParamList } from './types';
 const Tab = createBottomTabNavigator<TabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-function TabIcon({ label, focused }: { label: string; focused: boolean }) {
-  const icons: Record<string, string> = {
-    Dashboard: '🏠',
-    Deliveries: '🚚',
-    More: '⚙️',
-  };
-  return <Text style={{ fontSize: 22, opacity: focused ? 1 : 0.5 }}>{icons[label] || '📋'}</Text>;
-}
+type IoniconsName = keyof typeof Ionicons.glyphMap;
+
+const tabIcons: Record<string, { active: IoniconsName; inactive: IoniconsName }> = {
+  Dashboard: { active: 'grid', inactive: 'grid-outline' },
+  Deliveries: { active: 'car', inactive: 'car-outline' },
+  Alerts: { active: 'notifications', inactive: 'notifications-outline' },
+  More: { active: 'ellipsis-horizontal-circle', inactive: 'ellipsis-horizontal-circle-outline' },
+};
 
 function MainTabs() {
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarIcon: ({ focused }) => <TabIcon label={route.name} focused={focused} />,
-        tabBarActiveTintColor: '#1A237E',
-        tabBarInactiveTintColor: '#999',
+        tabBarIcon: ({ focused, color, size }) => {
+          const icons = tabIcons[route.name];
+          return <Ionicons name={focused ? icons.active : icons.inactive} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: '#000000',
+        tabBarInactiveTintColor: '#94A3B8',
         tabBarStyle: {
           backgroundColor: '#fff',
           borderTopWidth: 1,
-          borderTopColor: '#eee',
-          paddingBottom: 8,
-          paddingTop: 8,
-          height: 60,
+          borderTopColor: '#E2E8F0',
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 6,
+          paddingTop: 6,
+          height: insets.bottom > 0 ? 60 + insets.bottom : 60,
         },
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
       <Tab.Screen name="Deliveries" component={DeliveriesListScreen} />
+      <Tab.Screen name="Alerts" component={AlertsScreen} />
       <Tab.Screen name="More" component={MoreScreen} />
     </Tab.Navigator>
   );
@@ -56,7 +62,8 @@ function MainTabs() {
 
 export default function AppNavigator() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen
         name="DeliveryDetail"
@@ -99,5 +106,6 @@ export default function AppNavigator() {
         options={{ headerShown: true, headerTitle: 'Alerts', headerBackTitle: 'Back' }}
       />
     </Stack.Navigator>
+    </SafeAreaView>
   );
 }

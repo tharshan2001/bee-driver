@@ -6,19 +6,68 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "splash": {
-      "backgroundColor": "#1A237E"
+      "backgroundColor": "#000000"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.bee.driver"
+      "bundleIdentifier": "com.bee.driver",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "location",
+          "remote-notification"
+        ],
+        "NSLocationWhenInUseUsageDescription": "Bee Driver needs your location to navigate to delivery addresses and track your trips.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Bee Driver needs background location access to continuously share your live location with dispatchers and customers even when the app is closed."
+      },
     },
     "android": {
-      "package": "com.bee.driver"
+      "package": "com.ebee.driver",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
+        "POST_NOTIFICATIONS",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION"
+      ]
     },
+    "newArchEnabled": true,
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Bee Driver needs background location access to continuously share your live location with dispatchers and customers even when the app is closed.",
+          "locationWhenInUsePermission": "Bee Driver needs your location to navigate to delivery addresses and track your trips.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0",
+            "minSdkVersion": 26,
+            "kotlinVersion": "2.0.21"
+          }
+        }
+      ]
+    ],
+    "projectId": "9c17f6ca-6688-4c93-9847-16d86554ed6b",
     "extra": {
       "apiHost": "localhost",
       "apiPort": "8085",
-      "apiBaseUrl": "http://192.168.8.130:8085/api"
+      "apiBaseUrl": "http://192.168.8.130:8085/api",
+      "eas": {
+        "projectId": "9c17f6ca-6688-4c93-9847-16d86554ed6b"
+      }
     }
   }
 }

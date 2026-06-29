@@ -61,6 +61,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F5F5' },
   content: { padding: 24 },
   input: { backgroundColor: '#fff', borderRadius: 12, padding: 14, fontSize: 16, marginBottom: 16, borderWidth: 1, borderColor: '#ddd' },
-  button: { backgroundColor: '#1A237E', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 8 },
+  button: { backgroundColor: '#000000', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 8 },
   buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
 });

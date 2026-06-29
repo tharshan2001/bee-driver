@@ -1,9 +1,10 @@
 const { getDefaultConfig } = require('expo/metro-config');
+const { withUniwindConfig } = require('uniwind/metro');
 const http = require('http');
 
 const config = getDefaultConfig(__dirname);
 
-module.exports = {
+const proxiedConfig = {
   ...config,
   server: {
     port: 8081,
@@ -38,3 +39,8 @@ module.exports = {
     },
   },
 };
+
+module.exports = withUniwindConfig(proxiedConfig, {
+  cssEntryFile: './global.css',
+  dtsFile: './src/uniwind-types.d.ts',
+});
