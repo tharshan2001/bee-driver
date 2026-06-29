@@ -7,6 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import api from '../../../core/api/client';
 import { formatDate } from '../../../core/utils/helpers';
+import { colors } from '../../../shared/theme';
 
 const categories = ['FUEL', 'MAINTENANCE', 'PARKING', 'TOLL', 'OTHER'];
 
@@ -66,7 +67,7 @@ export default function CreateExpenseScreen() {
       <Text style={styles.label}>Category</Text>
       <TouchableOpacity style={styles.selector} onPress={() => setShowCategories(!showCategories)}>
         <Text style={styles.selectorText}>{category}</Text>
-        <Text style={{ color: '#999' }}>▼</Text>
+        <Text style={{ color: colors.textMuted }}>▼</Text>
       </TouchableOpacity>
       {showCategories && (
         <View style={styles.dropdown}>
@@ -141,22 +142,22 @@ export default function CreateExpenseScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
+  container: { flex: 1, backgroundColor: colors.canvas },
   content: { padding: 24 },
-  label: { fontSize: 13, fontWeight: '600', color: '#666', marginBottom: 6, marginTop: 16 },
-  input: { backgroundColor: '#fff', borderRadius: 12, padding: 14, fontSize: 16, borderWidth: 1, borderColor: '#ddd' },
+  label: { fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: 6, marginTop: 16 },
+  input: { backgroundColor: colors.card, borderRadius: 12, padding: 14, fontSize: 16, borderWidth: 1, borderColor: colors.border },
   textArea: { minHeight: 80, textAlignVertical: 'top' },
-  selector: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#ddd' },
-  selectorText: { fontSize: 16, color: '#333' },
-  dropdown: { backgroundColor: '#fff', borderRadius: 12, marginTop: 4, overflow: 'hidden', borderWidth: 1, borderColor: '#ddd' },
-  dropdownItem: { padding: 14, borderBottomWidth: 1, borderBottomColor: '#f5f5f5' },
-  dropdownItemActive: { backgroundColor: '#FFF8E1' },
-  dropdownText: { fontSize: 14, color: '#333' },
-  dropdownTextActive: { color: '#FFC107', fontWeight: '600' },
+  selector: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.card, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: colors.border },
+  selectorText: { fontSize: 16, color: colors.textPrimary },
+  dropdown: { backgroundColor: colors.card, borderRadius: 12, marginTop: 4, overflow: 'hidden', borderWidth: 1, borderColor: colors.border },
+  dropdownItem: { padding: 14, borderBottomWidth: 1, borderBottomColor: colors.canvas },
+  dropdownItemActive: { backgroundColor: colors.accentLight },
+  dropdownText: { fontSize: 14, color: colors.textPrimary },
+  dropdownTextActive: { color: colors.accent, fontWeight: '600' },
   receiptPreview: { width: '100%', height: 150, borderRadius: 12, marginBottom: 8 },
-  removeText: { color: '#D32F2F', textAlign: 'center' },
-  uploadBtn: { backgroundColor: '#fff', borderRadius: 12, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: '#ddd', borderStyle: 'dashed' },
-  uploadBtnText: { fontSize: 14, color: '#FFC107' },
-  submitBtn: { backgroundColor: '#000000', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 32 },
-  submitBtnText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  removeText: { color: colors.danger, textAlign: 'center' },
+  uploadBtn: { backgroundColor: colors.card, borderRadius: 12, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderStyle: 'dashed' },
+  uploadBtnText: { fontSize: 14, color: colors.accent },
+  submitBtn: { backgroundColor: colors.primary, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 32 },
+  submitBtnText: { color: colors.textOnPrimary, fontSize: 16, fontWeight: '600' },
 });

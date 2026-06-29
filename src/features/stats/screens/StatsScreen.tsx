@@ -3,6 +3,7 @@ import { View, Text, ScrollView, RefreshControl, StyleSheet, ActivityIndicator }
 import api from '../../../core/api/client';
 import type { DriverStats } from '../../../core/api/types';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
+import { colors } from '../../../shared/theme';
 
 export default function StatsScreen() {
   const [stats, setStats] = useState<DriverStats | null>(null);
@@ -29,7 +30,7 @@ export default function StatsScreen() {
     fetchStats();
   }, [fetchStats]);
 
-  if (loading) return <View style={styles.center}><ActivityIndicator size="large" color="#000000" /></View>;
+  if (loading) return <View style={styles.center}><ActivityIndicator size="large" color={colors.primary} /></View>;
   if (error) return <ErrorScreen message={error} onRetry={() => setLoading(true)} />;
   if (!stats) return null;
 
@@ -46,21 +47,21 @@ export default function StatsScreen() {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
-      <StatCard icon="🚚" label="Total Deliveries" value={`${stats.totalDeliveries}`} color="#FFC107" />
+      <StatCard icon="🚚" label="Total Deliveries" value={`${stats.totalDeliveries}`} color={colors.accent} />
       <View style={styles.row}>
-        <StatCard icon="✅" label="Completed" value={`${stats.completedDeliveries}`} color="#388E3C" flex={1} />
+        <StatCard icon="✅" label="Completed" value={`${stats.completedDeliveries}`} color={colors.success} flex={1} />
         <View style={{ width: 8 }} />
-        <StatCard icon="❌" label="Failed" value={`${stats.failedDeliveries}`} color="#D32F2F" flex={1} />
+        <StatCard icon="❌" label="Failed" value={`${stats.failedDeliveries}`} color={colors.danger} flex={1} />
       </View>
-      <StatCard icon="💰" label="Total Earnings" value={`$${stats.totalEarnings.toFixed(2)}`} color="#388E3C" />
+      <StatCard icon="💰" label="Total Earnings" value={`$${stats.totalEarnings.toFixed(2)}`} color={colors.success} />
       {stats.rating != null && (
-        <StatCard icon="⭐" label="Rating" value={stats.rating.toFixed(1)} color="#FFA000" />
+        <StatCard icon="⭐" label="Rating" value={stats.rating.toFixed(1)} color={colors.warning} />
       )}
 
       <View style={styles.performanceCard}>
         <Text style={styles.performanceTitle}>Delivery Performance</Text>
-        <ProgressRow label="Completion Rate" value={completionRate} color="#388E3C" />
-        <ProgressRow label="Failure Rate" value={failureRate} color="#D32F2F" />
+        <ProgressRow label="Completion Rate" value={completionRate} color={colors.success} />
+        <ProgressRow label="Failure Rate" value={failureRate} color={colors.danger} />
       </View>
     </ScrollView>
   );
@@ -94,22 +95,22 @@ function ProgressRow({ label, value, color }: { label: string; value: string; co
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
+  container: { flex: 1, backgroundColor: colors.canvas },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   content: { padding: 16 },
   row: { flexDirection: 'row', marginBottom: 8 },
   statCard: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff',
+    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card,
     padding: 16, borderRadius: 12, marginBottom: 8,
-    shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 3, elevation: 1,
+    shadowColor: colors.shadow, shadowOpacity: 0.03, shadowRadius: 3, elevation: 1,
   },
   statIcon: { fontSize: 28, marginRight: 16 },
-  statLabel: { fontSize: 13, color: '#666' },
+  statLabel: { fontSize: 13, color: colors.textSecondary },
   statValue: { fontSize: 22, fontWeight: 'bold' },
-  performanceCard: { backgroundColor: '#fff', borderRadius: 12, padding: 16, marginTop: 8 },
-  performanceTitle: { fontSize: 16, fontWeight: '600', color: '#333', marginBottom: 16 },
+  performanceCard: { backgroundColor: colors.card, borderRadius: 12, padding: 16, marginTop: 8 },
+  performanceTitle: { fontSize: 16, fontWeight: '600', color: colors.textPrimary, marginBottom: 16 },
   progressRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  progressLabel: { width: 120, fontSize: 13, color: '#666' },
+  progressLabel: { width: 120, fontSize: 13, color: colors.textSecondary },
   progressBar: { flex: 1, height: 8, backgroundColor: '#eee', borderRadius: 4, marginHorizontal: 12 },
   progressFill: { height: 8, borderRadius: 4 },
   progressValue: { width: 48, textAlign: 'right', fontWeight: '600', fontSize: 12 },

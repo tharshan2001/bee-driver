@@ -4,6 +4,7 @@ import {
   Platform, ScrollView, ActivityIndicator, Alert,
 } from 'react-native';
 import { useAuth } from '../../../context/AuthContext';
+import { colors } from '../../../shared/theme';
 
 export default function LoginScreen() {
   const { login } = useAuth();
@@ -58,7 +59,7 @@ export default function LoginScreen() {
             keyboardType="email-address"
             autoCapitalize="none"
             placeholder="driver@example.com"
-            placeholderTextColor="#999"
+            placeholderTextColor={colors.textMuted}
           />
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
@@ -69,7 +70,7 @@ export default function LoginScreen() {
             onChangeText={setPassword}
             secureTextEntry
             placeholder="Enter password"
-            placeholderTextColor="#999"
+            placeholderTextColor={colors.textMuted}
           />
           {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
@@ -79,7 +80,7 @@ export default function LoginScreen() {
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={colors.textOnPrimary} />
             ) : (
               <Text style={styles.buttonText}>Login as Driver</Text>
             )}
@@ -91,31 +92,31 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
+  container: { flex: 1, backgroundColor: colors.canvas },
   content: { flexGrow: 1, justifyContent: 'center', padding: 24 },
   icon: { fontSize: 64, textAlign: 'center', marginBottom: 8 },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#000000', textAlign: 'center' },
-  subtitle: { fontSize: 16, color: '#666', textAlign: 'center', marginBottom: 40 },
+  title: { fontSize: 28, fontWeight: 'bold', color: colors.primary, textAlign: 'center' },
+  subtitle: { fontSize: 16, color: colors.textSecondary, textAlign: 'center', marginBottom: 40 },
   form: { width: '100%' },
-  label: { fontSize: 14, fontWeight: '600', color: '#333', marginBottom: 6, marginTop: 12 },
+  label: { fontSize: 14, fontWeight: '600', color: colors.textPrimary, marginBottom: 6, marginTop: 12 },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.card,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: colors.border,
     borderRadius: 12,
     padding: 14,
     fontSize: 16,
-    color: '#333',
+    color: colors.textPrimary,
   },
-  inputError: { borderColor: '#D32F2F' },
-  errorText: { color: '#D32F2F', fontSize: 12, marginTop: 4 },
+  inputError: { borderColor: colors.danger },
+  errorText: { color: colors.danger, fontSize: 12, marginTop: 4 },
   button: {
-    backgroundColor: '#000000',
+    backgroundColor: colors.primary,
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
     marginTop: 32,
   },
   buttonDisabled: { opacity: 0.7 },
-  buttonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  buttonText: { color: colors.textOnPrimary, fontSize: 16, fontWeight: '600' },
 });

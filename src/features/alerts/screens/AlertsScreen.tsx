@@ -10,6 +10,7 @@ import type { Alert as AlertType } from '../../../core/api/types';
 import EmptyState from '../../../shared/components/EmptyState';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
 import { timeAgo } from '../../../core/utils/helpers';
+import { colors } from '../../../shared/theme';
 
 export default function AlertsScreen() {
   const insets = useSafeAreaInsets();
@@ -102,16 +103,16 @@ export default function AlertsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
+  container: { flex: 1, backgroundColor: colors.canvas },
   markAllBtn: { padding: 12, alignItems: 'flex-end', paddingRight: 16 },
-  markAllText: { color: '#FFC107', fontSize: 13, fontWeight: '600' },
-  item: { flexDirection: 'row', backgroundColor: '#fff', padding: 14, borderRadius: 12, marginBottom: 8, alignItems: 'center' },
-  itemUnread: { borderLeftWidth: 3, borderLeftColor: '#000000' },
+  markAllText: { color: colors.accent, fontSize: 13, fontWeight: '600' },
+  item: { flexDirection: 'row', backgroundColor: colors.card, padding: 14, borderRadius: 12, marginBottom: 8, alignItems: 'center' },
+  itemUnread: { borderLeftWidth: 3, borderLeftColor: colors.primary },
   icon: { fontSize: 24, marginRight: 12 },
   content: { flex: 1 },
-  title: { fontSize: 14, color: '#333' },
+  title: { fontSize: 14, color: colors.textPrimary },
   titleUnread: { fontWeight: '600' },
-  message: { fontSize: 13, color: '#666', marginTop: 2 },
-  time: { fontSize: 11, color: '#999', marginTop: 4 },
-  unreadDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#000000', marginLeft: 8 },
+  message: { fontSize: 13, color: colors.textSecondary, marginTop: 2 },
+  time: { fontSize: 11, color: colors.textMuted, marginTop: 4 },
+  unreadDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary, marginLeft: 8 },
 });

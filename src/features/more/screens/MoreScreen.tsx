@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { RootStackParamList, RootStackNav } from '../../../navigation/types';
+import { colors } from '../../../shared/theme';
 
 export default function MoreScreen() {
   const navigation = useNavigation<RootStackNav>();
@@ -14,8 +15,8 @@ export default function MoreScreen() {
         <Text style={styles.headerTitle}>More</Text>
       </View>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 16 }}>
-        <MenuItem icon="👤" label="Profile" color="#FFC107" onPress={() => navigation.navigate('Profile')} />
-        <MenuItem icon="🧾" label="Expenses" color="#FFA000" onPress={() => navigation.navigate('Expenses')} />
+        <MenuItem icon="👤" label="Profile" color={colors.accent} onPress={() => navigation.navigate('Profile')} />
+        <MenuItem icon="🧾" label="Expenses" color={colors.warning} onPress={() => navigation.navigate('Expenses')} />
         <MenuItem icon="📊" label="Statistics" color="#7B1FA2" onPress={() => navigation.navigate('Stats')} />
       </ScrollView>
     </View>
@@ -37,16 +38,16 @@ function MenuItem({ icon, label, color, onPress }: {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
-  header: { padding: 20, backgroundColor: '#000000' },
-  headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#fff' },
+  container: { flex: 1, backgroundColor: colors.canvas },
+  header: { padding: 20, backgroundColor: colors.primary },
+  headerTitle: { fontSize: 22, fontWeight: 'bold', color: colors.textOnPrimary },
   menuItem: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff',
+    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card,
     padding: 16, borderRadius: 12, marginBottom: 8,
-    shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 3, elevation: 1,
+    shadowColor: colors.shadow, shadowOpacity: 0.03, shadowRadius: 3, elevation: 1,
   },
   menuIcon: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center', marginRight: 14 },
   menuIconText: { fontSize: 22 },
-  menuLabel: { flex: 1, fontSize: 16, fontWeight: '600', color: '#333' },
-  menuArrow: { fontSize: 22, color: '#999' },
+  menuLabel: { flex: 1, fontSize: 16, fontWeight: '600', color: colors.textPrimary },
+  menuArrow: { fontSize: 22, color: colors.textMuted },
 });

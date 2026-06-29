@@ -10,6 +10,7 @@ import type { RootStackParamList, RootStackNav } from '../../../navigation/types
 import StatusBadge from '../../../shared/components/StatusBadge';
 import EmptyState from '../../../shared/components/EmptyState';
 import { formatDate } from '../../../core/utils/helpers';
+import { colors } from '../../../shared/theme';
 
 type Nav = RootStackNav;
 
@@ -92,19 +93,19 @@ export default function ExpensesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
+  container: { flex: 1, backgroundColor: colors.canvas },
   filterContainer: { padding: 16, paddingBottom: 8, gap: 8 },
-  filterChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: '#fff', borderWidth: 1, borderColor: '#ddd' },
-  filterChipActive: { backgroundColor: '#000000', borderColor: '#000000' },
-  filterText: { fontSize: 13, color: '#666' },
-  filterTextActive: { color: '#fff', fontWeight: '600' },
-  item: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 14, borderRadius: 12, marginBottom: 8 },
+  filterChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border },
+  filterChipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
+  filterText: { fontSize: 13, color: colors.textSecondary },
+  filterTextActive: { color: colors.textOnPrimary, fontWeight: '600' },
+  item: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, padding: 14, borderRadius: 12, marginBottom: 8 },
   categoryIcon: { fontSize: 24, marginRight: 12 },
   itemContent: { flex: 1 },
-  description: { fontWeight: '600', fontSize: 14, color: '#333' },
-  meta: { fontSize: 12, color: '#999', marginTop: 2 },
+  description: { fontWeight: '600', fontSize: 14, color: colors.textPrimary },
+  meta: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
   itemRight: { alignItems: 'flex-end', gap: 4 },
-  amount: { fontWeight: 'bold', fontSize: 16, color: '#333' },
-  fab: { position: 'absolute', bottom: 24, right: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: '#000000', justifyContent: 'center', alignItems: 'center', elevation: 4, shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 4 },
-  fabText: { fontSize: 28, color: '#fff', fontWeight: '300', marginTop: -2 },
+  amount: { fontWeight: 'bold', fontSize: 16, color: colors.textPrimary },
+  fab: { position: 'absolute', bottom: 24, right: 24, width: 56, height: 56, borderRadius: 28, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center', elevation: 4, shadowColor: colors.shadow, shadowOpacity: 0.2, shadowRadius: 4 },
+  fabText: { fontSize: 28, color: colors.textOnPrimary, fontWeight: '300', marginTop: -2 },
 });

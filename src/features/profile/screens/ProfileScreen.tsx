@@ -10,6 +10,7 @@ import type { DriverProfile } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
 import { formatDate } from '../../../core/utils/helpers';
 import { useAuth } from '../../../context/AuthContext';
+import { colors } from '../../../shared/theme';
 
 type Nav = RootStackNav;
 
@@ -78,6 +79,10 @@ export default function ProfileScreen() {
         await api.post('/driver/profile/photo', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
+        const res = await api.get('/driver/profile');
+        if (res.data?.success && res.data?.data) {
+          setProfile(res.data.data as DriverProfile);
+        }
         Alert.alert('Success', 'Profile photo updated');
       } catch (err: any) {
         Alert.alert('Error', err?.response?.data?.message || 'Failed to upload photo');
@@ -92,7 +97,11 @@ export default function ProfileScreen() {
       <View style={styles.headerSection}>
         <TouchableOpacity onPress={pickPhoto}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{profile.firstName[0]}{profile.lastName[0]}</Text>
+            {profile.photoUrl ? (
+              <Image source={{ uri: profile.photoUrl }} style={styles.avatarImage} />
+            ) : (
+              <Text style={styles.avatarText}>{profile.firstName[0]}{profile.lastName[0]}</Text>
+            )}
             <View style={styles.cameraIcon}><Text style={{ fontSize: 14 }}>📷</Text></View>
           </View>
         </TouchableOpacity>
@@ -126,7 +135,7 @@ export default function ProfileScreen() {
 
       <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('ChangePassword')}>
         <Text style={styles.menuText}>🔒 Change Password</Text>
-        <Text style={{ color: '#999' }}>›</Text>
+        <Text style={{ color: colors.textMuted }}>›</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -146,24 +155,25 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F5F5F5' },
+  container: { flex: 1, backgroundColor: colors.canvas },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  headerSection: { alignItems: 'center', paddingVertical: 24, backgroundColor: '#fff' },
-  avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: '#000000', justifyContent: 'center', alignItems: 'center', marginBottom: 8 },
-  avatarText: { color: '#fff', fontSize: 28, fontWeight: 'bold' },
-  cameraIcon: { position: 'absolute', bottom: 0, right: -4, backgroundColor: '#fff', borderRadius: 12, padding: 4 },
-  editText: { color: '#FFC107', fontSize: 14, fontWeight: '600' },
-  form: { backgroundColor: '#fff', marginTop: 16, padding: 16 },
-  label: { fontSize: 13, fontWeight: '600', color: '#666', marginBottom: 4, marginTop: 12 },
-  input: { backgroundColor: '#F5F5F5', borderRadius: 8, padding: 12, fontSize: 16, color: '#333' },
-  saveButton: { backgroundColor: '#000000', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 24 },
-  saveButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
-  staticInfo: { backgroundColor: '#fff', marginTop: 16, padding: 16 },
-  infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#f5f5f5' },
-  infoLabel: { color: '#666' },
-  infoValue: { fontWeight: '600', color: '#333' },
-  menuItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', marginTop: 16, padding: 16 },
-  menuText: { fontSize: 16, color: '#333' },
-  logoutButton: { backgroundColor: '#fff', marginTop: 8, padding: 16, alignItems: 'center' },
-  logoutText: { fontSize: 16, color: '#D32F2F', fontWeight: '600' },
+  headerSection: { alignItems: 'center', paddingVertical: 24, backgroundColor: colors.card },
+  avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center', marginBottom: 8, overflow: 'hidden' },
+  avatarImage: { width: 80, height: 80, borderRadius: 40 },
+  avatarText: { color: colors.textOnPrimary, fontSize: 28, fontWeight: 'bold' },
+  cameraIcon: { position: 'absolute', bottom: 0, right: -4, backgroundColor: colors.card, borderRadius: 12, padding: 4 },
+  editText: { color: colors.accent, fontSize: 14, fontWeight: '600' },
+  form: { backgroundColor: colors.card, marginTop: 16, padding: 16 },
+  label: { fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: 4, marginTop: 12 },
+  input: { backgroundColor: colors.canvas, borderRadius: 8, padding: 12, fontSize: 16, color: colors.textPrimary },
+  saveButton: { backgroundColor: colors.primary, borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 24 },
+  saveButtonText: { color: colors.textOnPrimary, fontSize: 16, fontWeight: '600' },
+  staticInfo: { backgroundColor: colors.card, marginTop: 16, padding: 16 },
+  infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.canvas },
+  infoLabel: { color: colors.textSecondary },
+  infoValue: { fontWeight: '600', color: colors.textPrimary },
+  menuItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.card, marginTop: 16, padding: 16 },
+  menuText: { fontSize: 16, color: colors.textPrimary },
+  logoutButton: { backgroundColor: colors.card, marginTop: 8, padding: 16, alignItems: 'center' },
+  logoutText: { fontSize: 16, color: colors.danger, fontWeight: '600' },
 });

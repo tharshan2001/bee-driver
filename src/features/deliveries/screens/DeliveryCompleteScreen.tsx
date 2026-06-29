@@ -8,7 +8,6 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
-import { Paths, File } from 'expo-file-system';
 import SignatureView from 'react-native-signature-canvas';
 import api from '../../../core/api/client';
 import Card from '../../../shared/components/Card';
@@ -89,11 +88,8 @@ export default function DeliveryCompleteScreen() {
         } as any);
       }
       if (signatureBase64) {
-        const sigFile = new File(Paths.cache, 'signature.png');
-        sigFile.create({ overwrite: true });
-        sigFile.write(signatureBase64.replace(/^data:image\/\w+;base64,/, ''), { encoding: 'base64' });
         formData.append('signature', {
-          uri: sigFile.uri,
+          uri: signatureBase64,
           type: 'image/png',
           name: 'signature.png',
         } as any);

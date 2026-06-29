@@ -36,17 +36,19 @@ export function timeAgo(date: Date | string): string {
   return 'just now';
 }
 
+import { colors } from '../../shared/theme';
+
 export function getStatusColor(status: string): string {
-  const colors: Record<string, string> = {
+  const map: Record<string, string> = {
     PENDING: '#9E9E9E',
-    ASSIGNED: '#FFC107',
-    PICKED_UP: '#FFA000',
-    IN_TRANSIT: '#F57C00',
-    DELIVERED: '#388E3C',
-    FAILED: '#D32F2F',
+    ASSIGNED: colors.accent,
+    PICKED_UP: colors.warning,
+    IN_TRANSIT: colors.info,
+    DELIVERED: colors.success,
+    FAILED: colors.danger,
     FAILED_PERMANENT: '#B71C1C',
-    APPROVED: '#388E3C',
-    REJECTED: '#D32F2F',
+    APPROVED: colors.success,
+    REJECTED: colors.danger,
   };
-  return colors[status.toUpperCase()] || '#9E9E9E';
+  return map[status.toUpperCase()] || '#9E9E9E';
 }

@@ -1,8 +1,9 @@
+import { Alert, Linking, Platform } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
 import { LOCATION_TASK_NAME } from '../tasks/locationTask';
 
-const THROTTLE_MS = 15_000;
+const THROTTLE_MS = 10_000;
 
 export function useLocationTracking(isActive: boolean) {
   const [isTracking, setIsTracking] = useState(false);
@@ -30,7 +31,20 @@ export function useLocationTracking(isActive: boolean) {
       return;
     }
 
-    await Location.requestBackgroundPermissionsAsync();
+    const bg = await Location.requestBackgroundPermissionsAsync();
+    if (bg.status !== 'granted') {
+      startedRef.current = false;
+      setIsTracking(false);
+      Alert.alert(
+        'Background Location Needed',
+        'Bee Driver needs "Always" location access to continuously share your location even when the app is closed. Please enable it in Settings.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() },
+        ],
+      );
+      return;
+    }
 
     const alreadyStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
     if (alreadyStarted) {
@@ -39,9 +53,9 @@ export function useLocationTracking(isActive: boolean) {
     }
 
     await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-      accuracy: Location.Accuracy.Balanced,
+      accuracy: Location.Accuracy.BestForNavigation,
       timeInterval: THROTTLE_MS,
-      distanceInterval: 10,
+      distanceInterval: 5,
       pausesUpdatesAutomatically: false,
       showsBackgroundLocationIndicator: true,
       foregroundService: {

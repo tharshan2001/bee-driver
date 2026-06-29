@@ -1,20 +1,21 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { colors } from '../theme';
 
 interface StatusBadgeProps {
   status: string;
 }
 
 const statusColors: Record<string, { bg: string; text: string }> = {
-  PENDING: { bg: '#F5F5F5', text: '#9E9E9E' },
-  ASSIGNED: { bg: '#FFF8E1', text: '#FFC107' },
-  PICKED_UP: { bg: '#FFF3E0', text: '#FFA000' },
-  IN_TRANSIT: { bg: '#FFF3E0', text: '#F57C00' },
-  DELIVERED: { bg: '#E8F5E9', text: '#388E3C' },
-  FAILED: { bg: '#FFEBEE', text: '#D32F2F' },
+  PENDING: { bg: colors.canvas, text: '#9E9E9E' },
+  ASSIGNED: { bg: colors.accentLight, text: colors.accent },
+  PICKED_UP: { bg: '#FFF3E0', text: colors.warning },
+  IN_TRANSIT: { bg: '#FFF3E0', text: colors.info },
+  DELIVERED: { bg: colors.successLight, text: colors.success },
+  FAILED: { bg: colors.dangerLight, text: colors.danger },
   FAILED_PERMANENT: { bg: '#FCE4EC', text: '#B71C1C' },
-  APPROVED: { bg: '#E8F5E9', text: '#388E3C' },
-  REJECTED: { bg: '#FFEBEE', text: '#D32F2F' },
+  APPROVED: { bg: colors.successLight, text: colors.success },
+  REJECTED: { bg: colors.dangerLight, text: colors.danger },
 };
 
 export default function StatusBadge({ status }: StatusBadgeProps) {

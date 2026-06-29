@@ -51,11 +51,17 @@ export default function DashboardScreen() {
     fetchDashboard();
   }, [fetchDashboard]);
 
+  const hasActiveDeliveries = (dashboard?.activeDeliveries ?? 0) > 0;
+
   const toggleAvailability = async (value: boolean) => {
+    if (hasActiveDeliveries && value) {
+      Alert.alert('Active Deliveries', 'Complete your current deliveries before going online.');
+      return;
+    }
     try {
       await setAvailability(value);
-    } catch {
-      Alert.alert('Error', 'Failed to update availability');
+    } catch (err: any) {
+      Alert.alert('Error', err?.response?.data?.message || 'Failed to update availability');
     }
   };
 
@@ -76,10 +82,10 @@ export default function DashboardScreen() {
       <View style={[styles.header, { paddingTop: 20 }]}>
         <View style={styles.headerRight}>
           <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
-            <Ionicons name="notifications-outline" size={24} color="#fff" />
+            <Ionicons name="notifications-outline" size={24} color={colors.textOnPrimary} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-            <Ionicons name="person-outline" size={24} color="#fff" />
+            <Ionicons name="person-outline" size={24} color={colors.textOnPrimary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -90,15 +96,20 @@ export default function DashboardScreen() {
         <View style={styles.availabilityInner}>
           <View>
             <Text style={styles.cardLabel}>Availability</Text>
-            <Text style={[styles.statusText, { color: availability ? colors.success : colors.danger }]}>
-              {availability ? 'You are ONLINE' : 'You are OFFLINE'}
+            <Text style={[styles.statusText, {
+              color: hasActiveDeliveries ? colors.warning : (availability ? colors.success : colors.danger)
+            }]}>
+              {hasActiveDeliveries
+                ? 'On Delivery'
+                : (availability ? 'You are ONLINE' : 'You are OFFLINE')}
             </Text>
           </View>
           <Switch
             value={availability}
             onValueChange={toggleAvailability}
-            trackColor={{ false: '#ddd', true: '#A5D6A7' }}
-            thumbColor={availability ? colors.success : '#f4f3f4'}
+            disabled={hasActiveDeliveries}
+            trackColor={{ false: colors.border, true: colors.successLight }}
+            thumbColor={hasActiveDeliveries ? colors.warning : (availability ? colors.success : '#f4f3f4')}
           />
         </View>
       </Card>
