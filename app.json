@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Bee Driver",
+    "slug": "bee-driver",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#1A237E"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bee.driver"
+    },
+    "android": {
+      "package": "com.bee.driver"
+    },
+    "extra": {
+      "apiHost": "localhost",
+      "apiPort": "8085",
+      "apiBaseUrl": "http://localhost:8085/api"
+    }
+  }
+}
