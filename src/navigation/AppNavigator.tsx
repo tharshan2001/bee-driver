@@ -1,8 +1,9 @@
 import React from 'react';
+import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors } from '../shared/theme';
 
 import DashboardScreen from '../features/dashboard/screens/DashboardScreen';
 import DeliveriesListScreen from '../features/deliveries/screens/DeliveriesListScreen';
@@ -30,7 +31,6 @@ const tabIcons: Record<string, { active: IoniconsName; inactive: IoniconsName }>
 };
 
 function MainTabs() {
-  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -39,15 +39,12 @@ function MainTabs() {
           const icons = tabIcons[route.name];
           return <Ionicons name={focused ? icons.active : icons.inactive} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#000000',
-        tabBarInactiveTintColor: '#94A3B8',
+        tabBarActiveTintColor: colors.tabActive,
+        tabBarInactiveTintColor: colors.tabInactive,
         tabBarStyle: {
-          backgroundColor: '#fff',
+          backgroundColor: colors.tabBarBg,
           borderTopWidth: 1,
-          borderTopColor: '#E2E8F0',
-          paddingBottom: insets.bottom > 0 ? insets.bottom : 6,
-          paddingTop: 6,
-          height: insets.bottom > 0 ? 60 + insets.bottom : 60,
+          borderTopColor: colors.borderLight,
         },
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
       })}
@@ -62,7 +59,7 @@ function MainTabs() {
 
 export default function AppNavigator() {
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+    <View style={{ flex: 1 }}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen
@@ -106,6 +103,6 @@ export default function AppNavigator() {
         options={{ headerShown: true, headerTitle: 'Alerts', headerBackTitle: 'Back' }}
       />
     </Stack.Navigator>
-    </SafeAreaView>
+    </View>
   );
 }

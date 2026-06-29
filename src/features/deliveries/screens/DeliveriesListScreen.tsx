@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, FlatList, TouchableOpacity, RefreshControl, StyleSheet, ActivityIndicator,
-  Animated, LayoutAnimation, Platform, UIManager,
+  Animated, LayoutAnimation, Platform, UIManager, SafeAreaView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../../../core/api/client';
 import { cacheData, getCachedData } from '../../../core/storage/storage';
 import type { PageResponse } from '../../../core/api/types';
@@ -44,7 +43,6 @@ function DeliverySkeletons() {
 
 export default function DeliveriesListScreen() {
   const navigation = useNavigation<Nav>();
-  const insets = useSafeAreaInsets();
   const [data, setData] = useState<any[]>([]);
   const [filter, setFilter] = useState<string | null>(null);
   const [page, setPage] = useState(0);
@@ -150,7 +148,7 @@ export default function DeliveriesListScreen() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>My Deliveries</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
@@ -190,10 +188,10 @@ export default function DeliveriesListScreen() {
           onEndReachedThreshold={0.3}
           ListEmptyComponent={<EmptyState icon="📭" title="No deliveries" />}
           ListFooterComponent={loadingMore ? <ActivityIndicator style={{ padding: 16 }} /> : null}
-          contentContainerStyle={data.length === 0 ? { flex: 1 } : { padding: 16, paddingTop: 8, paddingBottom: insets.bottom + 16 }}
+          contentContainerStyle={data.length === 0 ? { flex: 1 } : { padding: 16, paddingTop: 8, paddingBottom: 24 }}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
