@@ -54,7 +54,7 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     height: MASCOT_SIZE,
     borderRadius: MASCOT_SIZE / 2,
     overflow: 'hidden',
-    backgroundColor: '#1a1a1a',
+    backgroundColor: '#f0f0f0',
   },
   video: {
     width: MASCOT_SIZE,

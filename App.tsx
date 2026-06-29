@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { HeroUINativeProvider } from 'heroui-native';
@@ -14,7 +14,7 @@ export default function App() {
       <HeroUINativeProvider>
         <SafeAreaProvider>
           <AuthProvider>
-            <StatusBar style="light" />
+            <StatusBar backgroundColor="#000000" barStyle="light-content" />
             <RootNavigator />
           </AuthProvider>
         </SafeAreaProvider>

@@ -13,6 +13,7 @@ import Card from '../../../shared/components/Card';
 import SectionHeader from '../../../shared/components/SectionHeader';
 import ScreenContainer from '../../../shared/components/ScreenContainer';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
+import WelcomeBanner from '../components/WelcomeBanner';
 import { timeAgo } from '../../../core/utils/helpers';
 import { colors } from '../../../shared/theme';
 
@@ -73,7 +74,6 @@ export default function DashboardScreen() {
   return (
     <ScreenContainer scroll refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <View style={[styles.header, { paddingTop: 20 }]}>
-        <Text style={styles.greeting}>Hi, {dashboard?.driverName?.split(' ')[0] || 'Driver'}</Text>
         <View style={styles.headerRight}>
           <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
             <Ionicons name="notifications-outline" size={24} color="#fff" />
@@ -83,6 +83,8 @@ export default function DashboardScreen() {
           </TouchableOpacity>
         </View>
       </View>
+
+      <WelcomeBanner name={dashboard?.driverName?.split(' ')[0] || 'Driver'} />
 
       <Card padding={16} style={styles.availabilityCard}>
         <View style={styles.availabilityInner}>
@@ -115,24 +117,6 @@ export default function DashboardScreen() {
           </View>
         </View>
       </Card>
-
-      <View style={styles.statsRow}>
-        <View style={[styles.statCard, { backgroundColor: colors.accentLight }]}>
-          <Ionicons name="car-outline" size={24} color={colors.accent} style={{ marginBottom: 8 }} />
-          <Text style={[styles.statValue, { color: colors.accent }]}>{dashboard?.activeDeliveries ?? 0}</Text>
-          <Text style={styles.statLabel}>Active</Text>
-        </View>
-        <View style={[styles.statCard, { backgroundColor: colors.successLight }]}>
-          <Ionicons name="checkmark-circle-outline" size={24} color={colors.success} style={{ marginBottom: 8 }} />
-          <Text style={[styles.statValue, { color: colors.success }]}>{dashboard?.completedToday ?? 0}</Text>
-          <Text style={styles.statLabel}>Completed</Text>
-        </View>
-        <View style={[styles.statCard, { backgroundColor: colors.dangerLight }]}>
-          <Ionicons name="close-circle-outline" size={24} color={colors.danger} style={{ marginBottom: 8 }} />
-          <Text style={[styles.statValue, { color: colors.danger }]}>{dashboard?.failedToday ?? 0}</Text>
-          <Text style={styles.statLabel}>Failed</Text>
-        </View>
-      </View>
 
       <SectionHeader title="Quick Actions" />
 
@@ -180,7 +164,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: 20, paddingBottom: 20, backgroundColor: colors.header,
   },
-  greeting: { fontSize: 24, fontWeight: 'bold', color: colors.textOnPrimary },
   headerRight: { flexDirection: 'row', gap: 12 },
   availabilityCard: { marginHorizontal: 16, marginTop: 16 },
   availabilityInner: {
@@ -195,12 +178,6 @@ const styles = StyleSheet.create({
   trackingLabel: { fontSize: 12, color: colors.textMuted, fontWeight: '600', marginBottom: 2 },
   trackingDot: { width: 8, height: 8, borderRadius: 4 },
   trackingStatus: { fontSize: 13, fontWeight: '500' },
-  statsRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8 },
-  statCard: {
-    flex: 1, padding: 16, borderRadius: 12, alignItems: 'center',
-  },
-  statValue: { fontSize: 22, fontWeight: 'bold' },
-  statLabel: { fontSize: 12, color: colors.textSecondary, marginTop: 4 },
   actionsRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8 },
   actionCard: {
     flex: 1, alignItems: 'center', padding: 16,
