@@ -132,9 +132,9 @@ export default function ProfileScreen() {
       </View>
 
       <TouchableOpacity style={styles.menuRow} onPress={() => navigation.navigate('ChangePassword')}>
-        <Ionicons name="key-outline" size={18} color={colors.textMuted} style={{ marginRight: 12 }} />
+        <Ionicons name="key-outline" size={18} color={colors.textTertiary} style={{ marginRight: 12 }} />
         <Text style={styles.menuText}>Change password</Text>
-        <Text style={{ color: colors.textMuted, fontFamily: 'IBMPlexMono_500Medium', fontSize: 14 }}>›</Text>
+        <Text style={{ color: colors.textTertiary, fontFamily: 'IBMPlexMono_500Medium', fontSize: 14 }}>›</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.logoutRow} onPress={handleLogout}>
@@ -171,30 +171,29 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.kraft },
+  container: { flex: 1, backgroundColor: colors.background },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  headerSection: { alignItems: 'center', paddingVertical: 24, backgroundColor: colors.paper, borderBottomWidth: 1, borderBottomColor: colors.border },
+  headerSection: { alignItems: 'center', paddingVertical: 24 },
   avatar: {
-    width: 80, height: 80, borderRadius: 4, backgroundColor: colors.primaryTint,
+    width: 80, height: 80, borderRadius: 40, backgroundColor: colors.primaryTint,
     justifyContent: 'center', alignItems: 'center', marginBottom: 8, overflow: 'hidden',
-    borderWidth: 1, borderColor: colors.primary,
   },
-  avatarImage: { width: 80, height: 80, borderRadius: 4 },
+  avatarImage: { width: 80, height: 80, borderRadius: 40 },
   avatarText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 24, color: colors.primary },
-  cameraIcon: { position: 'absolute', bottom: 2, right: 2, backgroundColor: colors.paper, borderRadius: 2, borderWidth: 1, borderColor: colors.border, padding: 4 },
+  cameraIcon: { position: 'absolute', bottom: 2, right: 2, backgroundColor: colors.elevated, borderRadius: 10, shadowColor: colors.shadow, shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 1 }, padding: 4 },
   editText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.primary },
-  formCard: { backgroundColor: colors.paper, marginTop: 16, padding: 16, borderRadius: 4, borderWidth: 1, borderColor: colors.border, marginHorizontal: 16 },
+  formCard: { backgroundColor: colors.elevated, marginTop: 16, padding: 16, borderRadius: 10, marginHorizontal: 16, shadowColor: colors.shadow, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
   fieldGroup: { marginBottom: 16 },
-  fieldLabel: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted, marginBottom: 4, textTransform: 'uppercase' },
-  fieldInput: { borderBottomWidth: 1.5, borderBottomColor: colors.border, paddingVertical: 8, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
-  saveButton: { backgroundColor: colors.primary, borderRadius: 4, padding: 14, alignItems: 'center', marginTop: 8 },
-  saveButtonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.paper },
-  infoCard: { backgroundColor: colors.paper, marginTop: 16, padding: 16, borderRadius: 4, borderWidth: 1, borderColor: colors.border, marginHorizontal: 16 },
-  infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.border, borderStyle: 'dashed' },
-  infoLabel: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted, textTransform: 'uppercase' },
+  fieldLabel: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginBottom: 4, textTransform: 'uppercase' },
+  fieldInput: { borderBottomWidth: 1, borderBottomColor: colors.separator, paddingVertical: 8, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
+  saveButton: { backgroundColor: colors.primary, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 8 },
+  saveButtonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary },
+  infoCard: { backgroundColor: colors.elevated, marginTop: 16, padding: 16, borderRadius: 10, marginHorizontal: 16, shadowColor: colors.shadow, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
+  infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10 },
+  infoLabel: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, textTransform: 'uppercase' },
   infoValue: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.textPrimary },
-  menuRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.paper, marginTop: 16, padding: 16, borderRadius: 4, borderWidth: 1, borderColor: colors.border, marginHorizontal: 16 },
+  menuRow: { flexDirection: 'row', alignItems: 'center', marginTop: 16, padding: 16, marginHorizontal: 16 },
   menuText: { flex: 1, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
-  logoutRow: { backgroundColor: colors.paper, marginTop: 8, padding: 16, alignItems: 'center', borderRadius: 4, borderWidth: 1, borderColor: colors.border, marginHorizontal: 16 },
+  logoutRow: { marginTop: 8, padding: 16, alignItems: 'center', marginHorizontal: 16 },
   logoutText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.danger },
 });

@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: colors.primary, paddingHorizontal: 32, paddingVertical: 12,
-    borderRadius: 4,
+    borderRadius: 10,
   },
   buttonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary },
 });

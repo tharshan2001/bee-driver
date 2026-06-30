@@ -10,7 +10,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
 import SignatureView from 'react-native-signature-canvas';
 import api from '../../../core/api/client';
-import WaybillCard from '../../../shared/components/Card';
+import Card from '../../../shared/components/Card';
 import type { RootStackParamList } from '../../../navigation/types';
 import { colors } from '../../../shared/theme';
 
@@ -128,7 +128,7 @@ export default function DeliveryCompleteScreen() {
     switch (step) {
       case 0:
         return (
-          <WaybillCard padding={16} style={{ alignItems: 'center' }}>
+          <Card padding={16} style={{ alignItems: 'center' }}>
             {photo ? (
               <View style={{ width: '100%' }}>
                 <Image source={{ uri: photo }} style={styles.previewImage} />
@@ -142,11 +142,11 @@ export default function DeliveryCompleteScreen() {
                 <Text style={styles.uploadText}>Add photo</Text>
               </TouchableOpacity>
             )}
-          </WaybillCard>
+          </Card>
         );
       case 1:
         return (
-          <WaybillCard padding={16} style={{ minHeight: 280 }}>
+          <Card padding={16} style={{ minHeight: 280 }}>
             {signature ? (
               <View>
                 <Image
@@ -166,33 +166,33 @@ export default function DeliveryCompleteScreen() {
                 clearText="Clear"
                 confirmText="Save"
                 autoClear={false}
-                backgroundColor={colors.paper}
+                backgroundColor={colors.surface}
                 webStyle={`.m-signature-pad--footer { display: none; } .m-signature-pad { border: none; }`}
                 style={styles.signaturePad}
               />
             )}
-          </WaybillCard>
+          </Card>
         );
       case 2:
         return (
-          <WaybillCard padding={0} style={{ overflow: 'hidden' }}>
+          <Card padding={0} style={{ overflow: 'hidden' }}>
             <TextInput
               style={styles.notesInput}
               placeholder="Add any notes about this delivery…"
-              placeholderTextColor={colors.textMuted}
+              placeholderTextColor={colors.textTertiary}
               value={notes}
               onChangeText={setNotes}
               multiline
             />
-          </WaybillCard>
+          </Card>
         );
       case 3:
         return (
-          <WaybillCard padding={16} style={{ gap: 12 }}>
+          <Card padding={16} style={{ gap: 12 }}>
             <ReviewRow icon="camera-outline" label="Photo" done={!!photo} />
             <ReviewRow icon="create-outline" label="Signature" done={!!signature} />
             <ReviewRow icon="document-text-outline" label="Notes" done={notes.trim().length > 0} detail={notes.trim() || undefined} />
-          </WaybillCard>
+          </Card>
         );
     }
   }
@@ -232,7 +232,7 @@ export default function DeliveryCompleteScreen() {
           onPress={goNext}
           disabled={loading}
         >
-          <Text style={[styles.navButtonText, { color: colors.paper }]}>
+          <Text style={[styles.navButtonText, { color: colors.textOnPrimary }]}>
             {loading ? 'Submitting...' : step < 3 ? 'Next' : 'Submit'}
           </Text>
         </TouchableOpacity>
@@ -244,8 +244,8 @@ export default function DeliveryCompleteScreen() {
 function ReviewRow({ icon, label, done, detail }: { icon: keyof typeof Ionicons.glyphMap; label: string; done: boolean; detail?: string }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <View style={[styles.reviewMark, { backgroundColor: done ? colors.successTint : 'transparent', borderColor: done ? colors.success : colors.border }]}>
-        <Text style={{ fontFamily: 'IBMPlexMono_500Medium', fontSize: 14, color: done ? colors.success : colors.textMuted }}>
+      <View style={[styles.reviewMark, { backgroundColor: done ? colors.successTint : 'transparent', borderColor: done ? colors.success : colors.separator }]}>
+        <Text style={{ fontFamily: 'IBMPlexMono_500Medium', fontSize: 14, color: done ? colors.success : colors.textTertiary }}>
           {done ? '✓' : '✗'}
         </Text>
       </View>
@@ -258,37 +258,36 @@ function ReviewRow({ icon, label, done, detail }: { icon: keyof typeof Ionicons.
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.kraft },
+  container: { flex: 1, backgroundColor: colors.background },
   progressRow: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 24, marginTop: 8 },
   progressDot: { width: 40, height: 4, borderRadius: 2 },
   progressDotCompleted: { backgroundColor: colors.primary },
-  progressDotCurrent: { backgroundColor: colors.primary, borderWidth: 1, borderColor: colors.primary, height: 4 },
-  progressDotInactive: { backgroundColor: colors.border },
+  progressDotCurrent: { backgroundColor: colors.primary, height: 4 },
+  progressDotInactive: { backgroundColor: colors.separator },
   stepHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
   stepTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, color: colors.textPrimary },
   stepSubtitle: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary },
   stepContent: { minHeight: 200 },
   uploadArea: {
-    height: 180, borderWidth: 1.5, borderColor: colors.border, borderRadius: 4,
-    borderStyle: 'dashed', justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper, width: '100%',
+    height: 180, borderWidth: 1.5, borderColor: colors.separator, borderRadius: 10,
+    borderStyle: 'dashed', justifyContent: 'center', alignItems: 'center', backgroundColor: colors.surface, width: '100%',
   },
   uploadText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 12, color: colors.primary, textTransform: 'uppercase' },
-  previewImage: { width: '100%', height: 200, borderRadius: 4, marginBottom: 8 },
-  signaturePad: { height: 250, borderRadius: 4, borderWidth: 1, borderColor: colors.border },
-  signaturePreview: { width: '100%', height: 200, borderRadius: 4, marginBottom: 8, backgroundColor: colors.paper },
+  previewImage: { width: '100%', height: 200, borderRadius: 10, marginBottom: 8 },
+  signaturePad: { height: 250, borderRadius: 10, borderWidth: 1, borderColor: colors.separator },
+  signaturePreview: { width: '100%', height: 200, borderRadius: 10, marginBottom: 8, backgroundColor: colors.surface },
   removeText: { fontFamily: 'IBMPlexSans_400Regular', color: colors.danger, textAlign: 'center', marginTop: 8, fontSize: 14 },
   notesInput: {
-    borderRadius: 4, padding: 14, fontSize: 16, fontFamily: 'IBMPlexSans_400Regular',
+    padding: 14, fontSize: 16, fontFamily: 'IBMPlexSans_400Regular',
     minHeight: 120, textAlignVertical: 'top', color: colors.textPrimary,
-    borderBottomWidth: 1.5, borderBottomColor: colors.border,
   },
   navRow: { flexDirection: 'row', gap: 12, marginTop: 24, marginBottom: 40 },
-  navButton: { flex: 1, borderRadius: 4, padding: 14, alignItems: 'center', justifyContent: 'center' },
-  navButtonSecondary: { backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.border },
+  navButton: { flex: 1, borderRadius: 10, padding: 14, alignItems: 'center', justifyContent: 'center' },
+  navButtonSecondary: { backgroundColor: colors.surface },
   navButtonPrimary: { backgroundColor: colors.primary },
   navButtonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textPrimary },
   reviewMark: {
-    width: 28, height: 28, borderRadius: 4, borderWidth: 1.5,
+    width: 28, height: 28, borderRadius: 6, borderWidth: 1.5,
     justifyContent: 'center', alignItems: 'center',
   },
 });

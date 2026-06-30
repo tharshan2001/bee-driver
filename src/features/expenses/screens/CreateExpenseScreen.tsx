@@ -68,7 +68,7 @@ export default function CreateExpenseScreen() {
       <Field label="CATEGORY">
         <TouchableOpacity style={styles.selector} onPress={() => setShowCategories(!showCategories)}>
           <Text style={styles.selectorText}>{category}</Text>
-          <Text style={{ fontFamily: 'IBMPlexMono_500Medium', color: colors.textMuted }}>▼</Text>
+          <Text style={{ fontFamily: 'IBMPlexMono_500Medium', color: colors.textTertiary }}>▼</Text>
         </TouchableOpacity>
         {showCategories && (
           <View style={styles.dropdown}>
@@ -92,7 +92,7 @@ export default function CreateExpenseScreen() {
           onChangeText={setAmount}
           keyboardType="decimal-pad"
           placeholder="0.00"
-          placeholderTextColor={colors.textMuted}
+          placeholderTextColor={colors.textTertiary}
         />
       </Field>
 
@@ -103,7 +103,7 @@ export default function CreateExpenseScreen() {
           onChangeText={setDescription}
           multiline
           placeholder="What was this for?"
-          placeholderTextColor={colors.textMuted}
+          placeholderTextColor={colors.textTertiary}
         />
       </Field>
 
@@ -157,26 +157,26 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.kraft },
+  container: { flex: 1, backgroundColor: colors.background },
   content: { padding: 24 },
   fieldGroup: { marginBottom: 20 },
-  label: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted, marginBottom: 6, textTransform: 'uppercase' },
-  selector: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1.5, borderBottomColor: colors.border, paddingVertical: 8 },
+  label: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginBottom: 6, textTransform: 'uppercase' },
+  selector: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: colors.separator, paddingVertical: 8 },
   selectorText: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
-  dropdown: { backgroundColor: colors.paper, borderRadius: 4, marginTop: 4, overflow: 'hidden', borderWidth: 1, borderColor: colors.border },
-  dropdownItem: { padding: 14, borderBottomWidth: 1, borderBottomColor: colors.border },
+  dropdown: { backgroundColor: colors.elevated, borderRadius: 10, marginTop: 4, overflow: 'hidden', shadowColor: colors.shadow, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
+  dropdownItem: { padding: 14, borderBottomWidth: 1, borderBottomColor: colors.separator },
   dropdownItemActive: { backgroundColor: colors.primaryTint },
   dropdownText: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary },
   dropdownTextActive: { color: colors.primary, fontFamily: 'IBMPlexSans_500Medium' },
   amountInput: {
-    borderBottomWidth: 1.5, borderBottomColor: colors.border, paddingVertical: 8,
+    borderBottomWidth: 1, borderBottomColor: colors.separator, paddingVertical: 8,
     fontFamily: 'IBMPlexMono_500Medium', fontSize: 22, color: colors.textPrimary,
   },
-  textArea: { borderBottomWidth: 1.5, borderBottomColor: colors.border, paddingVertical: 8, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary, minHeight: 80, textAlignVertical: 'top' },
-  receiptPreview: { width: '100%', height: 150, borderRadius: 4, marginBottom: 8 },
+  textArea: { borderBottomWidth: 1, borderBottomColor: colors.separator, paddingVertical: 8, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary, minHeight: 80, textAlignVertical: 'top' },
+  receiptPreview: { width: '100%', height: 150, borderRadius: 10, marginBottom: 8 },
   removeText: { fontFamily: 'IBMPlexSans_400Regular', color: colors.danger, textAlign: 'center' },
-  uploadBtn: { backgroundColor: colors.paper, borderRadius: 4, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderStyle: 'dashed', flexDirection: 'row', justifyContent: 'center' },
+  uploadBtn: { backgroundColor: colors.surface, borderRadius: 10, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: colors.separator, borderStyle: 'dashed', flexDirection: 'row', justifyContent: 'center' },
   uploadBtnText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 12, color: colors.primary },
-  submitBtn: { backgroundColor: colors.primary, borderRadius: 4, padding: 14, alignItems: 'center', marginTop: 16 },
-  submitBtnText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.paper },
+  submitBtn: { backgroundColor: colors.primary, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 16 },
+  submitBtnText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary },
 });

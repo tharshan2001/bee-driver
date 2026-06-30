@@ -30,7 +30,7 @@ export default function Skeleton({ width = '100%', height = 16, borderRadius = 4
 
   return (
     <Animated.View
-      style={[{ width: width as any, height, borderRadius, backgroundColor: colors.border, opacity }, style]}
+      style={[{ width: width as any, height, borderRadius, backgroundColor: colors.separator, opacity }, style]}
     />
   );
 }

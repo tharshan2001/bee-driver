@@ -9,7 +9,7 @@ import type { RouteProp } from '@react-navigation/native';
 import api from '../../../core/api/client';
 import type { DriverDelivery } from '../../../core/api/types';
 import type { RootStackParamList, RootStackNav } from '../../../navigation/types';
-import WaybillCard from '../../../shared/components/Card';
+import Card from '../../../shared/components/Card';
 import Skeleton from '../../../shared/components/Skeleton';
 import { formatDateTime, getStatusColor, timeAgo } from '../../../core/utils/helpers';
 import { colors } from '../../../shared/theme';
@@ -21,11 +21,11 @@ function DetailSkeletons() {
   return (
     <View style={{ padding: 16, gap: 12 }}>
       {[1, 2, 3, 4].map((i) => (
-        <WaybillCard key={i} padding={16} style={{ gap: 10 }}>
+        <Card key={i} padding={16} style={{ gap: 10 }}>
           <Skeleton width="30%" height={12} />
           <Skeleton width="70%" height={16} />
           <Skeleton width="50%" height={14} />
-        </WaybillCard>
+        </Card>
       ))}
     </View>
   );
@@ -82,22 +82,22 @@ export default function DeliveryDetailScreen() {
     switch (status.toUpperCase()) {
       case 'ASSIGNED':
         return [
-          { label: 'Mark Picked Up', action: () => updateStatus('PICKED_UP'), color: colors.primary, textColor: colors.paper },
+          { label: 'Mark Picked Up', action: () => updateStatus('PICKED_UP'), color: colors.primary, textColor: colors.textOnPrimary },
           { label: 'Report Issue', action: () => setShowIssueModal(true), color: 'transparent', textColor: colors.danger, outline: true },
         ];
       case 'PICKED_UP':
         return [
-          { label: 'Start Transit', action: () => updateStatus('IN_TRANSIT'), color: colors.warning, textColor: colors.paper },
+          { label: 'Start Transit', action: () => updateStatus('IN_TRANSIT'), color: colors.warning, textColor: colors.textOnPrimary },
           { label: 'Report Issue', action: () => setShowIssueModal(true), color: 'transparent', textColor: colors.danger, outline: true },
         ];
       case 'IN_TRANSIT':
         return [
-          { label: 'Complete Delivery', action: () => navigation.navigate('DeliveryComplete', { orderId }), color: colors.primary, textColor: colors.paper },
+          { label: 'Complete Delivery', action: () => navigation.navigate('DeliveryComplete', { orderId }), color: colors.primary, textColor: colors.textOnPrimary },
           { label: 'Report Issue', action: () => setShowIssueModal(true), color: 'transparent', textColor: colors.danger, outline: true },
         ];
       case 'FAILED':
         return [
-          { label: 'Retry (Pick Up)', action: () => updateStatus('PICKED_UP'), color: colors.primary, textColor: colors.paper },
+          { label: 'Retry (Pick Up)', action: () => updateStatus('PICKED_UP'), color: colors.primary, textColor: colors.textOnPrimary },
         ];
       default:
         return [];
@@ -108,7 +108,7 @@ export default function DeliveryDetailScreen() {
     const opacity = cardAnims[index] || 1;
     return (
       <Animated.View style={{ opacity, transform: [{ translateY: cardAnims[index]?.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) || 0 }] }}>
-        <WaybillCard padding={16} style={style}>{children}</WaybillCard>
+        <Card padding={16} style={style}>{children}</Card>
       </Animated.View>
     );
   }
@@ -232,12 +232,11 @@ export default function DeliveryDetailScreen() {
       <Modal visible={showIssueModal} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <View style={styles.modalNotch} />
             <Text style={styles.modalTitle}>Report an Issue</Text>
             <TextInput
               style={styles.modalInput}
               placeholder="Describe the issue..."
-              placeholderTextColor={colors.textMuted}
+              placeholderTextColor={colors.textTertiary}
               value={issueReason}
               onChangeText={setIssueReason}
               multiline
@@ -265,50 +264,45 @@ function InfoRow({ label, value, valueColor, mono }: { label: string; value: str
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.kraft },
+  container: { flex: 1, backgroundColor: colors.background },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   cardCaption: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, color: colors.textMuted,
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, color: colors.textTertiary,
     textTransform: 'uppercase', marginBottom: 12,
   },
   customerRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   avatar: {
-    width: 48, height: 48, borderRadius: 4, backgroundColor: colors.primaryTint,
+    width: 48, height: 48, borderRadius: 24, backgroundColor: colors.primaryTint,
     justifyContent: 'center', alignItems: 'center', marginRight: 12,
-    borderWidth: 1, borderColor: colors.primary,
   },
   avatarText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 18, color: colors.primary },
   customerName: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 16, color: colors.textPrimary },
   district: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 12, color: colors.textSecondary },
   linkRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
   linkText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 12, color: colors.success },
-  infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.border, borderStyle: 'dashed' },
-  infoLabel: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted, textTransform: 'uppercase' },
+  infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 },
+  infoLabel: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, textTransform: 'uppercase' },
   infoValue: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.textPrimary },
-  itemRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.border, borderStyle: 'dashed' },
+  itemRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6 },
   timelineItem: { flexDirection: 'row', marginBottom: 4 },
   timelineDotCol: { alignItems: 'center', width: 20, marginRight: 12 },
-  timelineDot: { width: 12, height: 12, borderRadius: 2, marginTop: 4 },
-  timelineLine: { width: 2, flex: 1, backgroundColor: colors.border, marginVertical: 4 },
+  timelineDot: { width: 12, height: 12, borderRadius: 6, marginTop: 4 },
+  timelineLine: { width: 2, flex: 1, backgroundColor: colors.separator, marginVertical: 4 },
   timelineContent: { flex: 1, paddingBottom: 16 },
-  timelineTime: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted, marginTop: 2 },
+  timelineTime: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginTop: 2 },
   timelineNote: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary, marginTop: 4 },
-  actionButton: { borderRadius: 4, padding: 14, alignItems: 'center', marginBottom: 8, marginHorizontal: 16 },
+  actionButton: { borderRadius: 10, padding: 14, alignItems: 'center', marginBottom: 8, marginHorizontal: 16 },
   actionButtonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15 },
-  proofImage: { width: '100%', height: 120, borderRadius: 4, marginBottom: 4 },
+  proofImage: { width: '100%', height: 120, borderRadius: 10, marginBottom: 4 },
   modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: colors.paper, borderRadius: 0, padding: 24, position: 'relative' },
-  modalNotch: {
-    position: 'absolute', top: -8, left: 0, right: 0, height: 16,
-    backgroundColor: colors.paper, marginHorizontal: 16,
-  },
+  modalContent: { backgroundColor: colors.elevated, borderTopLeftRadius: 14, borderTopRightRadius: 14, padding: 24 },
   modalTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, color: colors.textPrimary, marginBottom: 16 },
   modalInput: {
-    borderBottomWidth: 1.5, borderBottomColor: colors.border, paddingVertical: 8,
+    borderBottomWidth: 1, borderBottomColor: colors.separator, paddingVertical: 8,
     fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary,
     minHeight: 80, textAlignVertical: 'top', marginBottom: 16,
   },
-  modalButton: { borderRadius: 4, padding: 14, alignItems: 'center', marginBottom: 12 },
-  modalButtonText: { fontFamily: 'IBMPlexSans_500Medium', color: colors.paper, fontSize: 15 },
+  modalButton: { borderRadius: 10, padding: 14, alignItems: 'center', marginBottom: 12 },
+  modalButtonText: { fontFamily: 'IBMPlexSans_500Medium', color: colors.textOnPrimary, fontSize: 15 },
   cancelText: { textAlign: 'center', fontFamily: 'IBMPlexSans_400Regular', color: colors.textSecondary, fontSize: 14 },
 });

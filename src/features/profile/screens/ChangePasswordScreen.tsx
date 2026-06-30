@@ -49,18 +49,18 @@ function Field({ label, value, onChange, secure }: { label: string; value: strin
         value={value}
         onChangeText={onChange}
         secureTextEntry={secure}
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor={colors.textTertiary}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.kraft },
+  container: { flex: 1, backgroundColor: colors.background },
   content: { padding: 24 },
   fieldGroup: { marginBottom: 24 },
-  label: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted, marginBottom: 6, textTransform: 'uppercase' },
-  input: { borderBottomWidth: 1.5, borderBottomColor: colors.border, paddingVertical: 8, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
-  button: { backgroundColor: colors.primary, borderRadius: 4, padding: 14, alignItems: 'center', marginTop: 8 },
-  buttonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.paper },
+  label: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginBottom: 6, textTransform: 'uppercase' },
+  input: { borderBottomWidth: 1, borderBottomColor: colors.separator, paddingVertical: 8, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
+  button: { backgroundColor: colors.primary, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 8 },
+  buttonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary },
 });

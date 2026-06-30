@@ -3,7 +3,7 @@ import { View, Text, ScrollView, RefreshControl, StyleSheet, ActivityIndicator }
 import api from '../../../core/api/client';
 import type { DriverStats } from '../../../core/api/types';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
-import WaybillCard from '../../../shared/components/Card';
+import Card from '../../../shared/components/Card';
 import { colors } from '../../../shared/theme';
 
 export default function StatsScreen() {
@@ -59,11 +59,11 @@ export default function StatsScreen() {
         <StatCard icon="star-outline" label="Rating" value={stats.rating.toFixed(1)} color={colors.warning} />
       )}
 
-      <WaybillCard padding={16} style={{ marginTop: 8 }}>
+      <Card padding={16} style={{ marginTop: 8 }}>
         <Text style={styles.perfTitle}>Delivery Performance</Text>
         <ProgressRow label="Completion Rate" value={completionRate} color={colors.success} />
         <ProgressRow label="Failure Rate" value={failureRate} color={colors.danger} />
-      </WaybillCard>
+      </Card>
     </ScrollView>
   );
 }
@@ -98,22 +98,22 @@ function ProgressRow({ label, value, color }: { label: string; value: string; co
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.kraft },
+  container: { flex: 1, backgroundColor: colors.background },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   content: { padding: 16 },
   row: { flexDirection: 'row', marginBottom: 8 },
   statCard: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.paper,
-    padding: 16, borderRadius: 4, marginBottom: 8, borderWidth: 1, borderColor: colors.border,
-    shadowColor: colors.shadow, shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: { width: 0, height: 1 }, elevation: 2,
+    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.elevated,
+    padding: 16, borderRadius: 10, marginBottom: 8,
+    shadowColor: colors.shadow, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 3,
   },
-  statIconBox: { width: 36, height: 36, borderRadius: 4, borderWidth: 1.5, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  statIconBox: { width: 36, height: 36, borderRadius: 10, borderWidth: 1.5, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
   statLabel: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary },
   statValue: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 22 },
   perfTitle: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textPrimary, marginBottom: 16 },
   progressRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   progressLabel: { width: 120, fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary },
-  progressBar: { flex: 1, height: 6, backgroundColor: colors.border, borderRadius: 2, marginHorizontal: 12 },
-  progressFill: { height: 6, borderRadius: 2 },
+  progressBar: { flex: 1, height: 6, backgroundColor: colors.surface, borderRadius: 3, marginHorizontal: 12 },
+  progressFill: { height: 6, borderRadius: 3 },
   progressValue: { width: 48, textAlign: 'right', fontFamily: 'IBMPlexMono_500Medium', fontSize: 12 },
 });

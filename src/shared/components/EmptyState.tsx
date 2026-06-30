@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 48 },
   illustration: { fontSize: 48, marginBottom: 16 },
   placeholder: { width: 80, height: 60, justifyContent: 'center', gap: 8, marginBottom: 16 },
-  line: { height: 2, backgroundColor: colors.border, borderRadius: 1 },
+  line: { height: 2, backgroundColor: colors.separator, borderRadius: 1 },
   title: {
     fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, color: colors.textPrimary, textAlign: 'center',
   },

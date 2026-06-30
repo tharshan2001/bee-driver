@@ -8,8 +8,8 @@ import { useAuth } from '../../../context/AuthContext';
 import api from '../../../core/api/client';
 import type { DriverDashboard } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
-import StampBadge from '../../../shared/components/StatusBadge';
-import WaybillCard from '../../../shared/components/Card';
+import Badge from '../../../shared/components/StatusBadge';
+import Card from '../../../shared/components/Card';
 import SectionHeader from '../../../shared/components/SectionHeader';
 import ScreenContainer from '../../../shared/components/ScreenContainer';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
@@ -68,7 +68,7 @@ export default function DashboardScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <Text style={{ fontFamily: 'IBMPlexSans_400Regular', color: colors.textMuted }}>Loading dashboard...</Text>
+        <Text style={{ fontFamily: 'IBMPlexSans_400Regular', color: colors.textTertiary }}>Loading dashboard...</Text>
       </View>
     );
   }
@@ -101,7 +101,7 @@ export default function DashboardScreen() {
 
       <WelcomeBanner name={dashboard?.driverName?.split(' ')[0] || 'Driver'} />
 
-      <WaybillCard padding={16} style={styles.availabilityCard}>
+      <Card padding={16} style={styles.availabilityCard}>
         <View style={styles.availabilityInner}>
           <View>
             <Text style={styles.cardCaption}>STATUS</Text>
@@ -115,15 +115,15 @@ export default function DashboardScreen() {
               value={availability}
               onValueChange={toggleAvailability}
               disabled={hasActiveDeliveries}
-              trackColor={{ false: colors.border, true: colors.primary }}
-              thumbColor={colors.paper}
+              trackColor={{ false: colors.separator, true: colors.primary }}
+              thumbColor={colors.background}
               style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
             />
           </View>
         </View>
-      </WaybillCard>
+      </Card>
 
-      <WaybillCard variant="accent" padding={16} style={styles.trackingCard}>
+      <Card variant="accent" padding={16} style={styles.trackingCard}>
         <View style={styles.trackingInner}>
           <View style={styles.iconSquare}>
             <Ionicons name="location-outline" size={20} color={colors.primary} />
@@ -138,7 +138,7 @@ export default function DashboardScreen() {
             </View>
           </View>
         </View>
-      </WaybillCard>
+      </Card>
 
       <SectionHeader title="QUICK ACTIONS" />
 
@@ -171,7 +171,7 @@ export default function DashboardScreen() {
                 <Text style={styles.recentCustomer}>{delivery.customerName}</Text>
               </View>
               <View style={styles.recentRight}>
-                <StampBadge status={delivery.status} compact />
+                <Badge status={delivery.status} compact />
                 <Text style={styles.recentTime}>{timeAgo(delivery.createdAt)}</Text>
               </View>
             </TouchableOpacity>
@@ -183,14 +183,13 @@ export default function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.kraft },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: 20, paddingVertical: 16, backgroundColor: colors.paper,
-    borderBottomWidth: 1, borderBottomColor: colors.border,
+    paddingHorizontal: 20, paddingVertical: 16,
   },
   headerTitle: {
-    fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, color: colors.textPrimary,
+    fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: colors.textPrimary,
   },
   headerRight: { flexDirection: 'row', gap: 16 },
   availabilityCard: { marginHorizontal: 16, marginTop: 16 },
@@ -198,26 +197,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
   },
   cardCaption: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, color: colors.textMuted,
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, color: colors.textTertiary,
     textTransform: 'uppercase', marginBottom: 4,
   },
-  statusDot: { width: 8, height: 8, borderRadius: 1 },
+  statusDot: { width: 8, height: 8, borderRadius: 4 },
   statusText: {
     fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, textTransform: 'uppercase',
   },
-  toggleTrack: { borderRadius: 2, overflow: 'hidden' },
+  toggleTrack: { borderRadius: 14, overflow: 'hidden' },
   trackingCard: { marginHorizontal: 16, marginTop: 0, marginBottom: 8 },
   trackingInner: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   iconSquare: {
-    width: 36, height: 36, borderRadius: 4, borderWidth: 1.5, borderColor: colors.primary,
+    width: 36, height: 36, borderRadius: 10, borderWidth: 1.5, borderColor: colors.primary,
     justifyContent: 'center', alignItems: 'center',
   },
-  trackingDot: { width: 8, height: 8, borderRadius: 1 },
+  trackingDot: { width: 8, height: 8, borderRadius: 4 },
   trackingStatus: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11 },
-  actionsRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8 },
+  actionsRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginTop: 4 },
   actionCard: {
-    flex: 1, alignItems: 'center', padding: 16, backgroundColor: colors.paper,
-    borderRadius: 4, borderWidth: 1, borderColor: colors.border,
+    flex: 1, alignItems: 'center', padding: 16, backgroundColor: colors.surface,
+    borderRadius: 10,
   },
   actionLabel: {
     fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, color: colors.textPrimary,
@@ -225,17 +224,17 @@ const styles = StyleSheet.create({
   },
   recentRow: {
     flexDirection: 'row', alignItems: 'center', paddingVertical: 12,
-    marginHorizontal: 16, borderBottomWidth: 1, borderBottomColor: colors.border,
+    marginHorizontal: 16, borderBottomWidth: 1, borderBottomColor: colors.separator,
   },
   recentLeft: { flex: 1 },
   recentOrderId: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.textMuted,
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.textTertiary,
   },
   recentCustomer: {
     fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary, marginTop: 2,
   },
   recentRight: { alignItems: 'flex-end', gap: 4 },
   recentTime: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted,
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary,
   },
 });

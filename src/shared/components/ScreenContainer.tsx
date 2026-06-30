@@ -13,7 +13,7 @@ interface ScreenContainerProps {
 export default function ScreenContainer({ children, scroll = false, padding, refreshControl }: ScreenContainerProps) {
   const insets = useSafeAreaInsets();
   const content = (
-    <View style={[styles.inner, padding != null ? { padding } : { paddingBottom: insets.bottom + 16 }]}>
+    <View style={[styles.inner, padding != null ? { padding } : { paddingHorizontal: 16, paddingBottom: insets.bottom + 16 }]}>
       {children}
     </View>
   );
@@ -29,6 +29,6 @@ export default function ScreenContainer({ children, scroll = false, padding, ref
 }
 
 const styles = StyleSheet.create({
-  outer: { flex: 1, backgroundColor: colors.kraft },
+  outer: { flex: 1, backgroundColor: colors.background },
   inner: { flexGrow: 1 },
 });

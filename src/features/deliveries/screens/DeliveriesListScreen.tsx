@@ -9,8 +9,7 @@ import api from '../../../core/api/client';
 import { cacheData, getCachedData } from '../../../core/storage/storage';
 import type { PageResponse } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
-import StampBadge from '../../../shared/components/StatusBadge';
-import WaybillCard from '../../../shared/components/Card';
+import Badge from '../../../shared/components/StatusBadge';
 import Skeleton from '../../../shared/components/Skeleton';
 import EmptyState from '../../../shared/components/EmptyState';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
@@ -136,7 +135,7 @@ export default function DeliveriesListScreen() {
             <Text style={styles.customerName}>{item.customerName}</Text>
           </View>
           <View style={styles.itemRight}>
-            <StampBadge status={item.status} compact />
+            <Badge status={item.status} compact />
             <Text style={styles.timeAgo}>{timeAgo(item.createdAt)}</Text>
           </View>
         </TouchableOpacity>
@@ -192,20 +191,20 @@ export default function DeliveriesListScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.kraft },
+  container: { flex: 1, backgroundColor: colors.background },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: 20, backgroundColor: colors.paper, borderBottomWidth: 1, borderBottomColor: colors.border,
+    padding: 20,
   },
-  headerTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, color: colors.textPrimary },
+  headerTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: colors.textPrimary },
   filterRow: {
     flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12, gap: 16,
-    backgroundColor: colors.kraft,
+    backgroundColor: colors.background,
   },
   filterTab: { position: 'relative', paddingBottom: 4 },
   filterTabActive: {},
   filterText: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted,
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary,
     textTransform: 'uppercase',
   },
   filterTextActive: { color: colors.textPrimary },
@@ -215,17 +214,17 @@ const styles = StyleSheet.create({
   },
   item: {
     flexDirection: 'row', alignItems: 'center',
-    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.border,
+    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.separator,
   },
   itemLeft: { flex: 1 },
   orderNumber: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.textMuted,
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.textTertiary,
   },
   customerName: {
     fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary, marginTop: 2,
   },
   itemRight: { alignItems: 'flex-end', gap: 4 },
   timeAgo: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted,
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary,
   },
 });

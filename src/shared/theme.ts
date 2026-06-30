@@ -1,9 +1,10 @@
-/* Waybill design tokens for Bee Driver */
+/* Apple-inspired minimalist tokens for Bee Driver */
 
 export const colors = {
   /* Surfaces */
-  kraft: '#EDE6D3',
-  paper: '#FAF7F0',
+  background: '#FFFFFF',
+  surface: '#F5F5F7',
+  elevated: '#FFFFFF',
 
   /* Brand */
   primary: '#FF6A13',
@@ -19,20 +20,26 @@ export const colors = {
   dangerTint: '#F3E2DE',
 
   /* Text */
-  textPrimary: '#221F1A',
-  textSecondary: '#5C5648',
-  textMuted: '#928C7C',
-  textOnPrimary: '#FAF7F0',
+  textPrimary: '#1D1D1F',
+  textSecondary: '#86868B',
+  textTertiary: '#AEAEB2',
+  textOnPrimary: '#FFFFFF',
 
-  /* Borders */
-  border: '#DCD3BC',
+  /* Separator (hairline, rarely used) */
+  separator: '#E5E5EA',
 
   /* Tab bar */
   tabActive: '#FF6A13',
-  tabInactive: '#928C7C',
-  tabBarBg: '#FAF7F0',
+  tabInactive: '#AEAEB2',
+  tabBarBg: '#FFFFFF',
 
   /* Misc */
-  overlay: 'rgba(34,31,26,0.55)',
-  shadow: '#221F1A',
+  overlay: 'rgba(0,0,0,0.35)',
+  shadow: '#000000',
+
+  /* Legacy aliases (keep for backward compat, will remove after screens update) */
+  kraft: '#FFFFFF',
+  paper: '#F5F5F7',
+  border: '#E5E5EA',
+  textMuted: '#AEAEB2',
 };

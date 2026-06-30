@@ -39,18 +39,18 @@ function MenuItem({ icon, label, onPress }: {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.kraft },
-  header: { padding: 20, backgroundColor: colors.paper, borderBottomWidth: 1, borderBottomColor: colors.border },
-  headerTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, color: colors.textPrimary },
+  container: { flex: 1, backgroundColor: colors.background },
+  header: { padding: 20 },
+  headerTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: colors.textPrimary },
   menuItem: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.paper,
-    padding: 16, borderRadius: 4, marginBottom: 8, borderWidth: 1, borderColor: colors.border,
-    shadowColor: colors.shadow, shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: { width: 0, height: 1 }, elevation: 2,
+    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.elevated,
+    padding: 16, borderRadius: 10, marginBottom: 8,
+    shadowColor: colors.shadow, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 3,
   },
   menuIcon: {
-    width: 40, height: 40, borderRadius: 4, borderWidth: 1.5, borderColor: colors.primary,
+    width: 40, height: 40, borderRadius: 10, backgroundColor: colors.primaryTint,
     justifyContent: 'center', alignItems: 'center', marginRight: 14,
   },
   menuLabel: { flex: 1, fontFamily: 'IBMPlexSans_500Medium', fontSize: 16, color: colors.textPrimary },
-  menuArrow: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 18, color: colors.textMuted },
+  menuArrow: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 18, color: colors.textTertiary },
 });

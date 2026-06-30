@@ -40,32 +40,18 @@ function MainTabs() {
         tabBarIcon: ({ focused }) => {
           const icons = tabIcons[route.name];
           return (
-            <View style={{ alignItems: 'center' }}>
-              {focused && (
-                <View
-                  style={{
-                    width: 24,
-                    height: 3,
-                    borderRadius: 2,
-                    backgroundColor: colors.primary,
-                    marginBottom: 6,
-                  }}
-                />
-              )}
-              <Ionicons
-                name={focused ? icons.active : icons.inactive}
-                size={22}
-                color={focused ? colors.primary : colors.textMuted}
-              />
-            </View>
+            <Ionicons
+              name={focused ? icons.active : icons.inactive}
+              size={22}
+              color={focused ? colors.tabActive : colors.tabInactive}
+            />
           );
         },
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textMuted,
+        tabBarActiveTintColor: colors.textPrimary,
+        tabBarInactiveTintColor: colors.tabInactive,
         tabBarStyle: {
           backgroundColor: colors.tabBarBg,
-          borderTopWidth: 1,
-          borderTopColor: colors.border,
+          borderTopWidth: 0,
           paddingBottom: insets.bottom > 0 ? insets.bottom : 6,
           paddingTop: 8,
           height: insets.bottom > 0 ? 56 + insets.bottom : 64,

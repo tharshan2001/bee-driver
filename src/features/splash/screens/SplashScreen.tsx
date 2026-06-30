@@ -54,7 +54,7 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.kraft,
+    backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -62,20 +62,19 @@ const styles = StyleSheet.create({
   stamp: {
     width: 96,
     height: 96,
-    borderRadius: 4,
+    borderRadius: 14,
     borderWidth: 2,
     borderColor: colors.textPrimary,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
-    transform: [{ rotate: '-4deg' }],
   },
   stampRing: {
     width: 80,
     height: 80,
-    borderRadius: 4,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: colors.textMuted,
+    borderColor: colors.textTertiary,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
@@ -83,7 +82,7 @@ const styles = StyleSheet.create({
   stampInner: {
     width: 72,
     height: 72,
-    borderRadius: 4,
+    borderRadius: 10,
     overflow: 'hidden',
     backgroundColor: colors.primaryTint,
   },
@@ -97,14 +96,14 @@ const styles = StyleSheet.create({
   subtitle: {
     fontFamily: 'IBMPlexMono_500Medium',
     fontSize: 10,
-    color: colors.textMuted,
+    color: colors.textTertiary,
     letterSpacing: 1,
     marginTop: 6,
   },
   rule: {
     width: 120,
     height: 1,
-    backgroundColor: colors.border,
+    backgroundColor: colors.separator,
     marginTop: 16,
   },
 });

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { colors } from '../theme';
 
-interface WaybillCardProps {
+interface CardProps {
   children: React.ReactNode;
   onPress?: () => void;
   variant?: 'default' | 'accent';
@@ -10,14 +10,14 @@ interface WaybillCardProps {
   style?: ViewStyle;
 }
 
-export default function WaybillCard({
+export default function Card({
   children,
   onPress,
   variant = 'default',
   padding = 16,
   style,
-}: WaybillCardProps) {
-  const bgMap = { default: colors.paper, accent: colors.primaryTint };
+}: CardProps) {
+  const bgMap = { default: colors.elevated, accent: colors.primaryTint };
   const inner = (
     <View style={[styles.base, { backgroundColor: bgMap[variant], padding }, style]}>
       {children}
@@ -29,13 +29,11 @@ export default function WaybillCard({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: colors.border,
+    borderRadius: 10,
     shadowColor: colors.shadow,
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
 });

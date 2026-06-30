@@ -61,7 +61,7 @@ export default function LoginScreen() {
             keyboardType="email-address"
             autoCapitalize="none"
             placeholder="driver@example.com"
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.textTertiary}
           />
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
@@ -72,7 +72,7 @@ export default function LoginScreen() {
             onChangeText={setPassword}
             secureTextEntry
             placeholder="Enter password"
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.textTertiary}
           />
           {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
@@ -94,14 +94,14 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.kraft },
+  container: { flex: 1, backgroundColor: colors.background },
   content: { flexGrow: 1, justifyContent: 'center', padding: 24 },
   stamp: {
-    width: 48, height: 48, borderRadius: 4, borderWidth: 2, borderColor: colors.textPrimary,
+    width: 48, height: 48, borderRadius: 10, borderWidth: 2, borderColor: colors.textPrimary,
     justifyContent: 'center', alignItems: 'center', marginBottom: 24,
   },
   stampRing: {
-    width: 40, height: 40, borderRadius: 4, borderWidth: 1, borderColor: colors.textMuted,
+    width: 40, height: 40, borderRadius: 8, borderWidth: 1, borderColor: colors.textTertiary,
     justifyContent: 'center', alignItems: 'center',
   },
   stampText: {
@@ -115,18 +115,13 @@ const styles = StyleSheet.create({
   },
   form: { width: '100%' },
   label: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted,
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary,
     marginBottom: 4, marginTop: 16, textTransform: 'uppercase',
   },
   input: {
-    borderBottomWidth: 1.5,
-    borderBottomColor: colors.border,
-    borderLeftWidth: 0,
-    borderRightWidth: 0,
-    borderTopWidth: 0,
-    borderRadius: 0,
-    paddingVertical: 8,
-    paddingHorizontal: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.separator,
+    paddingVertical: 10,
     fontSize: 16,
     fontFamily: 'IBMPlexSans_400Regular',
     color: colors.textPrimary,
@@ -135,7 +130,7 @@ const styles = StyleSheet.create({
   errorText: { fontFamily: 'IBMPlexMono_500Medium', color: colors.danger, fontSize: 12, marginTop: 4 },
   button: {
     backgroundColor: colors.primary,
-    borderRadius: 4,
+    borderRadius: 10,
     padding: 14,
     alignItems: 'center',
     marginTop: 32,

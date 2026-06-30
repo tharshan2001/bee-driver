@@ -91,7 +91,7 @@ export default function AlertsScreen() {
             <Ionicons
               name={iconMap[item.type?.toUpperCase()] || 'information-circle-outline'}
               size={20}
-              color={colors.textMuted}
+              color={colors.textTertiary}
               style={{ marginRight: 12 }}
             />
             <View style={styles.content}>
@@ -111,18 +111,18 @@ export default function AlertsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.kraft },
-  markAllBtn: { padding: 12, alignItems: 'flex-end', paddingRight: 16, backgroundColor: colors.paper, borderBottomWidth: 1, borderBottomColor: colors.border },
+  container: { flex: 1, backgroundColor: colors.background },
+  markAllBtn: { padding: 12, alignItems: 'flex-end', paddingRight: 16 },
   markAllText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 13, color: colors.primary },
   item: {
     flexDirection: 'row', paddingVertical: 14, alignItems: 'center',
-    borderBottomWidth: 1, borderBottomColor: colors.border, marginHorizontal: 16,
+    borderBottomWidth: 1, borderBottomColor: colors.separator, marginHorizontal: 16,
   },
   itemUnread: { borderLeftWidth: 3, borderLeftColor: colors.primary, paddingLeft: 13 },
   content: { flex: 1 },
   title: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary },
   titleUnread: { fontFamily: 'IBMPlexSans_500Medium' },
   message: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary, marginTop: 2 },
-  time: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted, marginTop: 4 },
-  unreadDot: { width: 8, height: 8, borderRadius: 1, backgroundColor: colors.primary, marginLeft: 8 },
+  time: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginTop: 4 },
+  unreadDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary, marginLeft: 8 },
 });
