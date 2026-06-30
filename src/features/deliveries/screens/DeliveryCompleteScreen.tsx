@@ -10,7 +10,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
 import SignatureView from 'react-native-signature-canvas';
 import api from '../../../core/api/client';
-import Card from '../../../shared/components/Card';
+import WaybillCard from '../../../shared/components/Card';
 import type { RootStackParamList } from '../../../navigation/types';
 import { colors } from '../../../shared/theme';
 
@@ -128,7 +128,7 @@ export default function DeliveryCompleteScreen() {
     switch (step) {
       case 0:
         return (
-          <Card padding={16} style={{ alignItems: 'center' }}>
+          <WaybillCard padding={16} style={{ alignItems: 'center' }}>
             {photo ? (
               <View style={{ width: '100%' }}>
                 <Image source={{ uri: photo }} style={styles.previewImage} />
@@ -138,15 +138,15 @@ export default function DeliveryCompleteScreen() {
               </View>
             ) : (
               <TouchableOpacity style={styles.uploadArea} onPress={handlePhotoPick}>
-                <Ionicons name="camera-outline" size={40} color={colors.accent} style={{ marginBottom: 8 }} />
-                <Text style={styles.uploadText}>Add Photo</Text>
+                <Ionicons name="camera-outline" size={32} color={colors.primary} style={{ marginBottom: 8 }} />
+                <Text style={styles.uploadText}>Add photo</Text>
               </TouchableOpacity>
             )}
-          </Card>
+          </WaybillCard>
         );
       case 1:
         return (
-          <Card padding={16} style={{ minHeight: 280 }}>
+          <WaybillCard padding={16} style={{ minHeight: 280 }}>
             {signature ? (
               <View>
                 <Image
@@ -155,7 +155,7 @@ export default function DeliveryCompleteScreen() {
                   resizeMode="contain"
                 />
                 <TouchableOpacity onPress={handleSignatureClear}>
-                  <Text style={styles.removeText}>Clear & Redo</Text>
+                  <Text style={styles.removeText}>Clear & redo</Text>
                 </TouchableOpacity>
               </View>
             ) : (
@@ -166,32 +166,33 @@ export default function DeliveryCompleteScreen() {
                 clearText="Clear"
                 confirmText="Save"
                 autoClear={false}
-                backgroundColor={colors.card}
+                backgroundColor={colors.paper}
+                webStyle={`.m-signature-pad--footer { display: none; } .m-signature-pad { border: none; }`}
                 style={styles.signaturePad}
               />
             )}
-          </Card>
+          </WaybillCard>
         );
       case 2:
         return (
-          <Card padding={0} style={{ overflow: 'hidden' }}>
+          <WaybillCard padding={0} style={{ overflow: 'hidden' }}>
             <TextInput
               style={styles.notesInput}
-              placeholder="Add any notes about the delivery..."
+              placeholder="Add any notes about this delivery…"
               placeholderTextColor={colors.textMuted}
               value={notes}
               onChangeText={setNotes}
               multiline
             />
-          </Card>
+          </WaybillCard>
         );
       case 3:
         return (
-          <Card padding={16} style={{ gap: 12 }}>
+          <WaybillCard padding={16} style={{ gap: 12 }}>
             <ReviewRow icon="camera-outline" label="Photo" done={!!photo} />
             <ReviewRow icon="create-outline" label="Signature" done={!!signature} />
             <ReviewRow icon="document-text-outline" label="Notes" done={notes.trim().length > 0} detail={notes.trim() || undefined} />
-          </Card>
+          </WaybillCard>
         );
     }
   }
@@ -204,14 +205,14 @@ export default function DeliveryCompleteScreen() {
             key={idx}
             style={[
               styles.progressDot,
-              idx <= step ? styles.progressDotActive : styles.progressDotInactive,
+              idx < step ? styles.progressDotCompleted : idx === step ? styles.progressDotCurrent : styles.progressDotInactive,
             ]}
           />
         ))}
       </View>
 
       <View style={styles.stepHeader}>
-        <Ionicons name={steps[step].icon} size={24} color={colors.primary} style={{ marginRight: 12 }} />
+        <Ionicons name={steps[step].icon} size={22} color={colors.primary} style={{ marginRight: 12 }} />
         <View style={{ flex: 1 }}>
           <Text style={styles.stepTitle}>{steps[step].title}</Text>
           <Text style={styles.stepSubtitle}>{steps[step].subtitle}</Text>
@@ -222,9 +223,8 @@ export default function DeliveryCompleteScreen() {
 
       <View style={styles.navRow}>
         {step > 0 && (
-          <TouchableOpacity style={styles.navButton} onPress={goBack} disabled={loading}>
-            <Ionicons name="arrow-back-outline" size={18} color={colors.textPrimary} />
-            <Text style={styles.navButtonText}> Back</Text>
+          <TouchableOpacity style={[styles.navButton, styles.navButtonSecondary]} onPress={goBack} disabled={loading}>
+            <Text style={styles.navButtonText}>Back</Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity
@@ -232,10 +232,9 @@ export default function DeliveryCompleteScreen() {
           onPress={goNext}
           disabled={loading}
         >
-          <Text style={[styles.navButtonText, styles.navButtonPrimaryText]}>
+          <Text style={[styles.navButtonText, { color: colors.paper }]}>
             {loading ? 'Submitting...' : step < 3 ? 'Next' : 'Submit'}
           </Text>
-          {!loading && <Ionicons name="arrow-forward-outline" size={18} color={colors.textOnPrimary} style={{ marginLeft: 4 }} />}
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -245,43 +244,51 @@ export default function DeliveryCompleteScreen() {
 function ReviewRow({ icon, label, done, detail }: { icon: keyof typeof Ionicons.glyphMap; label: string; done: boolean; detail?: string }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Ionicons name={icon} size={20} color={done ? colors.success : colors.textMuted} style={{ marginRight: 12 }} />
-      <View style={{ flex: 1 }}>
-        <Text style={{ fontWeight: '600', color: colors.textPrimary, fontSize: 15 }}>{label}</Text>
-        {detail && <Text style={{ fontSize: 13, color: colors.textSecondary }}>{detail}</Text>}
+      <View style={[styles.reviewMark, { backgroundColor: done ? colors.successTint : 'transparent', borderColor: done ? colors.success : colors.border }]}>
+        <Text style={{ fontFamily: 'IBMPlexMono_500Medium', fontSize: 14, color: done ? colors.success : colors.textMuted }}>
+          {done ? '✓' : '✗'}
+        </Text>
       </View>
-      <Ionicons name={done ? 'checkmark-circle' : 'close-circle'} size={22} color={done ? colors.success : colors.textMuted} />
+      <View style={{ flex: 1, marginLeft: 12 }}>
+        <Text style={{ fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textPrimary }}>{label}</Text>
+        {detail && <Text style={{ fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary }}>{detail}</Text>}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.canvas },
+  container: { flex: 1, backgroundColor: colors.kraft },
   progressRow: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 24, marginTop: 8 },
-  progressDot: { width: 48, height: 4, borderRadius: 2 },
-  progressDotActive: { backgroundColor: colors.primary },
+  progressDot: { width: 40, height: 4, borderRadius: 2 },
+  progressDotCompleted: { backgroundColor: colors.primary },
+  progressDotCurrent: { backgroundColor: colors.primary, borderWidth: 1, borderColor: colors.primary, height: 4 },
   progressDotInactive: { backgroundColor: colors.border },
   stepHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
-  stepTitle: { fontSize: 22, fontWeight: 'bold', color: colors.textPrimary },
-  stepSubtitle: { fontSize: 14, color: colors.textSecondary },
+  stepTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, color: colors.textPrimary },
+  stepSubtitle: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary },
   stepContent: { minHeight: 200 },
   uploadArea: {
-    height: 180, borderWidth: 2, borderColor: colors.border, borderRadius: 12,
-    borderStyle: 'dashed', justifyContent: 'center', alignItems: 'center', backgroundColor: colors.card, width: '100%',
+    height: 180, borderWidth: 1.5, borderColor: colors.border, borderRadius: 4,
+    borderStyle: 'dashed', justifyContent: 'center', alignItems: 'center', backgroundColor: colors.paper, width: '100%',
   },
-  uploadText: { fontSize: 16, color: colors.successDeep, fontWeight: '600' },
-  previewImage: { width: '100%', height: 200, borderRadius: 12, marginBottom: 8 },
-  signatureContainer: { flex: 1, minHeight: 250 },
-  signaturePad: { height: 250, borderRadius: 12, borderWidth: 1, borderColor: colors.border },
-  signaturePreview: { width: '100%', height: 200, borderRadius: 12, marginBottom: 8, backgroundColor: colors.card },
-  removeText: { color: colors.danger, textAlign: 'center', marginTop: 8, fontSize: 14, fontWeight: '500' },
-  notesInput: { borderRadius: 12, padding: 14, fontSize: 16, minHeight: 120, textAlignVertical: 'top', color: colors.textPrimary },
+  uploadText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 12, color: colors.primary, textTransform: 'uppercase' },
+  previewImage: { width: '100%', height: 200, borderRadius: 4, marginBottom: 8 },
+  signaturePad: { height: 250, borderRadius: 4, borderWidth: 1, borderColor: colors.border },
+  signaturePreview: { width: '100%', height: 200, borderRadius: 4, marginBottom: 8, backgroundColor: colors.paper },
+  removeText: { fontFamily: 'IBMPlexSans_400Regular', color: colors.danger, textAlign: 'center', marginTop: 8, fontSize: 14 },
+  notesInput: {
+    borderRadius: 4, padding: 14, fontSize: 16, fontFamily: 'IBMPlexSans_400Regular',
+    minHeight: 120, textAlignVertical: 'top', color: colors.textPrimary,
+    borderBottomWidth: 1.5, borderBottomColor: colors.border,
+  },
   navRow: { flexDirection: 'row', gap: 12, marginTop: 24, marginBottom: 40 },
-  navButton: {
-    flex: 1, borderRadius: 24, padding: 16, alignItems: 'center', justifyContent: 'center',
-    backgroundColor: colors.card, flexDirection: 'row',
-  },
+  navButton: { flex: 1, borderRadius: 4, padding: 14, alignItems: 'center', justifyContent: 'center' },
+  navButtonSecondary: { backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.border },
   navButtonPrimary: { backgroundColor: colors.primary },
-  navButtonText: { fontSize: 16, fontWeight: '600', color: colors.textPrimary },
-  navButtonPrimaryText: { color: colors.textOnPrimary },
+  navButtonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textPrimary },
+  reviewMark: {
+    width: 28, height: 28, borderRadius: 4, borderWidth: 1.5,
+    justifyContent: 'center', alignItems: 'center',
+  },
 });

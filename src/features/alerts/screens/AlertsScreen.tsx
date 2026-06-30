@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import {
   View, Text, FlatList, TouchableOpacity, RefreshControl, StyleSheet, Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../../../core/api/client';
@@ -68,13 +69,15 @@ export default function AlertsScreen() {
     return <ErrorScreen message={error} onRetry={() => { setLoading(true); fetchAlerts(); }} />;
   }
 
-  const iconMap: Record<string, string> = { WARNING: '⚠️', DELIVERY: '🚚', SYSTEM: '⚙️', INFO: 'ℹ️' };
+  const iconMap: Record<string, keyof typeof Ionicons.glyphMap> = {
+    WARNING: 'warning-outline', DELIVERY: 'car-outline', SYSTEM: 'settings-outline', INFO: 'information-circle-outline',
+  };
 
   return (
     <View style={styles.container}>
       {Array.isArray(data) && data.some((a) => !a.read) && (
         <TouchableOpacity style={styles.markAllBtn} onPress={markAllRead}>
-          <Text style={styles.markAllText}>Mark all as read</Text>
+          <Text style={styles.markAllText}>Mark all read</Text>
         </TouchableOpacity>
       )}
       <FlatList
@@ -85,7 +88,12 @@ export default function AlertsScreen() {
             style={[styles.item, !item.read && styles.itemUnread]}
             onPress={() => markRead(item.id)}
           >
-            <Text style={styles.icon}>{iconMap[item.type?.toUpperCase()] || 'ℹ️'}</Text>
+            <Ionicons
+              name={iconMap[item.type?.toUpperCase()] || 'information-circle-outline'}
+              size={20}
+              color={colors.textMuted}
+              style={{ marginRight: 12 }}
+            />
             <View style={styles.content}>
               <Text style={[styles.title, !item.read && styles.titleUnread]}>{item.title}</Text>
               <Text style={styles.message} numberOfLines={2}>{item.message}</Text>
@@ -95,24 +103,26 @@ export default function AlertsScreen() {
           </TouchableOpacity>
         )}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchAlerts(); }} />}
-        ListEmptyComponent={<EmptyState icon="🔔" title="No alerts" subtitle="You're all caught up!" />}
-        contentContainerStyle={data.length === 0 ? { flex: 1 } : { padding: 16, paddingBottom: insets.bottom + 16 }}
+        ListEmptyComponent={<EmptyState title="No alerts" subtitle="You're all caught up!" />}
+        contentContainerStyle={data.length === 0 ? { flex: 1 } : { paddingHorizontal: 16, paddingBottom: insets.bottom + 16 }}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.canvas },
-  markAllBtn: { padding: 12, alignItems: 'flex-end', paddingRight: 16 },
-  markAllText: { color: colors.successDeep, fontSize: 13, fontWeight: '600' },
-  item: { flexDirection: 'row', backgroundColor: colors.card, padding: 14, borderRadius: 24, marginBottom: 8, alignItems: 'center', shadowColor: colors.shadow, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 1 },
-  itemUnread: { borderLeftWidth: 3, borderLeftColor: colors.primary },
-  icon: { fontSize: 24, marginRight: 12 },
+  container: { flex: 1, backgroundColor: colors.kraft },
+  markAllBtn: { padding: 12, alignItems: 'flex-end', paddingRight: 16, backgroundColor: colors.paper, borderBottomWidth: 1, borderBottomColor: colors.border },
+  markAllText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 13, color: colors.primary },
+  item: {
+    flexDirection: 'row', paddingVertical: 14, alignItems: 'center',
+    borderBottomWidth: 1, borderBottomColor: colors.border, marginHorizontal: 16,
+  },
+  itemUnread: { borderLeftWidth: 3, borderLeftColor: colors.primary, paddingLeft: 13 },
   content: { flex: 1 },
-  title: { fontSize: 14, color: colors.textPrimary },
-  titleUnread: { fontWeight: '600' },
-  message: { fontSize: 13, color: colors.textSecondary, marginTop: 2 },
-  time: { fontSize: 11, color: colors.textMuted, marginTop: 4 },
-  unreadDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary, marginLeft: 8 },
+  title: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary },
+  titleUnread: { fontFamily: 'IBMPlexSans_500Medium' },
+  message: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary, marginTop: 2 },
+  time: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted, marginTop: 4 },
+  unreadDot: { width: 8, height: 8, borderRadius: 1, backgroundColor: colors.primary, marginLeft: 8 },
 });

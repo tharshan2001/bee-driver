@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, FlatList, TouchableOpacity, RefreshControl, StyleSheet, ActivityIndicator,
-  Animated, LayoutAnimation, Platform, UIManager, SafeAreaView,
+  Animated, Platform, UIManager,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -9,8 +9,8 @@ import api from '../../../core/api/client';
 import { cacheData, getCachedData } from '../../../core/storage/storage';
 import type { PageResponse } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
-import StatusBadge from '../../../shared/components/StatusBadge';
-import Card from '../../../shared/components/Card';
+import StampBadge from '../../../shared/components/StatusBadge';
+import WaybillCard from '../../../shared/components/Card';
 import Skeleton from '../../../shared/components/Skeleton';
 import EmptyState from '../../../shared/components/EmptyState';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
@@ -29,13 +29,13 @@ function DeliverySkeletons() {
   return (
     <View style={{ padding: 16, paddingTop: 8, gap: 8 }}>
       {[1, 2, 3, 4, 5].map((i) => (
-        <Card key={i} style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View key={i} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
           <View style={{ flex: 1, gap: 6 }}>
-            <Skeleton width="60%" height={14} />
             <Skeleton width="40%" height={12} />
+            <Skeleton width="60%" height={14} />
           </View>
-          <Skeleton width={70} height={22} borderRadius={8} />
-        </Card>
+          <Skeleton width={60} height={14} />
+        </View>
       ))}
     </View>
   );
@@ -108,31 +108,26 @@ export default function DeliveriesListScreen() {
     fetchDeliveries(nextPage, true);
   };
 
-  function handleFilter(newFilter: string | null) {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setFilter(newFilter);
-  }
-
   function renderItem({ item, index }: { item: any; index: number }) {
     const anim = fadeAnims.current[index];
-    const scale = anim?.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0.95, 1],
-    }) || 1;
     const opacity = anim ?? 1;
+    const translateY = anim?.interpolate({
+      inputRange: [0, 1],
+      outputRange: [10, 0],
+    }) || 0;
 
     if (anim) {
       Animated.timing(anim, {
         toValue: 1,
         duration: 300,
-        delay: index * 60,
+        delay: index * 50,
         useNativeDriver: true,
       }).start();
     }
 
     return (
-      <Animated.View style={{ opacity, transform: [{ scale }] }}>
-        <Card
+      <Animated.View style={{ opacity, transform: [{ translateY }] }}>
+        <TouchableOpacity
           onPress={() => navigation.navigate('DeliveryDetail', { orderId: item.orderId })}
           style={styles.item}
         >
@@ -140,39 +135,40 @@ export default function DeliveriesListScreen() {
             <Text style={styles.orderNumber}>{item.orderNumber}</Text>
             <Text style={styles.customerName}>{item.customerName}</Text>
           </View>
-          <StatusBadge status={item.status} />
-          <Text style={styles.timeAgo}>{timeAgo(item.createdAt)}</Text>
-        </Card>
+          <View style={styles.itemRight}>
+            <StampBadge status={item.status} compact />
+            <Text style={styles.timeAgo}>{timeAgo(item.createdAt)}</Text>
+          </View>
+        </TouchableOpacity>
       </Animated.View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>My Deliveries</Text>
+        <Text style={styles.headerTitle}>Deliveries</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
           <Ionicons name="notifications-outline" size={22} color={colors.textPrimary} />
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        horizontal
-        data={statusFilters}
-        keyExtractor={(item) => item || 'all'}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterContainer}
-        renderItem={({ item }) => (
+      <View style={styles.filterRow}>
+        {statusFilters.map((item) => (
           <TouchableOpacity
-            style={[styles.filterChip, filter === item && styles.filterChipActive]}
-            onPress={() => handleFilter(item)}
+            key={item || 'all'}
+            style={[styles.filterTab, filter === item && styles.filterTabActive]}
+            onPress={() => {
+              setFilter(item);
+            }}
           >
             <Text style={[styles.filterText, filter === item && styles.filterTextActive]}>
               {item?.replace(/_/g, ' ') || 'All'}
             </Text>
+            {filter === item && <View style={styles.filterUnderline} />}
           </TouchableOpacity>
-        )}
-      />
+        ))}
+      </View>
 
       {loading ? (
         <DeliverySkeletons />
@@ -186,35 +182,50 @@ export default function DeliveriesListScreen() {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           onEndReached={loadMore}
           onEndReachedThreshold={0.3}
-          ListEmptyComponent={<EmptyState icon="📭" title="No deliveries" />}
+          ListEmptyComponent={<EmptyState title="No deliveries" subtitle="All clear for now" />}
           ListFooterComponent={loadingMore ? <ActivityIndicator style={{ padding: 16 }} /> : null}
-          contentContainerStyle={data.length === 0 ? { flex: 1 } : { padding: 16, paddingTop: 8, paddingBottom: 24 }}
+          contentContainerStyle={data.length === 0 ? { flex: 1 } : { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 24 }}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.canvas },
+  container: { flex: 1, backgroundColor: colors.kraft },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: 20, backgroundColor: colors.header,
+    padding: 20, backgroundColor: colors.paper, borderBottomWidth: 1, borderBottomColor: colors.border,
   },
-  headerTitle: { fontSize: 22, fontWeight: 'bold', color: colors.textOnPrimary },
-  filterContainer: { padding: 16, paddingBottom: 8, gap: 8 },
-  filterChip: {
-    paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999,
-    backgroundColor: colors.card, borderWidth: 1, borderColor: colors.border,
+  headerTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, color: colors.textPrimary },
+  filterRow: {
+    flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12, gap: 16,
+    backgroundColor: colors.kraft,
   },
-  filterChipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
-  filterText: { fontSize: 13, color: colors.textSecondary },
-  filterTextActive: { color: colors.textOnPrimary, fontWeight: '600' },
+  filterTab: { position: 'relative', paddingBottom: 4 },
+  filterTabActive: {},
+  filterText: {
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted,
+    textTransform: 'uppercase',
+  },
+  filterTextActive: { color: colors.textPrimary },
+  filterUnderline: {
+    position: 'absolute', bottom: 0, left: 0, right: 0,
+    height: 3, backgroundColor: colors.primary, borderRadius: 2,
+  },
   item: {
-    flexDirection: 'row', alignItems: 'center', marginBottom: 8,
+    flexDirection: 'row', alignItems: 'center',
+    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.border,
   },
   itemLeft: { flex: 1 },
-  orderNumber: { fontWeight: '600', fontSize: 14, color: colors.textPrimary },
-  customerName: { fontSize: 12, color: colors.textSecondary, marginTop: 2 },
-  timeAgo: { fontSize: 11, color: colors.textMuted, marginLeft: 8 },
+  orderNumber: {
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.textMuted,
+  },
+  customerName: {
+    fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary, marginTop: 2,
+  },
+  itemRight: { alignItems: 'flex-end', gap: 4 },
+  timeAgo: {
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted,
+  },
 });

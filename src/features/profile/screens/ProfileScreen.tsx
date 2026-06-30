@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, TextInput, TouchableOpacity, StyleSheet, Alert, Image,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
 import api from '../../../core/api/client';
 import type { DriverProfile } from '../../../core/api/types';
@@ -90,7 +90,7 @@ export default function ProfileScreen() {
     }
   }
 
-  if (!profile) return <View style={styles.center}><Text>Loading...</Text></View>;
+  if (!profile) return <View style={styles.center}><Text style={{ fontFamily: 'IBMPlexSans_400Regular' }}>Loading...</Text></View>;
 
   return (
     <ScrollView style={styles.container}>
@@ -102,7 +102,9 @@ export default function ProfileScreen() {
             ) : (
               <Text style={styles.avatarText}>{profile.firstName[0]}{profile.lastName[0]}</Text>
             )}
-            <View style={styles.cameraIcon}><Text style={{ fontSize: 14 }}>📷</Text></View>
+            <View style={styles.cameraIcon}>
+              <Ionicons name="camera-outline" size={12} color={colors.textPrimary} />
+            </View>
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setEditing(!editing)}>
@@ -110,38 +112,52 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.form}>
-        <Text style={styles.label}>First Name</Text>
-        <TextInput style={styles.input} value={firstName} onChangeText={setFirstName} editable={editing} />
-        <Text style={styles.label}>Last Name</Text>
-        <TextInput style={styles.input} value={lastName} onChangeText={setLastName} editable={editing} />
-        <Text style={styles.label}>Phone Number</Text>
-        <TextInput style={styles.input} value={phone} onChangeText={setPhone} editable={editing} keyboardType="phone-pad" />
-        <Text style={styles.label}>License Number</Text>
-        <TextInput style={styles.input} value={license} onChangeText={setLicense} editable={editing} />
+      <View style={styles.formCard}>
+        <InputField label="FIRST NAME" value={firstName} onChange={setFirstName} editable={editing} />
+        <InputField label="LAST NAME" value={lastName} onChange={setLastName} editable={editing} />
+        <InputField label="PHONE NUMBER" value={phone} onChange={setPhone} editable={editing} keyboardType="phone-pad" />
+        <InputField label="LICENSE NUMBER" value={license} onChange={setLicense} editable={editing} />
 
         {editing && (
           <TouchableOpacity style={styles.saveButton} onPress={saveProfile} disabled={saving}>
-            <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save Changes'}</Text>
+            <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save changes'}</Text>
           </TouchableOpacity>
         )}
       </View>
 
-      <View style={styles.staticInfo}>
-        <InfoRow label="Email" value={profile.email} />
-        <InfoRow label="Driver ID" value={profile.id} />
-        <InfoRow label="Member Since" value={formatDate(profile.memberSince)} />
+      <View style={styles.infoCard}>
+        <InfoRow label="EMAIL" value={profile.email} />
+        <InfoRow label="DRIVER ID" value={profile.id} />
+        <InfoRow label="MEMBER SINCE" value={formatDate(profile.memberSince)} />
       </View>
 
-      <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('ChangePassword')}>
-        <Text style={styles.menuText}>🔒 Change Password</Text>
-        <Text style={{ color: colors.textMuted }}>›</Text>
+      <TouchableOpacity style={styles.menuRow} onPress={() => navigation.navigate('ChangePassword')}>
+        <Ionicons name="key-outline" size={18} color={colors.textMuted} style={{ marginRight: 12 }} />
+        <Text style={styles.menuText}>Change password</Text>
+        <Text style={{ color: colors.textMuted, fontFamily: 'IBMPlexMono_500Medium', fontSize: 14 }}>›</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>🚪 Logout</Text>
+      <TouchableOpacity style={styles.logoutRow} onPress={handleLogout}>
+        <Text style={styles.logoutText}>Log out</Text>
       </TouchableOpacity>
     </ScrollView>
+  );
+}
+
+function InputField({ label, value, onChange, editable, keyboardType }: {
+  label: string; value: string; onChange: (v: string) => void; editable: boolean; keyboardType?: any;
+}) {
+  return (
+    <View style={styles.fieldGroup}>
+      <Text style={styles.fieldLabel}>{label}</Text>
+      <TextInput
+        style={styles.fieldInput}
+        value={value}
+        onChangeText={onChange}
+        editable={editable}
+        keyboardType={keyboardType}
+      />
+    </View>
   );
 }
 
@@ -155,25 +171,30 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.canvas },
+  container: { flex: 1, backgroundColor: colors.kraft },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  headerSection: { alignItems: 'center', paddingVertical: 24, backgroundColor: colors.card },
-  avatar: { width: 80, height: 80, borderRadius: 40, backgroundColor: colors.primary, justifyContent: 'center', alignItems: 'center', marginBottom: 8, overflow: 'hidden' },
-  avatarImage: { width: 80, height: 80, borderRadius: 40 },
-  avatarText: { color: colors.textOnPrimary, fontSize: 28, fontWeight: 'bold' },
-  cameraIcon: { position: 'absolute', bottom: 0, right: -4, backgroundColor: colors.card, borderRadius: 12, padding: 4 },
-  editText: { color: colors.successDeep, fontSize: 14, fontWeight: '600' },
-  form: { backgroundColor: colors.card, marginTop: 16, padding: 16, borderRadius: 24 },
-  label: { fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: 4, marginTop: 12 },
-  input: { backgroundColor: colors.canvas, borderRadius: 12, padding: 12, fontSize: 16, color: colors.textPrimary },
-  saveButton: { backgroundColor: colors.primary, borderRadius: 24, padding: 16, alignItems: 'center', marginTop: 24 },
-  saveButtonText: { color: colors.textOnPrimary, fontSize: 16, fontWeight: '600' },
-  staticInfo: { backgroundColor: colors.card, marginTop: 16, padding: 16, borderRadius: 24 },
-  infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.canvas },
-  infoLabel: { color: colors.textSecondary },
-  infoValue: { fontWeight: '600', color: colors.textPrimary },
-  menuItem: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.card, marginTop: 16, padding: 16, borderRadius: 24 },
-  menuText: { fontSize: 16, color: colors.textPrimary },
-  logoutButton: { backgroundColor: colors.card, marginTop: 8, padding: 16, alignItems: 'center', borderRadius: 24 },
-  logoutText: { fontSize: 16, color: colors.danger, fontWeight: '600' },
+  headerSection: { alignItems: 'center', paddingVertical: 24, backgroundColor: colors.paper, borderBottomWidth: 1, borderBottomColor: colors.border },
+  avatar: {
+    width: 80, height: 80, borderRadius: 4, backgroundColor: colors.primaryTint,
+    justifyContent: 'center', alignItems: 'center', marginBottom: 8, overflow: 'hidden',
+    borderWidth: 1, borderColor: colors.primary,
+  },
+  avatarImage: { width: 80, height: 80, borderRadius: 4 },
+  avatarText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 24, color: colors.primary },
+  cameraIcon: { position: 'absolute', bottom: 2, right: 2, backgroundColor: colors.paper, borderRadius: 2, borderWidth: 1, borderColor: colors.border, padding: 4 },
+  editText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.primary },
+  formCard: { backgroundColor: colors.paper, marginTop: 16, padding: 16, borderRadius: 4, borderWidth: 1, borderColor: colors.border, marginHorizontal: 16 },
+  fieldGroup: { marginBottom: 16 },
+  fieldLabel: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted, marginBottom: 4, textTransform: 'uppercase' },
+  fieldInput: { borderBottomWidth: 1.5, borderBottomColor: colors.border, paddingVertical: 8, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
+  saveButton: { backgroundColor: colors.primary, borderRadius: 4, padding: 14, alignItems: 'center', marginTop: 8 },
+  saveButtonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.paper },
+  infoCard: { backgroundColor: colors.paper, marginTop: 16, padding: 16, borderRadius: 4, borderWidth: 1, borderColor: colors.border, marginHorizontal: 16 },
+  infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.border, borderStyle: 'dashed' },
+  infoLabel: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted, textTransform: 'uppercase' },
+  infoValue: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.textPrimary },
+  menuRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.paper, marginTop: 16, padding: 16, borderRadius: 4, borderWidth: 1, borderColor: colors.border, marginHorizontal: 16 },
+  menuText: { flex: 1, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
+  logoutRow: { backgroundColor: colors.paper, marginTop: 8, padding: 16, alignItems: 'center', borderRadius: 4, borderWidth: 1, borderColor: colors.border, marginHorizontal: 16 },
+  logoutText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.danger },
 });

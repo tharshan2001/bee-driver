@@ -29,6 +29,6 @@ export default function ScreenContainer({ children, scroll = false, padding, ref
 }
 
 const styles = StyleSheet.create({
-  outer: { flex: 1, backgroundColor: colors.canvas },
+  outer: { flex: 1, backgroundColor: colors.kraft },
   inner: { flexGrow: 1 },
 });

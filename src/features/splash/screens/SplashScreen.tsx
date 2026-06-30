@@ -1,11 +1,8 @@
 import React, { useCallback, useRef } from 'react';
-import { StyleSheet, View, Text, Dimensions } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { colors } from '../../../shared/theme';
-
-const { width } = Dimensions.get('window');
-const MASCOT_SIZE = Math.min(width * 0.45, 180);
 
 export default function SplashScreen() {
   const navigation = useNavigation();
@@ -31,22 +28,24 @@ export default function SplashScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <View style={styles.mascotWrapper}>
-          <View style={styles.mascotCircle}>
-            <Video
-              source={require('../../../../assets/buzz-pkg.webm')}
-              style={styles.video}
-              resizeMode={ResizeMode.CONTAIN}
-              shouldPlay
-              isLooping={false}
-              onPlaybackStatusUpdate={onPlaybackStatusUpdate}
-              onError={navigateAway}
-            />
+        <View style={styles.stamp}>
+          <View style={styles.stampRing}>
+            <View style={styles.stampInner}>
+              <Video
+                source={require('../../../../assets/buzz-pkg.webm')}
+                style={styles.video}
+                resizeMode={ResizeMode.CONTAIN}
+                shouldPlay
+                isLooping={false}
+                onPlaybackStatusUpdate={onPlaybackStatusUpdate}
+                onError={navigateAway}
+              />
+            </View>
           </View>
         </View>
-
-        <Text style={styles.welcome}>Welcome</Text>
-        <Text style={styles.subtitle}>Bee Driver</Text>
+        <Text style={styles.title}>BEE DRIVER</Text>
+        <Text style={styles.subtitle}>PARCEL MANIFEST SYSTEM</Text>
+        <View style={styles.rule} />
       </View>
     </View>
   );
@@ -55,38 +54,57 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.canvas,
+    backgroundColor: colors.kraft,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  content: {
+  content: { alignItems: 'center' },
+  stamp: {
+    width: 96,
+    height: 96,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: colors.textPrimary,
+    justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 24,
+    transform: [{ rotate: '-4deg' }],
   },
-  mascotWrapper: {
-    marginBottom: 32,
-  },
-  mascotCircle: {
-    width: MASCOT_SIZE,
-    height: MASCOT_SIZE,
-    borderRadius: MASCOT_SIZE / 2,
+  stampRing: {
+    width: 80,
+    height: 80,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: colors.textMuted,
+    justifyContent: 'center',
+    alignItems: 'center',
     overflow: 'hidden',
-    backgroundColor: colors.primaryPale,
   },
-  video: {
-    width: MASCOT_SIZE,
-    height: MASCOT_SIZE,
+  stampInner: {
+    width: 72,
+    height: 72,
+    borderRadius: 4,
+    overflow: 'hidden',
+    backgroundColor: colors.primaryTint,
   },
-  welcome: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.primary,
-    letterSpacing: 1,
-    marginBottom: 4,
+  video: { width: 72, height: 72 },
+  title: {
+    fontFamily: 'SpaceGrotesk_700Bold',
+    fontSize: 22,
+    color: colors.textPrimary,
+    letterSpacing: 2,
   },
   subtitle: {
-    fontSize: 15,
-    color: colors.textSecondary,
-    letterSpacing: 2,
-    textTransform: 'uppercase',
+    fontFamily: 'IBMPlexMono_500Medium',
+    fontSize: 10,
+    color: colors.textMuted,
+    letterSpacing: 1,
+    marginTop: 6,
+  },
+  rule: {
+    width: 120,
+    height: 1,
+    backgroundColor: colors.border,
+    marginTop: 16,
   },
 });

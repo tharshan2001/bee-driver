@@ -7,7 +7,7 @@
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash-icon.png",
-      "backgroundColor": "#e8ebe6",
+      "backgroundColor": "#EDE6D3",
       "resizeMode": "contain"
     },
     "ios": {
@@ -20,7 +20,7 @@
         ],
         "NSLocationWhenInUseUsageDescription": "Bee Driver needs your location to navigate to delivery addresses and track your trips.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Bee Driver needs background location access to continuously share your live location with dispatchers and customers even when the app is closed."
-      },
+      }
     },
     "android": {
       "package": "com.ebee.driver",
@@ -60,7 +60,8 @@
             "kotlinVersion": "2.0.21"
           }
         }
-      ]
+      ],
+      "expo-font"
     ],
     "projectId": "9c17f6ca-6688-4c93-9847-16d86554ed6b",
     "extra": {

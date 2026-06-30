@@ -9,14 +9,21 @@ interface WelcomeBannerProps {
 
 export default function WelcomeBanner({ name }: WelcomeBannerProps) {
   return (
-    <View style={styles.banner}>
-      <View style={styles.row}>
-        <View style={styles.textCol}>
-          <Text style={styles.greeting}>Welcome back,</Text>
+    <View style={styles.card}>
+      <View style={styles.headerZone}>
+        <Text style={styles.driverId}>DRIVER ID: {name.toUpperCase().slice(0, 2)}-9921</Text>
+      </View>
+      <View style={styles.tearLine}>
+        <View style={styles.notchLeft} />
+        <View style={styles.dash} />
+        <View style={styles.notchRight} />
+      </View>
+      <View style={styles.body}>
+        <View>
+          <Text style={styles.greeting}>Welcome back</Text>
           <Text style={styles.name}>{name}</Text>
-          <Text style={styles.tagline}>Ready to hit the road?</Text>
         </View>
-        <View style={styles.mascotCircle}>
+        <View style={styles.routeSketch}>
           <Video
             source={require('../../../../assets/buzz-wave.webm')}
             style={styles.mascotVideo}
@@ -27,65 +34,97 @@ export default function WelcomeBanner({ name }: WelcomeBannerProps) {
           />
         </View>
       </View>
-      <View style={styles.accentLine} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  banner: {
+  card: {
+    backgroundColor: colors.paper,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: colors.border,
     marginHorizontal: 16,
     marginTop: 16,
-    marginBottom: 4,
-    backgroundColor: colors.card,
-    borderRadius: 24,
-    padding: 20,
     shadowColor: colors.shadow,
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 2,
   },
-  row: {
+  headerZone: {
+    height: 44,
+    paddingHorizontal: 16,
+    justifyContent: 'center',
+  },
+  driverId: {
+    fontFamily: 'IBMPlexMono_500Medium',
+    fontSize: 11,
+    color: colors.textMuted,
+    textTransform: 'uppercase',
+  },
+  tearLine: {
     flexDirection: 'row',
     alignItems: 'center',
+    height: 1,
   },
-  textCol: {
+  notchLeft: {
+    width: 16,
+    height: 32,
+    backgroundColor: colors.kraft,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderLeftWidth: 0,
+    borderRadius: 0,
+    borderTopRightRadius: 16,
+    borderBottomRightRadius: 16,
+    marginLeft: -9,
+  },
+  dash: {
     flex: 1,
+    height: 0,
+    borderTopWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: colors.border,
+  },
+  notchRight: {
+    width: 16,
+    height: 32,
+    backgroundColor: colors.kraft,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRightWidth: 0,
+    borderRadius: 0,
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
+    marginRight: -9,
+  },
+  body: {
+    padding: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   greeting: {
-    fontSize: 13,
-    color: colors.textMuted,
-    fontWeight: '500',
+    fontFamily: 'IBMPlexSans_400Regular',
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginBottom: 2,
   },
   name: {
+    fontFamily: 'SpaceGrotesk_700Bold',
     fontSize: 22,
-    fontWeight: '700',
     color: colors.textPrimary,
-    marginTop: 1,
   },
-  tagline: {
-    fontSize: 12,
-    color: colors.primary,
-    fontWeight: '600',
-    marginTop: 4,
-  },
-  mascotCircle: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+  routeSketch: {
+    width: 80,
+    height: 80,
+    borderRadius: 4,
     overflow: 'hidden',
-    backgroundColor: colors.primaryPale,
+    backgroundColor: colors.primaryTint,
   },
   mascotVideo: {
-    width: 90,
-    height: 90,
-  },
-  accentLine: {
-    height: 2,
-    backgroundColor: colors.primary,
-    borderRadius: 1,
-    marginTop: 16,
-    width: 48,
+    width: 80,
+    height: 80,
   },
 });

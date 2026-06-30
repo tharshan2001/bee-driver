@@ -1,502 +1,87 @@
----
-version: alpha
-name: Wise-Inspired-design-analysis
-description: An inspired interpretation of Wise's design language — adapted for Bee Driver with a warm sunflower-yellow brand accent, sage-tinted surface neutrals, and rounded white cards on a pale green-tinted canvas.
+# Waybill Design System — Bee Driver
 
-colors:
-  primary: "#FFC800"
-  on-primary: "#0e0f0c"
-  primary-active: "#FFE066"
-  primary-neutral: "#FFE699"
-  primary-pale: "#FFF5D6"
-  ink: "#0e0f0c"
-  ink-deep: "#163300"
-  body: "#454745"
-  mute: "#868685"
-  canvas: "#ffffff"
-  canvas-soft: "#e8ebe6"
-  positive: "#2ead4b"
-  positive-deep: "#054d28"
-  warning: "#ffd11a"
-  warning-deep: "#b86700"
-  warning-content: "#4a3b1c"
-  negative: "#d03238"
-  negative-deep: "#a72027"
-  negative-darkest: "#a7000d"
-  negative-bg: "#320707"
-  accent-orange: "#ffc091"
-  accent-cyan: "#38c8ff"
+## Concept
 
-typography:
-  display-mega:
-    fontFamily: Wise Sans, Inter, system-ui, -apple-system, sans-serif
-    fontSize: 126px
-    fontWeight: 900
-    lineHeight: 107.1px
-  display-xxl:
-    fontFamily: Wise Sans, Inter, system-ui, sans-serif
-    fontSize: 96px
-    fontWeight: 900
-    lineHeight: 81.6px
-  display-xl:
-    fontFamily: Wise Sans, Inter, system-ui, sans-serif
-    fontSize: 64px
-    fontWeight: 900
-    lineHeight: 54.4px
-  display-lg:
-    fontFamily: Wise Sans, Inter, system-ui, sans-serif
-    fontSize: 47px
-    fontWeight: 400
-    lineHeight: 70.5px
-    letterSpacing: -0.108px
-  display-md:
-    fontFamily: Wise Sans, Inter, system-ui, sans-serif
-    fontSize: 40px
-    fontWeight: 900
-    lineHeight: 34px
-  display-sm:
-    fontFamily: Inter, system-ui, sans-serif
-    fontSize: 32px
-    fontWeight: 600
-    lineHeight: 38.4px
-    letterSpacing: -0.96px
-  display-xs:
-    fontFamily: Inter, system-ui, sans-serif
-    fontSize: 24px
-    fontWeight: 600
-    lineHeight: 31.2px
-    letterSpacing: -0.48px
-  body-lg:
-    fontFamily: Inter, system-ui, sans-serif
-    fontSize: 20px
-    fontWeight: 400
-    lineHeight: 30px
-  body-md:
-    fontFamily: Inter, system-ui, sans-serif
-    fontSize: 16px
-    fontWeight: 400
-    lineHeight: 24px
-  body-md-strong:
-    fontFamily: Inter, system-ui, sans-serif
-    fontSize: 16px
-    fontWeight: 600
-    lineHeight: 24px
-  body-sm:
-    fontFamily: Inter, system-ui, sans-serif
-    fontSize: 14px
-    fontWeight: 400
-    lineHeight: 20px
-  body-sm-strong:
-    fontFamily: Inter, system-ui, sans-serif
-    fontSize: 14px
-    fontWeight: 600
-    lineHeight: 20px
-  caption:
-    fontFamily: Inter, system-ui, sans-serif
-    fontSize: 12px
-    fontWeight: 400
-    lineHeight: 16px
-  button-md:
-    fontFamily: Inter, system-ui, sans-serif
-    fontSize: 16px
-    fontWeight: 600
-    lineHeight: 24px
-
-rounded:
-  none: 0px
-  sm: 8px
-  md: 12px
-  lg: 16px
-  xl: 24px
-  pill: 9999px
-  full: 9999px
-
-spacing:
-  xxs: 2px
-  xs: 4px
-  sm: 8px
-  md: 12px
-  lg: 16px
-  xl: 24px
-  2xl: 32px
-  3xl: 48px
-
-components:
-  nav-bar:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-sm-strong}"
-    padding: "{spacing.md} {spacing.xl}"
-  nav-link:
-    textColor: "{colors.ink}"
-    typography: "{typography.body-sm-strong}"
-  button-primary:
-    backgroundColor: "{colors.primary}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.md} {spacing.xl}"
-  button-secondary:
-    backgroundColor: "{colors.canvas-soft}"
-    textColor: "{colors.ink}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.md} {spacing.xl}"
-  button-tertiary:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    borderColor: "{colors.ink}"
-    typography: "{typography.button-md}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.md} {spacing.xl}"
-  button-icon-circular:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.full}"
-    padding: "{spacing.sm}"
-  text-input:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    borderColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.md}"
-    padding: "{spacing.md} {spacing.lg}"
-  card-content:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.xl}"
-  card-feature-sage:
-    backgroundColor: "{colors.canvas-soft}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.xl}"
-  card-feature-green:
-    backgroundColor: "{colors.primary-pale}"
-    textColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.xl}"
-  card-feature-dark:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.primary}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.xl}"
-  hero-band:
-    backgroundColor: "{colors.canvas-soft}"
-    textColor: "{colors.ink}"
-    typography: "{typography.display-mega}"
-    padding: "{spacing.3xl} {spacing.xl}"
-  hero-band-dark:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.primary}"
-    typography: "{typography.display-mega}"
-    padding: "{spacing.3xl} {spacing.xl}"
-  content-band:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    typography: "{typography.display-md}"
-    padding: "{spacing.3xl} {spacing.xl}"
-  currency-converter-card:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    borderColor: "{colors.ink}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.xl}"
-  badge-positive:
-    backgroundColor: "{colors.primary-pale}"
-    textColor: "{colors.positive-deep}"
-    typography: "{typography.body-sm-strong}"
-    rounded: "{rounded.pill}"
-    padding: "{spacing.xs} {spacing.md}"
-  badge-negative:
-    backgroundColor: "{colors.negative-bg}"
-    textColor: "{colors.on-primary}"
-    typography: "{typography.body-sm-strong}"
-    rounded: "{rounded.pill}"
-    padding: "{spacing.xs} {spacing.md}"
-  footer:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.canvas-soft}"
-    typography: "{typography.body-sm}"
-    padding: "{spacing.3xl} {spacing.xl}"
-
-  # ─── Examples (illustrative) ───
-  ex-pricing-tier:
-    description: "Default tier card. Re-uses feature-card chrome with brand canvas-soft surface."
-    backgroundColor: "{colors.canvas-soft}"
-    textColor: "{colors.ink}"
-    borderColor: "{colors.mute}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.xl}"
-  ex-pricing-tier-featured:
-    description: "Featured/highlighted tier — polarity-flipped surface."
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.on-primary}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.xl}"
-  ex-product-selector:
-    description: "What's Included summary card."
-    backgroundColor: "{colors.canvas-soft}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.xl}"
-  ex-cart-drawer:
-    description: "Subscription summary."
-    backgroundColor: "{colors.canvas}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.xl}"
-    item-divider: "{colors.canvas-soft}"
-  ex-app-shell-row:
-    description: "Sidebar nav row. Active state uses brand primary as the indicator."
-    backgroundColor: "{colors.canvas}"
-    activeIndicator: "{colors.primary}"
-    rounded: "{rounded.sm}"
-    padding: "{spacing.md} {spacing.lg}"
-  ex-data-table-cell:
-    description: "Default data-table th + td chrome."
-    headerBackground: "{colors.canvas-soft}"
-    headerTypography: "{typography.caption}"
-    bodyTypography: "{typography.body-sm}"
-    cellPadding: "{spacing.md} {spacing.lg}"
-    rowBorder: "{colors.canvas-soft}"
-  ex-auth-form-card:
-    description: "Sign-in / sign-up card. Re-uses feature-card chrome with text-input primitives inside."
-    backgroundColor: "{colors.canvas-soft}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.xl}"
-  ex-modal-card:
-    description: "Modal dialog surface — same chrome as feature-card with elevated shadow."
-    backgroundColor: "{colors.canvas}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.xl}"
-  ex-empty-state-card:
-    description: "Empty-state illustration frame."
-    backgroundColor: "{colors.canvas-soft}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.3xl}"
-    captionTypography: "{typography.body-md}"
-  ex-toast:
-    description: "Toast notification surface — feature-card shape + medium shadow."
-    backgroundColor: "{colors.canvas}"
-    rounded: "{rounded.xl}"
-    padding: "{spacing.md} {spacing.lg}"
-    typography: "{typography.body-sm}"
-
----
-
-## Overview
-
-This adapted Wise-inspired system for Bee Driver uses a warm sunflower-yellow `{colors.primary}` (`#FFC800`) as the CTA pill and brand accent, set against a pale sage-tinted canvas `{colors.canvas-soft}` (`#e8ebe6`). The near-black ink `{colors.ink}` (`#0e0f0c`) keeps text crisp, while generous whitespace, large rounded cards, and Inter at weight 600 maintain the friendly fintech voice.
-
-Display typography is the second decisive voice. The proprietary `Wise Sans` family carries hero displays at weight 900 in scales from 64 px up to 126 px on the largest hero. The brand pairs Wise Sans 900 with Inter at weight 600 for sub-displays — the contrast between the chunky proprietary face and Inter's neutrality creates a particular hierarchy: Wise Sans for the brand moment, Inter for everything else.
-
-Cards are universally pill-rounded — `{rounded.xl}` 24 px is the brand's signature card radius. Buttons take the same 24 px pill-rectangle shape. The brand never uses sharp corners on UI elements; the visual softness is part of the friendly fintech voice.
-
-**Key Characteristics:**
-- A single sunflower-yellow CTA accent `{colors.primary}` (`#FFC800`) — the app's universal primary action color. No second accent.
-- Inter at weight 600 for sub-displays and buttons, weight 400 for body.
-- `{rounded.xl}` 24 px is the canonical card and button radius. Generous, friendly.
-- Sage-tinted canvas `{colors.canvas-soft}` (`#e8ebe6`) is the app's hero surface; white `{colors.canvas}` is reserved for cards within the sage band.
-- A full semantic palette: positive green family, warning amber family, negative red family — each documented with content / hover / active variants for in-product status.
+A delivery-driver app built from real courier paperwork: kraft tags, ink stamps, tracking
+numbers, tear-lines. The signature element is an **ink-stamped status badge** (rotated
+circle, 2px ring, mono text) and **monospace data** (order IDs, amounts, timestamps)
+used everywhere a real waybill would print them. Sharp corners (4px), paper-like cards,
+one Courier Orange CTA.
 
 ## Colors
 
-### Brand & Accent
-- **Sunflower Yellow** (`{colors.primary}` — `#FFC800`): The app's universal CTA color. Every primary button, tab active pill, and brand accent.
-- **Sunflower Hover** (`{colors.primary-active}` — `#FFE066`): The lighter yellow for active state.
-- **Sunflower Neutral** (`{colors.primary-neutral}` — `#FFE699`): A mid-saturation yellow used as a neutral active fill.
-- **Sunflower Pale** (`{colors.primary-pale}` — `#FFF5D6`): The lightest yellow for soft surface tints / badge backgrounds.
-
-### Surface
-- **Canvas** (`{colors.canvas}` — `#ffffff`): Pure white for card interiors.
-- **Canvas Soft** (`{colors.canvas-soft}` — `#e8ebe6`): The sage-tinted page background. Defining mood of the brand.
-
-### Text
-- **Ink** (`{colors.ink}` — `#0e0f0c`): Near-black with a hint of olive warmth — the brand's default text and headings color.
-- **Ink Deep** (`{colors.ink-deep}` — `#163300`): A deep forest-green ink used on positive-state surfaces.
-- **Body** (`{colors.body}` — `#454745`): Secondary body text.
-- **Mute** (`{colors.mute}` — `#868685`): Lowest-priority text — captions, placeholder, fine print.
-
-### Semantic
-- **Positive** (`{colors.positive}` — `#2ead4b`): Success indicator.
-- **Positive Deep** (`{colors.positive-deep}` — `#054d28`): Pressed positive state.
-- **Warning** (`{colors.warning}` — `#ffd11a`): Caution indicator.
-- **Warning Deep** (`{colors.warning-deep}` — `#b86700`): Pressed warning.
-- **Warning Content** (`{colors.warning-content}` — `#4a3b1c`): Text on warning surfaces.
-- **Negative** (`{colors.negative}` — `#d03238`): Destructive / error red.
-- **Negative Deep** (`{colors.negative-deep}` — `#a72027`): Pressed destructive.
-- **Negative Darkest** (`{colors.negative-darkest}` — `#a7000d`): Highest-emphasis destructive text.
-- **Negative Bg** (`{colors.negative-bg}` — `#320707`): Dark maroon for destructive callout backgrounds.
-
-### Brand Accent — Tertiary
-- **Accent Orange** (`{colors.accent-orange}` — `#ffc091`): Bright peach used inside illustrative content / pricing cards.
-- **Accent Cyan** (`{colors.accent-cyan}` — `#38c8ff`): Bright sky-blue used as a tertiary illustration accent.
+| Token           | Hex       | Use                           |
+|-----------------|-----------|-------------------------------|
+| Kraft           | `#EDE6D3` | Page background               |
+| Paper           | `#FAF7F0` | Card / surface fill           |
+| Ink             | `#221F1A` | Primary text, headlines       |
+| Ink Faded       | `#5C5648` | Secondary body text           |
+| Ink Muted       | `#928C7C` | Captions, placeholders        |
+| Courier Orange  | `#FF6A13` | The one CTA/accent color      |
+| Courier Deep    | `#C8500C` | Pressed CTA state             |
+| Courier Tint    | `#FFE3CC` | Accent card fills             |
+| Manifest Green  | `#2F6F4E` | Delivered/approved/online     |
+| Manifest Tint   | `#E1ECE3` | Success card/badge backing    |
+| Customs Red     | `#B23A2E` | Failed/rejected/urgent        |
+| Customs Tint    | `#F3E2DE` | Danger card/badge backing     |
+| Transit Amber   | `#C97F1E` | In-transit/pending-action     |
+| Amber Tint      | `#F2E5CC` | Amber badge backing           |
+| Border          | `#DCD3BC` | Hairline borders              |
+| Overlay         | `rgba(34,31,26,0.55)` | Modal backdrops      |
 
 ## Typography
 
-### Font Family
-Two faces ladder the system:
-1. **Wise Sans** — proprietary geometric sans with an unusually heavy weight 900 used for all hero displays. The face is the brand's typographic signature. Always at weight 900, never lighter on the marketing surface.
-2. **Inter** — used for sub-displays (weight 600), all body, and form labels. Loaded with `font-feature-settings: "calt"` for contextual alternates.
+| Role           | Face              | Style                     |
+|----------------|-------------------|---------------------------|
+| Display        | Space Grotesk 700 | Hero numbers, section titles |
+| Body           | IBM Plex Sans 400/500 | All reading text       |
+| Data/utility   | IBM Plex Mono 500 | IDs, amounts, timestamps  |
 
-### Hierarchy
+| Style       | Size   | Weight | Face           |
+|-------------|--------|--------|----------------|
+| Section title | 20px | Bold   | Space Grotesk  |
+| Card title  | 16px   | Medium | IBM Plex Sans  |
+| Body        | 14–15px| Regular| IBM Plex Sans  |
+| Data field  | 13–15px| Medium | IBM Plex Mono  |
+| Caption     | 11–12px| Medium | IBM Plex Sans  |
+| Button label| 15px   | Medium | IBM Plex Sans  |
 
-| Token | Size | Weight | Line Height | Letter Spacing | Use |
-|---|---|---|---|---|---|
-| `{typography.display-mega}` | 126px | 900 | 107.1px | 0 | Hero stencil at maximum scale. |
-| `{typography.display-xxl}` | 96px | 900 | 81.6px | 0 | Sub-hero scale. |
-| `{typography.display-xl}` | 64px | 900 | 54.4px | 0 | Standard hero headline. |
-| `{typography.display-lg}` | 47px | 400 | 70.5px | -0.108px | Lighter sub-display. |
-| `{typography.display-md}` | 40px | 900 | 34px | 0 | Section / card headlines. |
-| `{typography.display-sm}` | 32px | 600 | 38.4px | -0.96px | Inter-rendered section headings. |
-| `{typography.display-xs}` | 24px | 600 | 31.2px | -0.48px | Sub-section displays. |
-| `{typography.body-lg}` | 20px | 400 | 30px | 0 | Lead paragraphs. |
-| `{typography.body-md}` | 16px | 400 | 24px | 0 | Default body. |
-| `{typography.body-md-strong}` | 16px | 600 | 24px | 0 | Bold inline body. |
-| `{typography.body-sm}` | 14px | 400 | 20px | 0 | Secondary body. |
-| `{typography.body-sm-strong}` | 14px | 600 | 20px | 0 | Bold caption / nav-link. |
-| `{typography.caption}` | 12px | 400 | 16px | 0 | Fine print. |
-| `{typography.button-md}` | 16px | 600 | 24px | 0 | Button label. |
+## Shape
 
-### Principles
-- **Weight 900 for hero, weight 600 for everything else.** The brand's display ceiling is full-black weight; everything below is semibold.
-- **Wise Sans for the brand voice, Inter for utility.** Strict role separation.
+- Cards & buttons: **4px radius** (paper-like, not bubble-rounded)
+- StampBadge: perfect circle (40px, `borderRadius: 20`), rotated -6°, 2px ring
+- Inputs: 4px radius, bottom-border-emphasized on focus
+- Toggle thumb: square (16px, `borderRadius: 2`)
+- Avatars: square with 4px radius, not circular
+- Status dots: square 8x8px
 
-### Note on Font Substitutes
-Wise Sans is proprietary. Open-source substitutes:
-- **Display** — *Inter* at weight 900 or *Manrope* at weight 800 / 900 captures the geometric heaviness. *Geist* weight 800 is a passable second choice.
-- **Sub-display + body** — *Inter* is the brand's actual second face.
+## Spacing
 
-## Layout
+- Page padding: 16–20px
+- Card padding: 16px, header tear-line at 44px
+- Gap between cards: 10px
+- Section gap: 24px
 
-### Spacing System
-- **Base unit**: 4 px.
-- **Tokens**: `{spacing.xxs}` 2 px · `{spacing.xs}` 4 px · `{spacing.sm}` 8 px · `{spacing.md}` 12 px · `{spacing.lg}` 16 px · `{spacing.xl}` 24 px · `{spacing.2xl}` 32 px · `{spacing.3xl}` 48 px.
-- **Section padding**: bands use `{spacing.3xl}` 48 px top/bottom on desktop.
-- **Card interior**: cards at `{spacing.xl}` 24 px.
+## Shadows
 
-### Grid & Container
-- Marketing container centres at ~1200 px.
-- Hero: split layout (headline left, currency-converter card right) at desktop; stacked at mobile.
-- Feature grids: 2-up / 3-up at desktop.
+- Cards: `shadowOpacity: 0.06, shadowRadius: 6, offset: {0,1}`
+- FAB: `shadowOpacity: 0.18, shadowRadius: 12, offset: {0,3}`
 
-### Responsive Strategy
+## Shared Components
 
-#### Breakpoints
+### WaybillCard
+Paper fill, 4px radius, 1px Border hairline, faint shadow. Top 44px header zone
+separated by dashed tear-line with two semicircle notch cutouts.
+Variants: `default` (Paper), `accent` (Courier Tint).
 
-| Name | Width | Key Changes |
-|---|---|---|
-| Mobile | < 768px | Hero stacks; converter card full-width below headline; grids 1-up. |
-| Tablet | 768–1023px | Grids 2-up. |
-| Desktop | ≥ 1024px | Hero split; full grids. |
+### StampBadge
+40px circle, rotated -6°, 2px ring, centered uppercase mono 9–10px.
+Compact variant: 6px square tick + uppercase mono label.
 
-#### Touch Targets
-Buttons render ~48 px tall (12 vertical padding + 24 line). WCAG AAA at all widths.
+Status colors: PENDING=Ink Muted, ASSIGNED=Manifest Green, PICKED_UP=Transit Amber,
+IN_TRANSIT=Transit Amber, DELIVERED=Manifest Green, FAILED=Customs Red,
+FAILED_PERMANENT=Customs Red, APPROVED=Manifest Green, REJECTED=Customs Red.
 
-## Elevation & Depth
-
-| Level | Treatment | Use |
-|---|---|---|
-| Level 0 — Flat | No shadow, no border. | Default. |
-| Level 1 — Hairline on Dark | 1 px solid `{colors.ink}` border. | Tertiary outline buttons, form inputs. |
-| Level 2 — Soft Card | Implicit Level 0 white card sitting on sage canvas — the surface contrast IS the elevation. | Cards on the sage hero band. |
-
-The brand uses surface contrast (`{colors.canvas-soft}` background vs `{colors.canvas}` cards) as the primary elevation cue.
-
-## Shapes
-
-### Border Radius Scale
-
-| Token | Value | Use |
-|---|---|---|
-| `{rounded.none}` | 0px | Full-bleed bands. |
-| `{rounded.sm}` | 8px | Inline pills, small badges. |
-| `{rounded.md}` | 12px | Form inputs, smaller chrome. |
-| `{rounded.lg}` | 16px | Mid-size cards. |
-| `{rounded.xl}` | 24px | The brand's canonical button + card radius. |
-| `{rounded.pill}` | 9999px | Status pills and full-radius accents. |
-| `{rounded.full}` | 9999px | Circular icon containers. |
-
-## Components
-
-### Buttons
-
-**`button-primary`** — the lime-green CTA pill.
-- Background `{colors.primary}`, text `{colors.on-primary}`, label `{typography.button-md}`, padding `{spacing.md} {spacing.xl}`, shape `{rounded.xl}` 24 px.
-
-**`button-secondary`** — the sage-tinted secondary.
-- Background `{colors.canvas-soft}`, text `{colors.ink}`, same typography / padding / shape.
-
-**`button-tertiary`** — the white outline tertiary.
-- Background `{colors.canvas}`, text `{colors.ink}`, 1 px solid `{colors.ink}` border, same typography / padding / shape.
-
-**`button-icon-circular`** — the circular icon button.
-- Background `{colors.canvas}`, ink icon, shape `{rounded.full}`.
-
-### Cards & Containers
-
-**`card-content`** — the default white card.
-- Background `{colors.canvas}`, text `{colors.ink}`, padding `{spacing.xl}`, shape `{rounded.xl}`. No border, sits on sage canvas.
-
-**`card-feature-sage`** — the sage-tinted feature card.
-- Background `{colors.canvas-soft}`, text `{colors.ink}`, padding `{spacing.xl}`, shape `{rounded.xl}`.
-
-**`card-feature-green`** — the soft-green feature card.
-- Background `{colors.primary-pale}`, text `{colors.ink}`, padding `{spacing.xl}`, shape `{rounded.xl}`.
-
-**`card-feature-dark`** — the polarity-flipped dark card with green text.
-- Background `{colors.ink}`, text `{colors.primary}` (Wise green!), padding `{spacing.xl}`, shape `{rounded.xl}`. Used for promotional moments.
-
-**`currency-converter-card`** — the brand's signature interactive widget.
-- Background `{colors.canvas}`, text `{colors.ink}`, 1 px solid `{colors.ink}` border, padding `{spacing.xl}`, shape `{rounded.xl}`. Hosts from/to amount inputs + currency selectors.
-
-### Inputs & Forms
-
-**`text-input`** — the canonical text input.
-- Background `{colors.canvas}`, text `{colors.ink}`, 1 px solid `{colors.ink}` border, body in `{typography.body-md}`, padding `{spacing.md} {spacing.lg}`, shape `{rounded.md}`.
-
-### Navigation
-
-**`nav-bar`** — the sticky top nav.
-- Background `{colors.canvas}`, text `{colors.ink}`, padding `{spacing.md} {spacing.xl}`.
-
-**`nav-link`** — link items inside nav.
-- Text `{colors.ink}`, set in `{typography.body-sm-strong}`.
-
-**`footer`** — the dark footer band.
-- Background `{colors.ink}`, text `{colors.canvas-soft}`, padding `{spacing.3xl} {spacing.xl}`. Body in `{typography.body-sm}`.
-
-### Signature Components
-
-**`hero-band`** — the sage-canvas hero band.
-- Background `{colors.canvas-soft}`, text `{colors.ink}`, padding `{spacing.3xl} {spacing.xl}`. Headline in `{typography.display-mega}` (Wise Sans weight 900).
-
-**`hero-band-dark`** — the polarity-flipped dark hero.
-- Background `{colors.ink}`, text `{colors.primary}` (Wise green headline on near-black!), same padding / scale.
-
-**`content-band`** — the white content band that follows hero.
-- Background `{colors.canvas}`, text `{colors.ink}`, padding `{spacing.3xl} {spacing.xl}`. Section headline in `{typography.display-md}`.
-
-**`badge-positive`** — the positive status pill.
-- Background `{colors.primary-pale}`, text `{colors.positive-deep}`, body in `{typography.body-sm-strong}`, padding `{spacing.xs} {spacing.md}`, shape `{rounded.pill}`.
-
-**`badge-negative`** — the negative status pill.
-- Background `{colors.negative-bg}`, text white, body in `{typography.body-sm-strong}`, padding `{spacing.xs} {spacing.md}`, shape `{rounded.pill}`.
-
-## Do's and Don'ts
-
-### Do
-- Reserve `{colors.primary}` sunflower yellow for every primary CTA. The yellow pill IS the app's conversion signature.
-- Use `{rounded.xl}` 24 px for buttons and cards. The generous radius is the app's friendliness signature.
-- Cycle page surfaces in `{colors.canvas-soft}` sage canvas → `{colors.canvas}` white cards. Surface contrast carries elevation.
-- Use the full semantic palette (positive / warning / negative) for in-product status — never repurpose sunflower yellow as success indicator since it IS the brand CTA.
-
-### Don't
-- Don't introduce a second brand accent. Sunflower yellow is the sole identity colour.
-- Don't render CTAs as sharp rectangles. The 24 px pill geometry is non-negotiable.
-- Don't pair the yellow CTA with a yellow background. The app always sits sunflower yellow on neutral surfaces (sage / white / ink).
-- Don't use sunflower yellow for success states — keep semantic success green distinct.
+### Tab Bar
+Paper fill, Border top hairline. Active tab: Courier Orange tick above icon
+(24×3px, 2px radius) + Courier Orange icon/label.

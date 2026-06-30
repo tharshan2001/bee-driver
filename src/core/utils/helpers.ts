@@ -43,10 +43,10 @@ export function getStatusColor(status: string): string {
     PENDING: colors.textMuted,
     ASSIGNED: colors.success,
     PICKED_UP: colors.warning,
-    IN_TRANSIT: colors.info,
+    IN_TRANSIT: colors.warning,
     DELIVERED: colors.success,
     FAILED: colors.danger,
-    FAILED_PERMANENT: colors.dangerDeep,
+    FAILED_PERMANENT: colors.danger,
     APPROVED: colors.success,
     REJECTED: colors.danger,
   };

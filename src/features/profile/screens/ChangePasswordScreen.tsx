@@ -30,27 +30,9 @@ export default function ChangePasswordScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <TextInput
-        style={styles.input}
-        placeholder="Current Password"
-        value={currentPassword}
-        onChangeText={setCurrentPassword}
-        secureTextEntry
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="New Password"
-        value={newPassword}
-        onChangeText={setNewPassword}
-        secureTextEntry
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm New Password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
+      <Field label="CURRENT PASSWORD" value={currentPassword} onChange={setCurrentPassword} secure />
+      <Field label="NEW PASSWORD" value={newPassword} onChange={setNewPassword} secure />
+      <Field label="CONFIRM NEW PASSWORD" value={confirmPassword} onChange={setConfirmPassword} secure />
       <TouchableOpacity style={styles.button} onPress={handleChange} disabled={loading}>
         <Text style={styles.buttonText}>{loading ? 'Changing...' : 'Change Password'}</Text>
       </TouchableOpacity>
@@ -58,10 +40,27 @@ export default function ChangePasswordScreen() {
   );
 }
 
+function Field({ label, value, onChange, secure }: { label: string; value: string; onChange: (v: string) => void; secure?: boolean }) {
+  return (
+    <View style={styles.fieldGroup}>
+      <Text style={styles.label}>{label}</Text>
+      <TextInput
+        style={styles.input}
+        value={value}
+        onChangeText={onChange}
+        secureTextEntry={secure}
+        placeholderTextColor={colors.textMuted}
+      />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.canvas },
+  container: { flex: 1, backgroundColor: colors.kraft },
   content: { padding: 24 },
-  input: { backgroundColor: colors.card, borderRadius: 12, padding: 14, fontSize: 16, marginBottom: 16, borderWidth: 1, borderColor: colors.border },
-  button: { backgroundColor: colors.primary, borderRadius: 24, padding: 16, alignItems: 'center', marginTop: 8 },
-  buttonText: { color: colors.textOnPrimary, fontSize: 16, fontWeight: '600' },
+  fieldGroup: { marginBottom: 24 },
+  label: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted, marginBottom: 6, textTransform: 'uppercase' },
+  input: { borderBottomWidth: 1.5, borderBottomColor: colors.border, paddingVertical: 8, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
+  button: { backgroundColor: colors.primary, borderRadius: 4, padding: 14, alignItems: 'center', marginTop: 8 },
+  buttonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.paper },
 });

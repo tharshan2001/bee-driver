@@ -2,24 +2,24 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { colors } from '../theme';
 
-interface CardProps {
+interface WaybillCardProps {
   children: React.ReactNode;
   onPress?: () => void;
-  variant?: 'default' | 'accent' | 'elevated';
+  variant?: 'default' | 'accent';
   padding?: number;
   style?: ViewStyle;
 }
 
-export default function Card({
+export default function WaybillCard({
   children,
   onPress,
   variant = 'default',
-  padding = 14,
+  padding = 16,
   style,
-}: CardProps) {
-  const bgMap = { default: colors.card, accent: colors.primaryPale, elevated: colors.card };
+}: WaybillCardProps) {
+  const bgMap = { default: colors.paper, accent: colors.primaryTint };
   const inner = (
-    <View style={[styles.base, { backgroundColor: bgMap[variant], padding }, variant === 'elevated' && styles.elevated, style]}>
+    <View style={[styles.base, { backgroundColor: bgMap[variant], padding }, style]}>
       {children}
     </View>
   );
@@ -29,17 +29,13 @@ export default function Card({
 
 const styles = StyleSheet.create({
   base: {
-    borderRadius: 24,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: colors.border,
     shadowColor: colors.shadow,
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 1,
-  },
-  elevated: {
     shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 1 },
     elevation: 2,
   },
 });

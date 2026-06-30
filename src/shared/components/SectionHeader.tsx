@@ -30,6 +30,16 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 8,
   },
-  title: { fontSize: 16, fontWeight: '600', color: colors.textPrimary },
-  action: { fontSize: 13, fontWeight: '600', color: colors.successDeep },
+  title: {
+    fontFamily: 'IBMPlexMono_500Medium',
+    fontSize: 11,
+    textTransform: 'uppercase',
+    color: colors.textMuted,
+    letterSpacing: 0.5,
+  },
+  action: {
+    fontFamily: 'IBMPlexSans_500Medium',
+    fontSize: 13,
+    color: colors.primary,
+  },
 });

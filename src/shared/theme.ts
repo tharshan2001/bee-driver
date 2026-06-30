@@ -1,52 +1,38 @@
-/* Wise-inspired design tokens for bee-driver */
+/* Waybill design tokens for Bee Driver */
 
 export const colors = {
-  /* Brand */
-  primary: '#FFC800',
-  primaryActive: '#FFE066',
-  primaryNeutral: '#FFE699',
-  primaryPale: '#FFF5D6',
+  /* Surfaces */
+  kraft: '#EDE6D3',
+  paper: '#FAF7F0',
 
-  /* Accent (same as brand) */
-  accent: '#FFC800',
-  accentLight: '#FFF5D6',
+  /* Brand */
+  primary: '#FF6A13',
+  primaryDeep: '#C8500C',
+  primaryTint: '#FFE3CC',
 
   /* Status */
-  success: '#2ead4b',
-  successLight: '#e2f6d5',
-  successDeep: '#054d28',
-  warning: '#F59E0B',
-  warningLight: '#FEF3C7',
-  warningDeep: '#B45309',
-  warningContent: '#78350F',
-  danger: '#d03238',
-  dangerLight: '#fce8e8',
-  dangerDeep: '#a72027',
-  dangerDarkest: '#a7000d',
-  info: '#38c8ff',
-  infoLight: '#e0f7ff',
-
-  /* Surfaces */
-  canvas: '#e8ebe6',
-  card: '#ffffff',
-  header: '#ffffff',
+  success: '#2F6F4E',
+  successTint: '#E1ECE3',
+  warning: '#C97F1E',
+  warningTint: '#F2E5CC',
+  danger: '#B23A2E',
+  dangerTint: '#F3E2DE',
 
   /* Text */
-  textPrimary: '#0e0f0c',
-  textSecondary: '#454745',
-  textMuted: '#868685',
-  textOnPrimary: '#0e0f0c',
+  textPrimary: '#221F1A',
+  textSecondary: '#5C5648',
+  textMuted: '#928C7C',
+  textOnPrimary: '#FAF7F0',
 
   /* Borders */
-  border: '#d3d7d1',
-  borderLight: '#e8ebe6',
+  border: '#DCD3BC',
 
   /* Tab bar */
-  tabActive: '#FFC800',
-  tabInactive: '#868685',
-  tabBarBg: '#ffffff',
+  tabActive: '#FF6A13',
+  tabInactive: '#928C7C',
+  tabBarBg: '#FAF7F0',
 
   /* Misc */
-  overlay: 'rgba(14, 15, 12, 0.5)',
-  shadow: '#0e0f0c',
-}
+  overlay: 'rgba(34,31,26,0.55)',
+  shadow: '#221F1A',
+};

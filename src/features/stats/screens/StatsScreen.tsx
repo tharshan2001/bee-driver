@@ -3,6 +3,7 @@ import { View, Text, ScrollView, RefreshControl, StyleSheet, ActivityIndicator }
 import api from '../../../core/api/client';
 import type { DriverStats } from '../../../core/api/types';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
+import WaybillCard from '../../../shared/components/Card';
 import { colors } from '../../../shared/theme';
 
 export default function StatsScreen() {
@@ -47,35 +48,37 @@ export default function StatsScreen() {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
-      <StatCard icon="🚚" label="Total Deliveries" value={`${stats.totalDeliveries}`} color={colors.accent} />
+      <StatCard icon="car-outline" label="Total Deliveries" value={`${stats.totalDeliveries}`} color={colors.primary} />
       <View style={styles.row}>
-        <StatCard icon="✅" label="Completed" value={`${stats.completedDeliveries}`} color={colors.success} flex={1} />
+        <StatCard icon="checkmark-outline" label="Completed" value={`${stats.completedDeliveries}`} color={colors.success} flex={1} />
         <View style={{ width: 8 }} />
-        <StatCard icon="❌" label="Failed" value={`${stats.failedDeliveries}`} color={colors.danger} flex={1} />
+        <StatCard icon="close-outline" label="Failed" value={`${stats.failedDeliveries}`} color={colors.danger} flex={1} />
       </View>
-      <StatCard icon="💰" label="Total Earnings" value={`$${stats.totalEarnings.toFixed(2)}`} color={colors.success} />
+      <StatCard icon="cash-outline" label="Total Earnings" value={`LKR ${stats.totalEarnings.toFixed(2)}`} color={colors.success} mono />
       {stats.rating != null && (
-        <StatCard icon="⭐" label="Rating" value={stats.rating.toFixed(1)} color={colors.warning} />
+        <StatCard icon="star-outline" label="Rating" value={stats.rating.toFixed(1)} color={colors.warning} />
       )}
 
-      <View style={styles.performanceCard}>
-        <Text style={styles.performanceTitle}>Delivery Performance</Text>
+      <WaybillCard padding={16} style={{ marginTop: 8 }}>
+        <Text style={styles.perfTitle}>Delivery Performance</Text>
         <ProgressRow label="Completion Rate" value={completionRate} color={colors.success} />
         <ProgressRow label="Failure Rate" value={failureRate} color={colors.danger} />
-      </View>
+      </WaybillCard>
     </ScrollView>
   );
 }
 
-function StatCard({ icon, label, value, color, flex }: {
-  icon: string; label: string; value: string; color: string; flex?: number;
+function StatCard({ icon, label, value, color, flex, mono }: {
+  icon: string; label: string; value: string; color: string; flex?: number; mono?: boolean;
 }) {
   return (
     <View style={[styles.statCard, flex ? { flex } : undefined]}>
-      <Text style={styles.statIcon}>{icon}</Text>
+      <View style={[styles.statIconBox, { borderColor: color }]}>
+        <Text style={{ fontSize: 18 }}>{/* placeholder for icon */}</Text>
+      </View>
       <View style={{ flex: 1 }}>
         <Text style={styles.statLabel}>{label}</Text>
-        <Text style={[styles.statValue, { color }]}>{value}</Text>
+        <Text style={[styles.statValue, { color }, mono && { fontFamily: 'IBMPlexMono_500Medium' }]}>{value}</Text>
       </View>
     </View>
   );
@@ -95,23 +98,22 @@ function ProgressRow({ label, value, color }: { label: string; value: string; co
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.canvas },
+  container: { flex: 1, backgroundColor: colors.kraft },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   content: { padding: 16 },
   row: { flexDirection: 'row', marginBottom: 8 },
   statCard: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card,
-    padding: 16, borderRadius: 24, marginBottom: 8,
-    shadowColor: colors.shadow, shadowOpacity: 0.04, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 1,
+    flexDirection: 'row', alignItems: 'center', backgroundColor: colors.paper,
+    padding: 16, borderRadius: 4, marginBottom: 8, borderWidth: 1, borderColor: colors.border,
+    shadowColor: colors.shadow, shadowOpacity: 0.06, shadowRadius: 6, shadowOffset: { width: 0, height: 1 }, elevation: 2,
   },
-  statIcon: { fontSize: 28, marginRight: 16 },
-  statLabel: { fontSize: 13, color: colors.textSecondary },
-  statValue: { fontSize: 22, fontWeight: 'bold' },
-  performanceCard: { backgroundColor: colors.card, borderRadius: 24, padding: 16, marginTop: 8 },
-  performanceTitle: { fontSize: 16, fontWeight: '600', color: colors.textPrimary, marginBottom: 16 },
+  statIconBox: { width: 36, height: 36, borderRadius: 4, borderWidth: 1.5, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  statLabel: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary },
+  statValue: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 22 },
+  perfTitle: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textPrimary, marginBottom: 16 },
   progressRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  progressLabel: { width: 120, fontSize: 13, color: colors.textSecondary },
-  progressBar: { flex: 1, height: 8, backgroundColor: colors.canvas, borderRadius: 4, marginHorizontal: 12 },
-  progressFill: { height: 8, borderRadius: 4 },
-  progressValue: { width: 48, textAlign: 'right', fontWeight: '600', fontSize: 12 },
+  progressLabel: { width: 120, fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary },
+  progressBar: { flex: 1, height: 6, backgroundColor: colors.border, borderRadius: 2, marginHorizontal: 12 },
+  progressFill: { height: 6, borderRadius: 2 },
+  progressValue: { width: 48, textAlign: 'right', fontFamily: 'IBMPlexMono_500Medium', fontSize: 12 },
 });

@@ -28,12 +28,9 @@ export default function LoginScreen() {
     if (!validate()) return;
     setLoading(true);
     try {
-      console.log('[Login] Starting login...');
       await login(email.trim(), password);
     } catch (err: any) {
       const msg = err?.response?.data?.message || err?.message || 'Login failed';
-      const detail = err?.response?.data ? JSON.stringify(err.response.data) : err?.stack || '';
-      console.log('[Login] Error:', msg, detail);
       Alert.alert('Error', msg.replace('Exception: ', ''));
     } finally {
       setLoading(false);
@@ -46,12 +43,17 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.icon}>🚚</Text>
-        <Text style={styles.title}>Ebee Driver</Text>
-        <Text style={styles.subtitle}>Sign in to manage your deliveries</Text>
+        <View style={styles.stamp}>
+          <View style={styles.stampRing}>
+            <Text style={styles.stampText}>BD</Text>
+          </View>
+        </View>
+
+        <Text style={styles.title}>Sign in</Text>
+        <Text style={styles.subtitle}>Enter your driver credentials</Text>
 
         <View style={styles.form}>
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>EMAIL</Text>
           <TextInput
             style={[styles.input, errors.email && styles.inputError]}
             value={email}
@@ -63,7 +65,7 @@ export default function LoginScreen() {
           />
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
-          <Text style={styles.label}>Password</Text>
+          <Text style={styles.label}>PASSWORD</Text>
           <TextInput
             style={[styles.input, errors.password && styles.inputError]}
             value={password}
@@ -82,7 +84,7 @@ export default function LoginScreen() {
             {loading ? (
               <ActivityIndicator color={colors.textOnPrimary} />
             ) : (
-              <Text style={styles.buttonText}>Login as Driver</Text>
+              <Text style={styles.buttonText}>Sign In</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -92,31 +94,54 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.canvas },
+  container: { flex: 1, backgroundColor: colors.kraft },
   content: { flexGrow: 1, justifyContent: 'center', padding: 24 },
-  icon: { fontSize: 64, textAlign: 'center', marginBottom: 8 },
-  title: { fontSize: 28, fontWeight: 'bold', color: colors.textPrimary, textAlign: 'center' },
-  subtitle: { fontSize: 16, color: colors.textSecondary, textAlign: 'center', marginBottom: 40 },
+  stamp: {
+    width: 48, height: 48, borderRadius: 4, borderWidth: 2, borderColor: colors.textPrimary,
+    justifyContent: 'center', alignItems: 'center', marginBottom: 24,
+  },
+  stampRing: {
+    width: 40, height: 40, borderRadius: 4, borderWidth: 1, borderColor: colors.textMuted,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  stampText: {
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 14, color: colors.textPrimary,
+  },
+  title: {
+    fontFamily: 'SpaceGrotesk_700Bold', fontSize: 24, color: colors.textPrimary,
+  },
+  subtitle: {
+    fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textSecondary, marginBottom: 32,
+  },
   form: { width: '100%' },
-  label: { fontSize: 14, fontWeight: '600', color: colors.textPrimary, marginBottom: 6, marginTop: 12 },
+  label: {
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted,
+    marginBottom: 4, marginTop: 16, textTransform: 'uppercase',
+  },
   input: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: 14,
+    borderBottomWidth: 1.5,
+    borderBottomColor: colors.border,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderTopWidth: 0,
+    borderRadius: 0,
+    paddingVertical: 8,
+    paddingHorizontal: 0,
     fontSize: 16,
+    fontFamily: 'IBMPlexSans_400Regular',
     color: colors.textPrimary,
   },
-  inputError: { borderColor: colors.danger },
-  errorText: { color: colors.danger, fontSize: 12, marginTop: 4 },
+  inputError: { borderBottomColor: colors.danger },
+  errorText: { fontFamily: 'IBMPlexMono_500Medium', color: colors.danger, fontSize: 12, marginTop: 4 },
   button: {
     backgroundColor: colors.primary,
-    borderRadius: 24,
-    padding: 16,
+    borderRadius: 4,
+    padding: 14,
     alignItems: 'center',
     marginTop: 32,
   },
-  buttonDisabled: { opacity: 0.7 },
-  buttonText: { color: colors.textOnPrimary, fontSize: 16, fontWeight: '600' },
+  buttonDisabled: { opacity: 0.5 },
+  buttonText: {
+    fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary,
+  },
 });

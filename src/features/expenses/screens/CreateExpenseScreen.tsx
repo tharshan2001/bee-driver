@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   View, Text, ScrollView, TextInput, TouchableOpacity, StyleSheet, Alert, Image, Platform,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -64,75 +65,80 @@ export default function CreateExpenseScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.label}>Category</Text>
-      <TouchableOpacity style={styles.selector} onPress={() => setShowCategories(!showCategories)}>
-        <Text style={styles.selectorText}>{category}</Text>
-        <Text style={{ color: colors.textMuted }}>▼</Text>
-      </TouchableOpacity>
-      {showCategories && (
-        <View style={styles.dropdown}>
-          {categories.map((c) => (
-            <TouchableOpacity
-              key={c}
-              style={[styles.dropdownItem, category === c && styles.dropdownItemActive]}
-              onPress={() => { setCategory(c); setShowCategories(false); }}
-            >
-              <Text style={[styles.dropdownText, category === c && styles.dropdownTextActive]}>{c}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
-
-      <Text style={styles.label}>Amount ($)</Text>
-      <TextInput
-        style={styles.input}
-        value={amount}
-        onChangeText={setAmount}
-        keyboardType="decimal-pad"
-        placeholder="0.00"
-      />
-
-      <Text style={styles.label}>Description</Text>
-      <TextInput
-        style={[styles.input, styles.textArea]}
-        value={description}
-        onChangeText={setDescription}
-        multiline
-        placeholder="What was this for?"
-      />
-
-      <Text style={styles.label}>Date</Text>
-      <TouchableOpacity
-        style={styles.selector}
-        onPress={() => setShowDatePicker(true)}
-      >
-        <Text style={styles.selectorText}>{formatDate(date)}</Text>
-      </TouchableOpacity>
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={(_event: any, selectedDate?: Date) => {
-            setShowDatePicker(Platform.OS === 'ios');
-            if (selectedDate) setDate(selectedDate);
-          }}
-        />
-      )}
-
-      <Text style={styles.label}>Receipt (Optional)</Text>
-      {receipt ? (
-        <View>
-          <Image source={{ uri: receipt }} style={styles.receiptPreview} />
-          <TouchableOpacity onPress={() => setReceipt(null)}>
-            <Text style={styles.removeText}>Remove</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <TouchableOpacity style={styles.uploadBtn} onPress={pickReceipt}>
-          <Text style={styles.uploadBtnText}>📎 Upload Receipt</Text>
+      <Field label="CATEGORY">
+        <TouchableOpacity style={styles.selector} onPress={() => setShowCategories(!showCategories)}>
+          <Text style={styles.selectorText}>{category}</Text>
+          <Text style={{ fontFamily: 'IBMPlexMono_500Medium', color: colors.textMuted }}>▼</Text>
         </TouchableOpacity>
-      )}
+        {showCategories && (
+          <View style={styles.dropdown}>
+            {categories.map((c) => (
+              <TouchableOpacity
+                key={c}
+                style={[styles.dropdownItem, category === c && styles.dropdownItemActive]}
+                onPress={() => { setCategory(c); setShowCategories(false); }}
+              >
+                <Text style={[styles.dropdownText, category === c && styles.dropdownTextActive]}>{c}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+      </Field>
+
+      <Field label="AMOUNT (LKR)">
+        <TextInput
+          style={[styles.amountInput]}
+          value={amount}
+          onChangeText={setAmount}
+          keyboardType="decimal-pad"
+          placeholder="0.00"
+          placeholderTextColor={colors.textMuted}
+        />
+      </Field>
+
+      <Field label="DESCRIPTION">
+        <TextInput
+          style={styles.textArea}
+          value={description}
+          onChangeText={setDescription}
+          multiline
+          placeholder="What was this for?"
+          placeholderTextColor={colors.textMuted}
+        />
+      </Field>
+
+      <Field label="DATE">
+        <TouchableOpacity style={styles.selector} onPress={() => setShowDatePicker(true)}>
+          <Text style={styles.selectorText}>{formatDate(date)}</Text>
+        </TouchableOpacity>
+        {showDatePicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={(_event: any, selectedDate?: Date) => {
+              setShowDatePicker(Platform.OS === 'ios');
+              if (selectedDate) setDate(selectedDate);
+            }}
+          />
+        )}
+      </Field>
+
+      <Field label="RECEIPT (OPTIONAL)">
+        {receipt ? (
+          <View>
+            <Image source={{ uri: receipt }} style={styles.receiptPreview} />
+            <TouchableOpacity onPress={() => setReceipt(null)}>
+              <Text style={styles.removeText}>Remove</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity style={styles.uploadBtn} onPress={pickReceipt}>
+            <Ionicons name="camera-outline" size={18} color={colors.primary} style={{ marginRight: 6 }} />
+            <Text style={styles.uploadBtnText}>Upload Receipt</Text>
+          </TouchableOpacity>
+        )}
+      </Field>
 
       <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit} disabled={loading}>
         <Text style={styles.submitBtnText}>{loading ? 'Submitting...' : 'Submit Expense'}</Text>
@@ -141,23 +147,36 @@ export default function CreateExpenseScreen() {
   );
 }
 
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <View style={styles.fieldGroup}>
+      <Text style={styles.label}>{label}</Text>
+      {children}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.canvas },
+  container: { flex: 1, backgroundColor: colors.kraft },
   content: { padding: 24 },
-  label: { fontSize: 13, fontWeight: '600', color: colors.textSecondary, marginBottom: 6, marginTop: 16 },
-  input: { backgroundColor: colors.card, borderRadius: 12, padding: 14, fontSize: 16, borderWidth: 1, borderColor: colors.border },
-  textArea: { minHeight: 80, textAlignVertical: 'top' },
-  selector: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.card, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: colors.border },
-  selectorText: { fontSize: 16, color: colors.textPrimary },
-  dropdown: { backgroundColor: colors.card, borderRadius: 12, marginTop: 4, overflow: 'hidden', borderWidth: 1, borderColor: colors.border },
-  dropdownItem: { padding: 14, borderBottomWidth: 1, borderBottomColor: colors.canvas },
-  dropdownItemActive: { backgroundColor: colors.accentLight },
-  dropdownText: { fontSize: 14, color: colors.textPrimary },
-  dropdownTextActive: { color: colors.accent, fontWeight: '600' },
-  receiptPreview: { width: '100%', height: 150, borderRadius: 12, marginBottom: 8 },
-  removeText: { color: colors.danger, textAlign: 'center' },
-  uploadBtn: { backgroundColor: colors.card, borderRadius: 12, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderStyle: 'dashed' },
-  uploadBtnText: { fontSize: 14, color: colors.successDeep },
-  submitBtn: { backgroundColor: colors.primary, borderRadius: 24, padding: 16, alignItems: 'center', marginTop: 32 },
-  submitBtnText: { color: colors.textOnPrimary, fontSize: 16, fontWeight: '600' },
+  fieldGroup: { marginBottom: 20 },
+  label: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted, marginBottom: 6, textTransform: 'uppercase' },
+  selector: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1.5, borderBottomColor: colors.border, paddingVertical: 8 },
+  selectorText: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
+  dropdown: { backgroundColor: colors.paper, borderRadius: 4, marginTop: 4, overflow: 'hidden', borderWidth: 1, borderColor: colors.border },
+  dropdownItem: { padding: 14, borderBottomWidth: 1, borderBottomColor: colors.border },
+  dropdownItemActive: { backgroundColor: colors.primaryTint },
+  dropdownText: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary },
+  dropdownTextActive: { color: colors.primary, fontFamily: 'IBMPlexSans_500Medium' },
+  amountInput: {
+    borderBottomWidth: 1.5, borderBottomColor: colors.border, paddingVertical: 8,
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 22, color: colors.textPrimary,
+  },
+  textArea: { borderBottomWidth: 1.5, borderBottomColor: colors.border, paddingVertical: 8, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary, minHeight: 80, textAlignVertical: 'top' },
+  receiptPreview: { width: '100%', height: 150, borderRadius: 4, marginBottom: 8 },
+  removeText: { fontFamily: 'IBMPlexSans_400Regular', color: colors.danger, textAlign: 'center' },
+  uploadBtn: { backgroundColor: colors.paper, borderRadius: 4, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderStyle: 'dashed', flexDirection: 'row', justifyContent: 'center' },
+  uploadBtnText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 12, color: colors.primary },
+  submitBtn: { backgroundColor: colors.primary, borderRadius: 4, padding: 14, alignItems: 'center', marginTop: 16 },
+  submitBtnText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.paper },
 });

@@ -10,7 +10,9 @@ interface ErrorScreenProps {
 export default function ErrorScreen({ message, onRetry }: ErrorScreenProps) {
   return (
     <View style={styles.container}>
-      <Text style={styles.icon}>⚠️</Text>
+      <View style={styles.iconBox}>
+        <Text style={styles.icon}>!</Text>
+      </View>
       <Text style={styles.message}>{message}</Text>
       {onRetry && (
         <TouchableOpacity style={styles.button} onPress={onRetry}>
@@ -23,8 +25,18 @@ export default function ErrorScreen({ message, onRetry }: ErrorScreenProps) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 },
-  icon: { fontSize: 48, marginBottom: 16 },
-  message: { fontSize: 16, textAlign: 'center', color: colors.textSecondary, marginBottom: 24 },
-  button: { backgroundColor: colors.primary, paddingHorizontal: 32, paddingVertical: 12, borderRadius: 24 },
-  buttonText: { color: colors.textOnPrimary, fontWeight: '600' },
+  iconBox: {
+    width: 48, height: 48, borderRadius: 4, borderWidth: 2, borderColor: colors.danger,
+    justifyContent: 'center', alignItems: 'center', marginBottom: 16,
+  },
+  icon: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 24, color: colors.danger },
+  message: {
+    fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, textAlign: 'center',
+    color: colors.textSecondary, marginBottom: 24,
+  },
+  button: {
+    backgroundColor: colors.primary, paddingHorizontal: 32, paddingVertical: 12,
+    borderRadius: 4,
+  },
+  buttonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary },
 });

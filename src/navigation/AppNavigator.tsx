@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../shared/theme';
 
 import DashboardScreen from '../features/dashboard/screens/DashboardScreen';
@@ -31,6 +32,7 @@ const tabIcons: Record<string, { active: IoniconsName; inactive: IoniconsName }>
 };
 
 function MainTabs() {
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -38,35 +40,37 @@ function MainTabs() {
         tabBarIcon: ({ focused }) => {
           const icons = tabIcons[route.name];
           return (
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 999,
-                backgroundColor: focused ? colors.primary : 'transparent',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
+            <View style={{ alignItems: 'center' }}>
+              {focused && (
+                <View
+                  style={{
+                    width: 24,
+                    height: 3,
+                    borderRadius: 2,
+                    backgroundColor: colors.primary,
+                    marginBottom: 6,
+                  }}
+                />
+              )}
               <Ionicons
                 name={focused ? icons.active : icons.inactive}
                 size={22}
-                color={focused ? colors.textOnPrimary : colors.textMuted}
+                color={focused ? colors.primary : colors.textMuted}
               />
             </View>
           );
         },
-        tabBarActiveTintColor: colors.textPrimary,
+        tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
           backgroundColor: colors.tabBarBg,
           borderTopWidth: 1,
-          borderTopColor: colors.borderLight,
-          height: 64,
-          paddingBottom: 8,
+          borderTopColor: colors.border,
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 6,
           paddingTop: 8,
+          height: insets.bottom > 0 ? 56 + insets.bottom : 64,
         },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+        tabBarLabelStyle: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, textTransform: 'uppercase' },
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />

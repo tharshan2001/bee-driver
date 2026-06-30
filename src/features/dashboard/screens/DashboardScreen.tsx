@@ -8,8 +8,8 @@ import { useAuth } from '../../../context/AuthContext';
 import api from '../../../core/api/client';
 import type { DriverDashboard } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
-import StatusBadge from '../../../shared/components/StatusBadge';
-import Card from '../../../shared/components/Card';
+import StampBadge from '../../../shared/components/StatusBadge';
+import WaybillCard from '../../../shared/components/Card';
 import SectionHeader from '../../../shared/components/SectionHeader';
 import ScreenContainer from '../../../shared/components/ScreenContainer';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
@@ -68,7 +68,7 @@ export default function DashboardScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <Text>Loading dashboard...</Text>
+        <Text style={{ fontFamily: 'IBMPlexSans_400Regular', color: colors.textMuted }}>Loading dashboard...</Text>
       </View>
     );
   }
@@ -77,48 +77,59 @@ export default function DashboardScreen() {
     return <ErrorScreen message={error} onRetry={() => { setLoading(true); fetchDashboard(); }} />;
   }
 
+  const statusColor = hasActiveDeliveries
+    ? colors.warning
+    : (availability ? colors.success : colors.danger);
+
+  const statusLabel = hasActiveDeliveries
+    ? 'ON DELIVERY'
+    : (availability ? 'ONLINE' : 'OFFLINE');
+
   return (
     <ScreenContainer scroll refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-      <View style={[styles.header, { paddingTop: 20 }]}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Dashboard</Text>
         <View style={styles.headerRight}>
           <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
-            <Ionicons name="notifications-outline" size={24} color={colors.textPrimary} />
+            <Ionicons name="notifications-outline" size={22} color={colors.textPrimary} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-            <Ionicons name="person-outline" size={24} color={colors.textPrimary} />
+            <Ionicons name="person-outline" size={22} color={colors.textPrimary} />
           </TouchableOpacity>
         </View>
       </View>
 
       <WelcomeBanner name={dashboard?.driverName?.split(' ')[0] || 'Driver'} />
 
-      <Card padding={16} style={styles.availabilityCard}>
+      <WaybillCard padding={16} style={styles.availabilityCard}>
         <View style={styles.availabilityInner}>
           <View>
-            <Text style={styles.cardLabel}>Availability</Text>
-            <Text style={[styles.statusText, {
-              color: hasActiveDeliveries ? colors.warning : (availability ? colors.success : colors.danger)
-            }]}>
-              {hasActiveDeliveries
-                ? 'On Delivery'
-                : (availability ? 'You are ONLINE' : 'You are OFFLINE')}
-            </Text>
+            <Text style={styles.cardCaption}>STATUS</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
+              <Text style={[styles.statusText, { color: statusColor }]}>{statusLabel}</Text>
+            </View>
           </View>
-          <Switch
-            value={availability}
-            onValueChange={toggleAvailability}
-            disabled={hasActiveDeliveries}
-            trackColor={{ false: colors.border, true: colors.primary }}
-            thumbColor={hasActiveDeliveries ? colors.warning : (availability ? colors.card : colors.card)}
-          />
+          <View style={styles.toggleTrack}>
+            <Switch
+              value={availability}
+              onValueChange={toggleAvailability}
+              disabled={hasActiveDeliveries}
+              trackColor={{ false: colors.border, true: colors.primary }}
+              thumbColor={colors.paper}
+              style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+            />
+          </View>
         </View>
-      </Card>
+      </WaybillCard>
 
-      <Card variant="accent" style={styles.trackingCard}>
+      <WaybillCard variant="accent" padding={16} style={styles.trackingCard}>
         <View style={styles.trackingInner}>
-          <Ionicons name="locate-outline" size={22} color={colors.primary} style={{ marginRight: 12 }} />
+          <View style={styles.iconSquare}>
+            <Ionicons name="location-outline" size={20} color={colors.primary} />
+          </View>
           <View style={{ flex: 1 }}>
-            <Text style={styles.trackingLabel}>Live Tracking</Text>
+            <Text style={styles.cardCaption}>LIVE TRACKING</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
               <View style={[styles.trackingDot, { backgroundColor: isTracking ? colors.success : colors.danger }]} />
               <Text style={[styles.trackingStatus, { color: isTracking ? colors.success : colors.danger }]}>
@@ -127,41 +138,43 @@ export default function DashboardScreen() {
             </View>
           </View>
         </View>
-      </Card>
+      </WaybillCard>
 
-      <SectionHeader title="Quick Actions" />
+      <SectionHeader title="QUICK ACTIONS" />
 
       <View style={styles.actionsRow}>
-        <Card onPress={() => navigation.navigate('MainTabs')} style={styles.actionCard}>
-          <Ionicons name="car-outline" size={28} color={colors.primary} style={{ marginBottom: 8 }} />
-          <Text style={styles.actionLabel}>Deliveries</Text>
-        </Card>
-        <Card onPress={() => navigation.navigate('CreateExpense')} style={styles.actionCard}>
-          <Ionicons name="cash-outline" size={28} color={colors.warningDeep} style={{ marginBottom: 8 }} />
-          <Text style={styles.actionLabel}>New Expense</Text>
-        </Card>
-        <Card onPress={() => navigation.navigate('Stats')} style={styles.actionCard}>
-          <Ionicons name="bar-chart-outline" size={28} color={colors.info} style={{ marginBottom: 8 }} />
-          <Text style={styles.actionLabel}>My Stats</Text>
-        </Card>
+        <TouchableOpacity onPress={() => navigation.navigate('MainTabs')} style={styles.actionCard}>
+          <Ionicons name="car-outline" size={24} color={colors.primary} style={{ marginBottom: 8 }} />
+          <Text style={styles.actionLabel}>DELIVERIES</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('CreateExpense')} style={styles.actionCard}>
+          <Ionicons name="receipt-outline" size={24} color={colors.warning} style={{ marginBottom: 8 }} />
+          <Text style={styles.actionLabel}>EXPENSE</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Stats')} style={styles.actionCard}>
+          <Ionicons name="bar-chart-outline" size={24} color={colors.success} style={{ marginBottom: 8 }} />
+          <Text style={styles.actionLabel}>STATS</Text>
+        </TouchableOpacity>
       </View>
 
       {dashboard?.recentDeliveries && dashboard.recentDeliveries.length > 0 && (
         <>
-          <SectionHeader title="Recent Deliveries" />
+          <SectionHeader title="RECENT" actionLabel="View all" onAction={() => navigation.navigate('MainTabs')} />
           {dashboard.recentDeliveries.slice(0, 5).map((delivery) => (
-            <Card
+            <TouchableOpacity
               key={delivery.orderId}
               onPress={() => navigation.navigate('DeliveryDetail', { orderId: delivery.orderId })}
-              style={styles.deliveryItem}
+              style={styles.recentRow}
             >
-              <View style={styles.deliveryLeft}>
-                <Text style={styles.orderNumber}>{delivery.orderNumber}</Text>
-                <Text style={styles.customerName}>{delivery.customerName}</Text>
+              <View style={styles.recentLeft}>
+                <Text style={styles.recentOrderId}>{delivery.orderNumber}</Text>
+                <Text style={styles.recentCustomer}>{delivery.customerName}</Text>
               </View>
-              <StatusBadge status={delivery.status} />
-              <Text style={styles.timeAgo}>{timeAgo(delivery.createdAt)}</Text>
-            </Card>
+              <View style={styles.recentRight}>
+                <StampBadge status={delivery.status} compact />
+                <Text style={styles.recentTime}>{timeAgo(delivery.createdAt)}</Text>
+              </View>
+            </TouchableOpacity>
           ))}
         </>
       )}
@@ -170,36 +183,59 @@ export default function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.kraft },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: 20, paddingBottom: 20, backgroundColor: colors.header,
+    paddingHorizontal: 20, paddingVertical: 16, backgroundColor: colors.paper,
+    borderBottomWidth: 1, borderBottomColor: colors.border,
   },
-  headerRight: { flexDirection: 'row', gap: 12 },
+  headerTitle: {
+    fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, color: colors.textPrimary,
+  },
+  headerRight: { flexDirection: 'row', gap: 16 },
   availabilityCard: { marginHorizontal: 16, marginTop: 16 },
   availabilityInner: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
   },
-  cardLabel: { fontSize: 12, color: colors.textMuted, fontWeight: '600', marginBottom: 4 },
-  statusText: { fontSize: 18, fontWeight: 'bold' },
-  trackingCard: { marginHorizontal: 16, marginTop: 0, marginBottom: 8 },
-  trackingInner: {
-    flexDirection: 'row', alignItems: 'center',
+  cardCaption: {
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, color: colors.textMuted,
+    textTransform: 'uppercase', marginBottom: 4,
   },
-  trackingLabel: { fontSize: 12, color: colors.textMuted, fontWeight: '600', marginBottom: 2 },
-  trackingDot: { width: 8, height: 8, borderRadius: 4 },
-  trackingStatus: { fontSize: 13, fontWeight: '500' },
+  statusDot: { width: 8, height: 8, borderRadius: 1 },
+  statusText: {
+    fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, textTransform: 'uppercase',
+  },
+  toggleTrack: { borderRadius: 2, overflow: 'hidden' },
+  trackingCard: { marginHorizontal: 16, marginTop: 0, marginBottom: 8 },
+  trackingInner: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  iconSquare: {
+    width: 36, height: 36, borderRadius: 4, borderWidth: 1.5, borderColor: colors.primary,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  trackingDot: { width: 8, height: 8, borderRadius: 1 },
+  trackingStatus: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11 },
   actionsRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8 },
   actionCard: {
-    flex: 1, alignItems: 'center', padding: 16,
+    flex: 1, alignItems: 'center', padding: 16, backgroundColor: colors.paper,
+    borderRadius: 4, borderWidth: 1, borderColor: colors.border,
   },
-  actionLabel: { fontSize: 12, fontWeight: '600', color: colors.textPrimary },
-  deliveryItem: {
-    flexDirection: 'row', alignItems: 'center',
-    marginHorizontal: 16, marginBottom: 8,
+  actionLabel: {
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, color: colors.textPrimary,
+    textTransform: 'uppercase',
   },
-  deliveryLeft: { flex: 1 },
-  orderNumber: { fontWeight: '600', fontSize: 14, color: colors.textPrimary },
-  customerName: { fontSize: 12, color: colors.textSecondary, marginTop: 2 },
-  timeAgo: { fontSize: 11, color: colors.textMuted, marginLeft: 8 },
+  recentRow: {
+    flexDirection: 'row', alignItems: 'center', paddingVertical: 12,
+    marginHorizontal: 16, borderBottomWidth: 1, borderBottomColor: colors.border,
+  },
+  recentLeft: { flex: 1 },
+  recentOrderId: {
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.textMuted,
+  },
+  recentCustomer: {
+    fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary, marginTop: 2,
+  },
+  recentRight: { alignItems: 'flex-end', gap: 4 },
+  recentTime: {
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textMuted,
+  },
 });
