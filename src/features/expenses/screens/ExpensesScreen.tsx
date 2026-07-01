@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../../../core/api/client';
 import type { Expense } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
@@ -17,6 +18,7 @@ type Nav = RootStackNav;
 const filters: (string | null)[] = [null, 'PENDING', 'APPROVED', 'REJECTED'];
 
 export default function ExpensesScreen() {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
   const [data, setData] = useState<Expense[]>([]);
   const [filter, setFilter] = useState<string | null>(null);
@@ -85,7 +87,7 @@ export default function ExpensesScreen() {
         contentContainerStyle={data.length === 0 ? { flex: 1 } : { paddingHorizontal: 16, paddingTop: 8 }}
       />
 
-      <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('CreateExpense')}>
+      <TouchableOpacity style={[styles.fab, { bottom: insets.bottom + 16 }]} onPress={() => navigation.navigate('CreateExpense')}>
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
     </View>
@@ -113,7 +115,7 @@ const styles = StyleSheet.create({
   itemRight: { alignItems: 'flex-end', gap: 4 },
   amount: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 15, color: colors.textPrimary },
   fab: {
-    position: 'absolute', bottom: 24, right: 24,
+    position: 'absolute', right: 24,
     width: 56, height: 56, borderRadius: 14, backgroundColor: colors.primary,
     justifyContent: 'center', alignItems: 'center',
     elevation: 6, shadowColor: colors.shadow, shadowOpacity: 0.18, shadowRadius: 12, shadowOffset: { width: 0, height: 3 },

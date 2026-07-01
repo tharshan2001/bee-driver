@@ -3,7 +3,7 @@
 ## Concept
 
 A delivery-driver app with Apple-level polish: clean white surfaces, generous whitespace,
-a single accent color (Courier Orange), and purposeful typography. Every element is
+a single accent color (Sunflower Yellow), and purposeful typography. Every element is
 a deliberate reduction — no paper metaphors, no stamps, no kraft texture. Instead:
 real depth from shadows (not borders), system-styled pill badges, and typography
 that follows Apple's hierarchy: large bold headlines, medium subheads, regular body,
@@ -20,9 +20,9 @@ and muted captions.
 | Text Secondary  | `#86868B` | Subheadings, metadata         |
 | Text Tertiary   | `#AEAEB2` | Captions, placeholders        |
 | Text on Color   | `#FFFFFF` | Text on accent/dark bg        |
-| Courier Orange  | `#FF6A13` | The one accent color          |
-| Courier Deep    | `#C8500C` | Pressed CTA state             |
-| Courier Tint    | `#FFE3CC` | Light accent fills            |
+| Sunflower Yellow| `#FFC107` | The one accent color          |
+| Sunflower Deep  | `#D4A000` | Pressed CTA state             |
+| Sunflower Tint  | `#FFF3CD` | Light accent fills            |
 | Manifest Green  | `#2F6F4E` | Delivered/approved/online     |
 | Green Tint      | `#E1ECE3` | Success badge backing         |
 | Customs Red     | `#B23A2E` | Failed/rejected/urgent        |
@@ -75,7 +75,7 @@ Letter-spacing: body +0, captions +0.3, buttons +0.5.
 1. **No borders where shadow suffices.** Cards, list rows, and containers use elevation
    (shadow + background) to separate from the surface. Lines only used as hairline
    separators between list items.
-2. **One accent color.** Courier Orange appears only on CTAs, active tab state,
+2. **One accent color.** Sunflower Yellow appears only on CTAs, active tab state,
    and interactive elements. Statuses use their own semantic colors.
 3. **Typography is the hierarchy.** Size and weight differences between screen title,
    section title, body, and caption are the primary wayfinding mechanism —

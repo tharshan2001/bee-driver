@@ -67,7 +67,7 @@
     "extra": {
       "apiHost": "localhost",
       "apiPort": "8085",
-      "apiBaseUrl": "http://192.168.8.130:8085/api",
+      "apiBaseUrl": "http://192.168.1.197:8085/api",
       "eas": {
         "projectId": "9c17f6ca-6688-4c93-9847-16d86554ed6b"
       }

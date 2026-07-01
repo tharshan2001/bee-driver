@@ -3,10 +3,12 @@ import {
   View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView,
   Platform, ScrollView, ActivityIndicator, Alert,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../../context/AuthContext';
 import { colors } from '../../../shared/theme';
 
 export default function LoginScreen() {
+  const insets = useSafeAreaInsets();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -42,7 +44,7 @@ export default function LoginScreen() {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={[styles.content, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]} keyboardShouldPersistTaps="handled">
         <View style={styles.stamp}>
           <View style={styles.stampRing}>
             <Text style={styles.stampText}>BD</Text>
@@ -95,7 +97,7 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  content: { flexGrow: 1, justifyContent: 'center', padding: 24 },
+  content: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24 },
   stamp: {
     width: 48, height: 48, borderRadius: 10, borderWidth: 2, borderColor: colors.textPrimary,
     justifyContent: 'center', alignItems: 'center', marginBottom: 24,

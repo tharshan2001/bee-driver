@@ -74,7 +74,7 @@ export default function AlertsScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       {Array.isArray(data) && data.some((a) => !a.read) && (
         <TouchableOpacity style={styles.markAllBtn} onPress={markAllRead}>
           <Text style={styles.markAllText}>Mark all read</Text>

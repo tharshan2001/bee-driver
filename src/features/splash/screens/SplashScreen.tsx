@@ -1,10 +1,12 @@
 import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { colors } from '../../../shared/theme';
 
 export default function SplashScreen() {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const navigated = useRef(false);
 
@@ -26,7 +28,7 @@ export default function SplashScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <View style={styles.content}>
         <View style={styles.stamp}>
           <View style={styles.stampRing}>

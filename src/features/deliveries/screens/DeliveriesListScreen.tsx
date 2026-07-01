@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../../../core/api/client';
 import { cacheData, getCachedData } from '../../../core/storage/storage';
 import type { PageResponse } from '../../../core/api/types';
@@ -41,6 +42,7 @@ function DeliverySkeletons() {
 }
 
 export default function DeliveriesListScreen() {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
   const [data, setData] = useState<any[]>([]);
   const [filter, setFilter] = useState<string | null>(null);
@@ -144,7 +146,7 @@ export default function DeliveriesListScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Deliveries</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>

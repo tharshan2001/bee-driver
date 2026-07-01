@@ -7,9 +7,9 @@ export const colors = {
   elevated: '#FFFFFF',
 
   /* Brand */
-  primary: '#FF6A13',
-  primaryDeep: '#C8500C',
-  primaryTint: '#FFE3CC',
+  primary: '#FFC107',
+  primaryDeep: '#D4A000',
+  primaryTint: '#FFF3CD',
 
   /* Status */
   success: '#2F6F4E',
@@ -29,7 +29,7 @@ export const colors = {
   separator: '#E5E5EA',
 
   /* Tab bar */
-  tabActive: '#FF6A13',
+  tabActive: '#FFC107',
   tabInactive: '#AEAEB2',
   tabBarBg: '#FFFFFF',
 
