@@ -1,6 +1,5 @@
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
 
 import api from '../api/client';
 
@@ -27,12 +26,10 @@ export async function registerFcmToken(): Promise<void> {
       });
     }
 
-    const config = Constants.expoConfig as Record<string, any> | null;
-    const projectId = config?.projectId || '9c17f6ca-6688-4c93-9847-16d86554ed6b';
-    const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
+    const tokenData = await Notifications.getDevicePushTokenAsync();
     if (tokenData.data) {
       await api.post('/driver/device-token', { fcmToken: tokenData.data });
-      console.log('[FCM] Token registered:', tokenData.data.substring(0, 30) + '...');
+      console.log('[FCM] Native token registered (type:', tokenData.type, '):', tokenData.data.substring(0, 30) + '...');
     }
   } catch (e) {
     console.warn('[FCM] Registration failed:', e);
