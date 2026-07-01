@@ -23,6 +23,7 @@
       }
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "package": "com.ebee.driver",
       "permissions": [
         "ACCESS_FINE_LOCATION",
@@ -30,12 +31,7 @@
         "ACCESS_BACKGROUND_LOCATION",
         "FOREGROUND_SERVICE",
         "FOREGROUND_SERVICE_LOCATION",
-        "POST_NOTIFICATIONS",
-        "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.ACCESS_BACKGROUND_LOCATION",
-        "android.permission.FOREGROUND_SERVICE",
-        "android.permission.FOREGROUND_SERVICE_LOCATION"
+        "POST_NOTIFICATIONS"
       ]
     },
     "newArchEnabled": true,
@@ -67,7 +63,7 @@
     "extra": {
       "apiHost": "localhost",
       "apiPort": "8085",
-      "apiBaseUrl": "http://192.168.1.197:8085/api",
+      "apiBaseUrl": "https://ebee.lk/api",
       "eas": {
         "projectId": "9c17f6ca-6688-4c93-9847-16d86554ed6b"
       }

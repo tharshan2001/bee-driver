@@ -1,10 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View, Text, FlatList, TouchableOpacity, RefreshControl, StyleSheet, Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as Notifications from 'expo-notifications';
 import api from '../../../core/api/client';
 import { cacheData, getCachedData } from '../../../core/storage/storage';
 import type { Alert as AlertType } from '../../../core/api/types';
@@ -12,6 +13,21 @@ import EmptyState from '../../../shared/components/EmptyState';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
 import { timeAgo } from '../../../core/utils/helpers';
 import { colors } from '../../../shared/theme';
+
+function notificationToAlert(n: Notifications.Notification): AlertType | null {
+  const { data } = n.request.content;
+  if (!data || typeof data !== 'object') return null;
+  const d = data as Record<string, any>;
+  if (!d.type || !d.title) return null;
+  return {
+    id: n.request.identifier,
+    type: d.type as string,
+    title: d.title as string,
+    message: (d.message || d.body || '') as string,
+    read: false,
+    createdAt: new Date().toISOString(),
+  } as AlertType;
+}
 
 export default function AlertsScreen() {
   const insets = useSafeAreaInsets();
@@ -23,15 +39,18 @@ export default function AlertsScreen() {
   const fetchAlerts = useCallback(async () => {
     setError(null);
     try {
-      const res = await api.get('/alerts');
+      const [res, cachedPush] = await Promise.all([
+        api.get('/alerts'),
+        getCachedData<AlertType[]>('push-alerts'),
+      ]);
       const raw = res.data?.data;
-      const arr = Array.isArray(raw) ? raw : raw?.content;
-      if (Array.isArray(arr)) {
-        setData(arr);
-        cacheData('alerts', arr);
-      } else {
-        setData([]);
-      }
+      const apiAlerts: AlertType[] = Array.isArray(raw) ? raw : raw?.content ?? [];
+      const merged = cachedPush
+        ? [...cachedPush, ...apiAlerts.filter((a) => !cachedPush.some((p) => p.id === a.id))]
+        : apiAlerts;
+      merged.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      setData(merged);
+      cacheData('alerts', merged);
     } catch (err: any) {
       const cached = await getCachedData<AlertType[]>('alerts');
       if (cached) {
@@ -46,6 +65,20 @@ export default function AlertsScreen() {
   }, []);
 
   useFocusEffect(useCallback(() => { fetchAlerts(); }, [fetchAlerts]));
+
+  useEffect(() => {
+    const sub = Notifications.addNotificationReceivedListener((notification) => {
+      const alert = notificationToAlert(notification);
+      if (!alert) return;
+      setData((prev) => {
+        const next = [alert, ...prev];
+        cacheData('alerts', next);
+        cacheData('push-alerts', [alert, ...(prev.filter((a) => a.id !== alert.id))]);
+        return next;
+      });
+    });
+    return () => sub.remove();
+  }, []);
 
   async function markRead(id: string) {
     try {

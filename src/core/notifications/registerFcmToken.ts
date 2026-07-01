@@ -28,7 +28,7 @@ export async function registerFcmToken(): Promise<void> {
     }
 
     const config = Constants.expoConfig as Record<string, any> | null;
-    const projectId = config?.projectId;
+    const projectId = config?.projectId || '9c17f6ca-6688-4c93-9847-16d86554ed6b';
     const tokenData = await Notifications.getExpoPushTokenAsync({ projectId });
     if (tokenData.data) {
       await api.post('/driver/device-token', { fcmToken: tokenData.data });
@@ -36,5 +36,8 @@ export async function registerFcmToken(): Promise<void> {
     }
   } catch (e) {
     console.warn('[FCM] Registration failed:', e);
+    if (e instanceof Error) {
+      console.error('[FCM] Error details:', e.message, e.stack);
+    }
   }
 }

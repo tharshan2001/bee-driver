@@ -65,6 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               driverId: data.driverId,
               availability: data.availability,
             }));
+            registerFcmToken();
             return;
           }
         } catch {
