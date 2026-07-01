@@ -186,13 +186,13 @@ const styles = StyleSheet.create({
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: 20, paddingVertical: 16,
+    paddingVertical: 16,
   },
   headerTitle: {
     fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: colors.textPrimary,
   },
   headerRight: { flexDirection: 'row', gap: 16 },
-  availabilityCard: { marginHorizontal: 16, marginTop: 16 },
+  availabilityCard: { marginTop: 16 },
   availabilityInner: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
   },
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, textTransform: 'uppercase',
   },
   toggleTrack: { borderRadius: 14, overflow: 'hidden' },
-  trackingCard: { marginHorizontal: 16, marginTop: 0, marginBottom: 8 },
+  trackingCard: { marginTop: 0, marginBottom: 8 },
   trackingInner: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   iconSquare: {
     width: 36, height: 36, borderRadius: 10, borderWidth: 1.5, borderColor: colors.primary,
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   },
   trackingDot: { width: 8, height: 8, borderRadius: 4 },
   trackingStatus: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11 },
-  actionsRow: { flexDirection: 'row', paddingHorizontal: 16, gap: 8, marginTop: 4 },
+  actionsRow: { flexDirection: 'row', gap: 8, marginTop: 4 },
   actionCard: {
     flex: 1, alignItems: 'center', padding: 16, backgroundColor: colors.surface,
     borderRadius: 10,
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
   },
   recentRow: {
     flexDirection: 'row', alignItems: 'center', paddingVertical: 12,
-    marginHorizontal: 16, borderBottomWidth: 1, borderBottomColor: colors.separator,
+    borderBottomWidth: 1, borderBottomColor: colors.separator,
   },
   recentLeft: { flex: 1 },
   recentOrderId: {
