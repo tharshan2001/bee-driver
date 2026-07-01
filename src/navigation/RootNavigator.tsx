@@ -29,10 +29,7 @@ Notifications.setNotificationHandler({
 function navigateToDelivery(orderId: string, navigationRef: React.RefObject<NavigationContainerRef<RootParamList> | null>) {
   const nav = navigationRef.current;
   if (!nav) return;
-  nav.navigate('App' as any);
-  setTimeout(() => {
-    (nav as any)?.navigate?.('DeliveryDetail', { orderId });
-  }, 300);
+  nav.navigate('App' as any, { screen: 'DeliveryDetail', params: { orderId } });
 }
 
 function extractOrderId(notification: Notifications.Notification): string | null {
