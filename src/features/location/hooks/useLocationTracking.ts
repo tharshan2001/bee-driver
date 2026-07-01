@@ -1,9 +1,11 @@
-import { Alert, Linking, Platform } from 'react-native';
+import { Alert, AppState, Linking, Platform } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
+import { cacheData, getCachedData } from '../../../core/storage/storage';
 import { LOCATION_TASK_NAME } from '../tasks/locationTask';
 
 const THROTTLE_MS = 10_000;
+const TRACKING_PREF_KEY = 'location-tracking-enabled';
 
 export function useLocationTracking(isActive: boolean) {
   const [isTracking, setIsTracking] = useState(false);
@@ -14,14 +16,51 @@ export function useLocationTracking(isActive: boolean) {
       stopTracking();
       return;
     }
-    if (startedRef.current) return;
-    startedRef.current = true;
 
-    startTracking();
+    initTracking();
 
     return () => { stopTracking(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive]);
+
+  useEffect(() => {
+    if (!isActive) return;
+    const sub = AppState.addEventListener('change', async (state) => {
+      if (state !== 'active') return;
+      const started = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+      if (!started) {
+        startedRef.current = false;
+        initTracking();
+      }
+    });
+    return () => sub.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isActive]);
+
+  async function initTracking() {
+    if (startedRef.current) return;
+    startedRef.current = true;
+
+    const pref = await getCachedData<boolean>(TRACKING_PREF_KEY);
+
+    const alreadyStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+    if (alreadyStarted) {
+      setIsTracking(true);
+      if (!pref) cacheData(TRACKING_PREF_KEY, true);
+      return;
+    }
+
+    if (pref === false) {
+      startedRef.current = false;
+      return;
+    }
+
+    if (Platform.OS === 'android') {
+      showBatteryOptDialog();
+    }
+
+    await startTracking();
+  }
 
   async function startTracking() {
     const fg = await Location.requestForegroundPermissionsAsync();
@@ -49,6 +88,7 @@ export function useLocationTracking(isActive: boolean) {
     const alreadyStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
     if (alreadyStarted) {
       setIsTracking(true);
+      cacheData(TRACKING_PREF_KEY, true);
       return;
     }
 
@@ -66,6 +106,7 @@ export function useLocationTracking(isActive: boolean) {
       activityType: Location.ActivityType.AutomotiveNavigation,
     });
 
+    cacheData(TRACKING_PREF_KEY, true);
     setIsTracking(true);
   }
 
@@ -78,6 +119,17 @@ export function useLocationTracking(isActive: boolean) {
       startedRef.current = false;
       setIsTracking(false);
     }
+  }
+
+  function showBatteryOptDialog() {
+    Alert.alert(
+      'Keep Location Active',
+      'To keep sharing your location even when the screen is off, disable battery optimization for Bee Driver in your system settings.',
+      [
+        { text: 'Not Now', style: 'cancel' },
+        { text: 'Open Settings', onPress: () => Linking.openSettings() },
+      ],
+    );
   }
 
   return { isTracking };
