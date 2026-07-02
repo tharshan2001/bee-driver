@@ -11,6 +11,7 @@ interface AuthState {
   driverId: string | null;
   availability: boolean;
   isTracking: boolean;
+  mustChangePassword: boolean;
 }
 
 interface AuthContextType extends AuthState {
@@ -18,6 +19,7 @@ interface AuthContextType extends AuthState {
   logout: () => Promise<void>;
   updateAvailability: (available: boolean) => void;
   setAvailability: (available: boolean) => Promise<void>;
+  clearMustChangePassword: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,6 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     driverId: null,
     availability: false,
     isTracking: false,
+    mustChangePassword: false,
   });
 
   const { isTracking } = useLocationTracking(state.isAuthenticated);
@@ -40,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     checkAuth();
     const unsub = onAuthExpired(() => {
-      setState({ isLoading: false, isAuthenticated: false, driverId: null, availability: false, isTracking: false });
+      setState({ isLoading: false, isAuthenticated: false, driverId: null, availability: false, isTracking: false, mustChangePassword: false });
     });
     return unsub;
   }, []);
@@ -64,6 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               isAuthenticated: true,
               driverId: data.driverId,
               availability: data.availability,
+              mustChangePassword: data.mustChangePassword ?? false,
             }));
             registerFcmToken();
             return;
@@ -73,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
     } catch {}
-    setState({ isLoading: false, isAuthenticated: false, driverId: null, availability: false, isTracking: false });
+    setState({ isLoading: false, isAuthenticated: false, driverId: null, availability: false, isTracking: false, mustChangePassword: false });
   }
 
   const login = useCallback(async (email: string, password: string) => {
@@ -93,6 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isAuthenticated: true,
       driverId: data.driverId,
       availability: data.availability,
+      mustChangePassword: data.mustChangePassword ?? false,
     }));
     console.log('[Auth] Login successful, driverId:', data.driverId);
 
@@ -102,7 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     try { await api.post('/auth/logout'); } catch {}
     await clearTokens();
-    setState({ isLoading: false, isAuthenticated: false, driverId: null, availability: false, isTracking: false });
+    setState({ isLoading: false, isAuthenticated: false, driverId: null, availability: false, isTracking: false, mustChangePassword: false });
   }, []);
 
   const setAvailability = useCallback(async (available: boolean) => {
@@ -115,8 +120,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setState((prev) => ({ ...prev, availability: available }));
   }, []);
 
+  const clearMustChangePassword = useCallback(() => {
+    setState((prev) => ({ ...prev, mustChangePassword: false }));
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, updateAvailability, setAvailability }}>
+    <AuthContext.Provider value={{ ...state, login, logout, updateAvailability, setAvailability, clearMustChangePassword }}>
       {children}
     </AuthContext.Provider>
   );

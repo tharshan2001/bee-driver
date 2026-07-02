@@ -34,7 +34,7 @@ export default function SplashScreen() {
           <View style={styles.stampRing}>
             <View style={styles.stampInner}>
               <Video
-                source={require('../../../../assets/buzz-pkg.webm')}
+                source={require('../../../../assets/buzz-pkg.mp4')}
                 style={styles.video}
                 resizeMode={ResizeMode.CONTAIN}
                 shouldPlay
@@ -45,7 +45,7 @@ export default function SplashScreen() {
             </View>
           </View>
         </View>
-        <Text style={styles.title}>BEE DRIVER</Text>
+        <Text style={styles.title}>eBee Go</Text>
         <Text style={styles.subtitle}>PARCEL MANIFEST SYSTEM</Text>
         <View style={styles.rule} />
       </View>

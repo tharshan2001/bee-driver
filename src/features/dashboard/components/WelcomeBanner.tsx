@@ -17,7 +17,7 @@ export default function WelcomeBanner({ name }: WelcomeBannerProps) {
         </View>
         <View style={styles.routeSketch}>
           <Video
-            source={require('../../../../assets/buzz-wave.webm')}
+            source={require('../../../../assets/buzz-wave.mp4')}
             style={styles.mascotVideo}
             resizeMode={ResizeMode.CONTAIN}
             shouldPlay

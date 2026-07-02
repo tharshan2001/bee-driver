@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Bee Driver",
-    "slug": "bee-driver",
+    "name": "eBee Go",
+    "slug": "ebee-go",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -18,8 +18,8 @@
           "location",
           "remote-notification"
         ],
-        "NSLocationWhenInUseUsageDescription": "Bee Driver needs your location to navigate to delivery addresses and track your trips.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Bee Driver needs background location access to continuously share your live location with dispatchers and customers even when the app is closed."
+        "NSLocationWhenInUseUsageDescription": "eBee Go needs your location to navigate to delivery addresses and track your trips.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "eBee Go needs background location access to continuously share your live location with dispatchers and customers even when the app is closed."
       }
     },
     "android": {
@@ -41,8 +41,8 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Bee Driver needs background location access to continuously share your live location with dispatchers and customers even when the app is closed.",
-          "locationWhenInUsePermission": "Bee Driver needs your location to navigate to delivery addresses and track your trips.",
+          "locationAlwaysAndWhenInUsePermission": "eBee Go needs background location access to continuously share your live location with dispatchers and customers even when the app is closed.",
+          "locationWhenInUsePermission": "eBee Go needs your location to navigate to delivery addresses and track your trips.",
           "isIosBackgroundLocationEnabled": true,
           "isAndroidBackgroundLocationEnabled": true
         }

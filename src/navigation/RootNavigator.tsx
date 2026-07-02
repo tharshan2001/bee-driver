@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as Notifications from 'expo-notifications';
 import { useAuth } from '../context/AuthContext';
 import LoginScreen from '../features/auth/screens/LoginScreen';
+import SetPasswordScreen from '../features/auth/screens/SetPasswordScreen';
 import LoadingScreen from '../shared/components/LoadingScreen';
 import SplashScreen from '../features/splash/screens/SplashScreen';
 import AppNavigator from './AppNavigator';
@@ -11,6 +12,7 @@ import AppNavigator from './AppNavigator';
 type RootParamList = {
   Splash: undefined;
   Login: undefined;
+  SetPassword: undefined;
   App: undefined;
 };
 
@@ -45,7 +47,7 @@ function extractOrderId(notification: Notifications.Notification): string | null
 }
 
 export default function RootNavigator() {
-  const { isLoading, isAuthenticated } = useAuth();
+  const { isLoading, isAuthenticated, mustChangePassword } = useAuth();
   const navigationRef = useRef<NavigationContainerRef<RootParamList>>(null);
   const pendingScreenRef = useRef<{ name: string; orderId: string } | null>(null);
   const isAuthenticatedRef = useRef(isAuthenticated);
@@ -97,10 +99,14 @@ export default function RootNavigator() {
     <NavigationContainer ref={navigationRef}>
       <RootStack.Navigator screenOptions={{ headerShown: false }}>
         {isAuthenticated ? (
-          <RootStack.Group>
-            <RootStack.Screen name="Splash" component={SplashScreen} />
-            <RootStack.Screen name="App" component={AppNavigator} />
-          </RootStack.Group>
+          mustChangePassword ? (
+            <RootStack.Screen name="SetPassword" component={SetPasswordScreen} />
+          ) : (
+            <RootStack.Group>
+              <RootStack.Screen name="Splash" component={SplashScreen} />
+              <RootStack.Screen name="App" component={AppNavigator} />
+            </RootStack.Group>
+          )
         ) : (
           <RootStack.Screen
             name="Login"

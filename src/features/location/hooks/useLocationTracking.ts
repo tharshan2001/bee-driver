@@ -76,7 +76,7 @@ export function useLocationTracking(isActive: boolean) {
       setIsTracking(false);
       Alert.alert(
         'Background Location Needed',
-        'Bee Driver needs "Always" location access to continuously share your location even when the app is closed. Please enable it in Settings.',
+        'eBee Go needs "Always" location access to continuously share your location even when the app is closed. Please enable it in Settings.',
         [
           { text: 'Cancel', style: 'cancel' },
           { text: 'Open Settings', onPress: () => Linking.openSettings() },
@@ -99,7 +99,7 @@ export function useLocationTracking(isActive: boolean) {
       pausesUpdatesAutomatically: false,
       showsBackgroundLocationIndicator: true,
       foregroundService: {
-        notificationTitle: 'Bee Driver',
+        notificationTitle: 'eBee Go',
         notificationBody: 'Sharing your live location',
         notificationColor: '#FFC107',
       },
@@ -124,7 +124,7 @@ export function useLocationTracking(isActive: boolean) {
   function showBatteryOptDialog() {
     Alert.alert(
       'Keep Location Active',
-      'To keep sharing your location even when the screen is off, disable battery optimization for Bee Driver in your system settings.',
+      'To keep sharing your location even when the screen is off, disable battery optimization for eBee Go in your system settings.',
       [
         { text: 'Not Now', style: 'cancel' },
         { text: 'Open Settings', onPress: () => Linking.openSettings() },

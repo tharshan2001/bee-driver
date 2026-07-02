@@ -3,6 +3,7 @@ export interface LoginResponse {
   refreshToken: string;
   driverId: string;
   availability: boolean;
+  mustChangePassword?: boolean;
 }
 
 export interface DriverDashboard {

@@ -1,4 +1,4 @@
-/* Apple-inspired minimalist tokens for Bee Driver */
+/* Apple-inspired minimalist tokens for eBee Go */
 
 export const colors = {
   /* Surfaces */
