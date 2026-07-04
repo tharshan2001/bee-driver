@@ -52,6 +52,11 @@ export default function DeliveryDetailScreen() {
       const res = await api.get(`/driver/deliveries/${orderId}`);
       if (res.data?.success && res.data?.data) {
         setDelivery(res.data.data);
+        console.log('[DeliveryDetail] RAW response:', JSON.stringify(res.data.data));
+        console.log('[DeliveryDetail] items count:', res.data.data.items?.length);
+        res.data.data.items?.forEach((item: any, i: number) => {
+          console.log(`[DeliveryDetail] item[${i}]:`, JSON.stringify(item));
+        });
         Animated.stagger(100, cardAnims.map((a) =>
           Animated.timing(a, { toValue: 1, duration: 300, useNativeDriver: true })
         )).start();
@@ -98,9 +103,7 @@ export default function DeliveryDetailScreen() {
           { label: 'Report Issue', action: () => setShowIssueModal(true), color: 'transparent', textColor: colors.danger, outline: true },
         ];
       case 'FAILED':
-        return [
-          { label: 'Retry (Pick Up)', action: () => updateStatus('PICKED_UP'), color: colors.primary, textColor: colors.textOnPrimary },
-        ];
+        return [];
       default:
         return [];
     }
@@ -123,7 +126,7 @@ export default function DeliveryDetailScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 16 }}>
+    <ScrollView style={styles.container} contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 16, gap: 12 }}>
       <AnimatedCard index={0}>
         <Text style={styles.cardCaption}>CUSTOMER</Text>
         <View style={styles.customerRow}>
@@ -158,6 +161,7 @@ export default function DeliveryDetailScreen() {
         <Text style={styles.cardCaption}>ITEMS ({delivery.items.length})</Text>
         {delivery.items.map((item, idx) => (
           <View key={idx} style={styles.itemRow}>
+            <ItemImage imageUrl={item.imageUrl} />
             <Text style={{ flex: 1, fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary }}>{item.name}</Text>
             <Text style={{ marginRight: 16, fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.textSecondary }}>x{item.quantity}</Text>
             <Text style={{ fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.textPrimary }}>LKR {(item.unitPrice * item.quantity).toFixed(2)}</Text>
@@ -256,6 +260,27 @@ export default function DeliveryDetailScreen() {
   );
 }
 
+function ItemImage({ imageUrl }: { imageUrl?: string }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!imageUrl || failed) {
+    return (
+      <View style={styles.itemImagePlaceholder}>
+        <Ionicons name="image-outline" size={18} color={colors.textTertiary} />
+      </View>
+    );
+  }
+
+  return (
+    <Image
+      source={{ uri: imageUrl }}
+      style={styles.itemImage}
+      resizeMode="cover"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
 function InfoRow({ label, value, valueColor, mono }: { label: string; value: string; valueColor?: string; mono?: boolean }) {
   return (
     <View style={styles.infoRow}>
@@ -285,7 +310,9 @@ const styles = StyleSheet.create({
   infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 },
   infoLabel: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, textTransform: 'uppercase' },
   infoValue: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.textPrimary },
-  itemRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6 },
+  itemRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, gap: 10 },
+  itemImage: { width: 40, height: 40, borderRadius: 6, backgroundColor: colors.surface },
+  itemImagePlaceholder: { width: 40, height: 40, borderRadius: 6, backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center' },
   timelineItem: { flexDirection: 'row', marginBottom: 4 },
   timelineDotCol: { alignItems: 'center', width: 20, marginRight: 12 },
   timelineDot: { width: 12, height: 12, borderRadius: 6, marginTop: 4 },
@@ -293,7 +320,7 @@ const styles = StyleSheet.create({
   timelineContent: { flex: 1, paddingBottom: 16 },
   timelineTime: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginTop: 2 },
   timelineNote: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary, marginTop: 4 },
-  actionButton: { borderRadius: 10, padding: 14, alignItems: 'center', marginBottom: 8, marginHorizontal: 16 },
+  actionButton: { borderRadius: 10, padding: 14, alignItems: 'center', marginBottom: 8 },
   actionButtonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15 },
   proofImage: { width: '100%', height: 120, borderRadius: 10, marginBottom: 4 },
   modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },

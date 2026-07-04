@@ -34,7 +34,7 @@ export default function SplashScreen() {
           <View style={styles.stampRing}>
             <View style={styles.stampInner}>
               <Video
-                source={require('../../../../assets/buzz-pkg.mp4')}
+                source={require('../../../../assets/buzz-pkg.mov')}
                 style={styles.video}
                 resizeMode={ResizeMode.CONTAIN}
                 shouldPlay

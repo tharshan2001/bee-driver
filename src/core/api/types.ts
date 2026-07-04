@@ -53,9 +53,14 @@ export interface OrderInfo {
 }
 
 export interface DeliveryItem {
-  name: string;
+  productId: string;
+  productName: string;
+  productItemCode: string | null;
+  imageUrl?: string;
   quantity: number;
   unitPrice: number;
+  subtotal: number;
+  name: string;
 }
 
 export interface StatusTimeline {
