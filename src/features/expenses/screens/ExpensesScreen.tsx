@@ -84,7 +84,7 @@ export default function ExpensesScreen() {
         )}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchExpenses(); }} />}
         ListEmptyComponent={loading ? null : <EmptyState title="No expenses logged" subtitle="Tap + to add one" />}
-        contentContainerStyle={data.length === 0 ? { flex: 1 } : { paddingHorizontal: 16, paddingTop: 8 }}
+        contentContainerStyle={data.length === 0 ? { flex: 1, paddingBottom: insets.bottom + 16 } : { paddingHorizontal: 16, paddingTop: 8, paddingBottom: insets.bottom + 16 }}
       />
 
       <TouchableOpacity style={[styles.fab, { bottom: insets.bottom + 16 }]} onPress={() => navigation.navigate('CreateExpense')}>

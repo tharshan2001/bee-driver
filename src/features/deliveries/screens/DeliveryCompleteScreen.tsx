@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
@@ -29,6 +30,7 @@ const steps = [
 ];
 
 export default function DeliveryCompleteScreen() {
+  const insets = useSafeAreaInsets();
   const route = useRoute<CompleteRoute>();
   const navigation = useNavigation<Nav>();
   const { orderId } = route.params;
@@ -198,7 +200,7 @@ export default function DeliveryCompleteScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ padding: 16 }}>
+    <ScrollView style={styles.container} contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 16 }}>
       <View style={styles.progressRow}>
         {steps.map((_, idx) => (
           <View

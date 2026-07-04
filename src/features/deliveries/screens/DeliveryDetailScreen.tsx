@@ -6,6 +6,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../../../core/api/client';
 import type { DriverDelivery } from '../../../core/api/types';
 import type { RootStackParamList, RootStackNav } from '../../../navigation/types';
@@ -32,6 +33,7 @@ function DetailSkeletons() {
 }
 
 export default function DeliveryDetailScreen() {
+  const insets = useSafeAreaInsets();
   const route = useRoute<DetailRoute>();
   const navigation = useNavigation<Nav>();
   const { orderId } = route.params;
@@ -121,7 +123,7 @@ export default function DeliveryDetailScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ padding: 16 }}>
+    <ScrollView style={styles.container} contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 16 }}>
       <AnimatedCard index={0}>
         <Text style={styles.cardCaption}>CUSTOMER</Text>
         <View style={styles.customerRow}>

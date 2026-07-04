@@ -3,6 +3,7 @@ import {
   View, Text, ScrollView, TextInput, TouchableOpacity, StyleSheet, Alert, Image, Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -13,6 +14,7 @@ import { colors } from '../../../shared/theme';
 const categories = ['FUEL', 'MAINTENANCE', 'PARKING', 'TOLL', 'OTHER'];
 
 export default function CreateExpenseScreen() {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [category, setCategory] = useState('FUEL');
   const [amount, setAmount] = useState('');
@@ -64,7 +66,7 @@ export default function CreateExpenseScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 16 }]}>
       <Field label="CATEGORY">
         <TouchableOpacity style={styles.selector} onPress={() => setShowCategories(!showCategories)}>
           <Text style={styles.selectorText}>{category}</Text>

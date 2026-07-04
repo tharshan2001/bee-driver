@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import api from '../../../core/api/client';
 import { colors } from '../../../shared/theme';
 
 export default function ChangePasswordScreen() {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -29,7 +31,7 @@ export default function ChangePasswordScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 16 }]}>
       <Field label="CURRENT PASSWORD" value={currentPassword} onChange={setCurrentPassword} secure />
       <Field label="NEW PASSWORD" value={newPassword} onChange={setNewPassword} secure />
       <Field label="CONFIRM NEW PASSWORD" value={confirmPassword} onChange={setConfirmPassword} secure />

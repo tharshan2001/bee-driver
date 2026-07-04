@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import api from '../../../core/api/client';
 import type { DriverProfile } from '../../../core/api/types';
@@ -15,6 +16,7 @@ import { colors } from '../../../shared/theme';
 type Nav = RootStackNav;
 
 export default function ProfileScreen() {
+  const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
   const { logout } = useAuth();
   const [profile, setProfile] = useState<DriverProfile | null>(null);
@@ -93,7 +95,7 @@ export default function ProfileScreen() {
   if (!profile) return <View style={styles.center}><Text style={{ fontFamily: 'IBMPlexSans_400Regular' }}>Loading...</Text></View>;
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}>
       <View style={styles.headerSection}>
         <TouchableOpacity onPress={pickPhoto}>
           <View style={styles.avatar}>

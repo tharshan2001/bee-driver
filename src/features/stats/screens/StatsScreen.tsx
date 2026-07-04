@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, RefreshControl, StyleSheet, ActivityIndicator } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../../../core/api/client';
 import type { DriverStats } from '../../../core/api/types';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
@@ -7,6 +8,7 @@ import Card from '../../../shared/components/Card';
 import { colors } from '../../../shared/theme';
 
 export default function StatsScreen() {
+  const insets = useSafeAreaInsets();
   const [stats, setStats] = useState<DriverStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -45,7 +47,7 @@ export default function StatsScreen() {
   return (
     <ScrollView
       style={styles.container}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 16 }]}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       <StatCard icon="car-outline" label="Total Deliveries" value={`${stats.totalDeliveries}`} color={colors.primary} />
