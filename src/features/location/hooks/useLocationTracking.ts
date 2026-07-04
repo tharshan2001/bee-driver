@@ -24,11 +24,23 @@ export function useLocationTracking(isActive: boolean) {
   }, [isActive]);
 
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive || Platform.OS === 'web') return;
     const sub = AppState.addEventListener('change', async (state) => {
       if (state !== 'active') return;
-      const started = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
-      if (!started) {
+      try {
+        const hasMethod = Location.hasStartedLocationUpdatesAsync && typeof Location.hasStartedLocationUpdatesAsync === 'function';
+        if (hasMethod) {
+          const started = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+          if (!started) {
+            startedRef.current = false;
+            initTracking();
+          }
+        } else {
+          startedRef.current = false;
+          initTracking();
+        }
+      } catch (e) {
+        console.log('Failed to check location tracking state:', e);
         startedRef.current = false;
         initTracking();
       }
@@ -43,7 +55,18 @@ export function useLocationTracking(isActive: boolean) {
 
     const pref = await getCachedData<boolean>(TRACKING_PREF_KEY);
 
-    const alreadyStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+    const hasMethod = Location.hasStartedLocationUpdatesAsync && typeof Location.hasStartedLocationUpdatesAsync === 'function';
+    let alreadyStarted = false;
+
+    if (hasMethod && Platform.OS !== 'web') {
+      try {
+        alreadyStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+      } catch (e) {
+        console.log('Failed to check if location tracking already started:', e);
+        alreadyStarted = false;
+      }
+    }
+
     if (alreadyStarted) {
       setIsTracking(true);
       if (!pref) cacheData(TRACKING_PREF_KEY, true);
@@ -63,61 +86,88 @@ export function useLocationTracking(isActive: boolean) {
   }
 
   async function startTracking() {
-    const fg = await Location.requestForegroundPermissionsAsync();
-    if (fg.status !== 'granted') {
-      startedRef.current = false;
-      setIsTracking(false);
-      return;
-    }
+    try {
+      const fg = await Location.requestForegroundPermissionsAsync();
+      if (fg.status !== 'granted') {
+        startedRef.current = false;
+        setIsTracking(false);
+        return;
+      }
 
-    const bg = await Location.requestBackgroundPermissionsAsync();
-    if (bg.status !== 'granted') {
+      const bg = await Location.requestBackgroundPermissionsAsync();
+      if (bg.status !== 'granted') {
+        startedRef.current = false;
+        setIsTracking(false);
+        Alert.alert(
+          'Background Location Needed',
+          'eBee Go needs "Always" location access to continuously share your location even when the app is closed. Please enable it in Settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+          ],
+        );
+        return;
+      }
+
+      const hasMethod = Location.hasStartedLocationUpdatesAsync && typeof Location.hasStartedLocationUpdatesAsync === 'function';
+      if (hasMethod && Platform.OS !== 'web') {
+        const alreadyStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+        if (alreadyStarted) {
+          setIsTracking(true);
+          cacheData(TRACKING_PREF_KEY, true);
+          return;
+        }
+      }
+
+      if (Platform.OS !== 'web') {
+        await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+          accuracy: Location.Accuracy.BestForNavigation,
+          timeInterval: THROTTLE_MS,
+          distanceInterval: 5,
+          pausesUpdatesAutomatically: false,
+          showsBackgroundLocationIndicator: true,
+          foregroundService: {
+            notificationTitle: 'eBee Go',
+            notificationBody: 'Sharing your live location',
+            notificationColor: '#FFC107',
+          },
+          activityType: Location.ActivityType.AutomotiveNavigation,
+        });
+      }
+
+      cacheData(TRACKING_PREF_KEY, true);
+      setIsTracking(true);
+    } catch (e) {
+      console.log('Failed to start tracking:', e);
       startedRef.current = false;
       setIsTracking(false);
       Alert.alert(
-        'Background Location Needed',
-        'eBee Go needs "Always" location access to continuously share your location even when the app is closed. Please enable it in Settings.',
+        'Location Tracking Failed',
+        'Could not start location tracking. Please check your location permissions and try again.',
         [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Open Settings', onPress: () => Linking.openSettings() },
+          { text: 'OK', style: 'default' },
         ],
       );
-      return;
     }
-
-    const alreadyStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
-    if (alreadyStarted) {
-      setIsTracking(true);
-      cacheData(TRACKING_PREF_KEY, true);
-      return;
-    }
-
-    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-      accuracy: Location.Accuracy.BestForNavigation,
-      timeInterval: THROTTLE_MS,
-      distanceInterval: 5,
-      pausesUpdatesAutomatically: false,
-      showsBackgroundLocationIndicator: true,
-      foregroundService: {
-        notificationTitle: 'eBee Go',
-        notificationBody: 'Sharing your live location',
-        notificationColor: '#FFC107',
-      },
-      activityType: Location.ActivityType.AutomotiveNavigation,
-    });
-
-    cacheData(TRACKING_PREF_KEY, true);
-    setIsTracking(true);
   }
 
   async function stopTracking() {
     if (startedRef.current) {
-      const started = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
-      if (started) {
-        await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
+      try {
+        const hasMethod = Location.hasStartedLocationUpdatesAsync && typeof Location.hasStartedLocationUpdatesAsync === 'function';
+        if (hasMethod) {
+          const started = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
+          if (started) {
+            await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
+          }
+        }
+        startedRef.current = false;
+        setIsTracking(false);
+      } catch (e) {
+        console.log('Failed to stop tracking:', e);
+        startedRef.current = false;
+        setIsTracking(false);
       }
-      startedRef.current = false;
-      setIsTracking(false);
     }
   }
 
