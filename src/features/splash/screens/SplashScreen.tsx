@@ -16,6 +16,7 @@ export default function SplashScreen() {
   const player = useVideoPlayer(require('../../../../assets/buzz-pkg.mov'), (player) => {
     player.loop = false;
     player.muted = true;
+    player.play();
   });
 
   const navigateAway = useCallback(() => {

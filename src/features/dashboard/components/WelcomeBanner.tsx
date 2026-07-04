@@ -12,6 +12,7 @@ export default function WelcomeBanner({ name }: WelcomeBannerProps) {
   const player = useVideoPlayer(require('../../../../assets/buzz-wave.mp4'), (player) => {
     player.loop = true;
     player.muted = true;
+    player.play();
   });
 
   return (
