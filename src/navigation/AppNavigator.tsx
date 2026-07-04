@@ -25,8 +25,8 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 type IoniconsName = keyof typeof Ionicons.glyphMap;
 
 const tabIcons: Record<string, { active: IoniconsName; inactive: IoniconsName }> = {
-  Dashboard: { active: 'grid', inactive: 'grid-outline' },
-  Deliveries: { active: 'car', inactive: 'car-outline' },
+  Home: { active: 'home', inactive: 'home-outline' },
+  Deliveries: { active: 'cube', inactive: 'cube-outline' },
   Alerts: { active: 'notifications', inactive: 'notifications-outline' },
   More: { active: 'ellipsis-horizontal-circle', inactive: 'ellipsis-horizontal-circle-outline' },
 };
@@ -59,7 +59,7 @@ function MainTabs() {
         tabBarLabelStyle: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, textTransform: 'uppercase' },
       })}
     >
-      <Tab.Screen name="Dashboard" component={DashboardScreen} />
+      <Tab.Screen name="Home" component={DashboardScreen} />
       <Tab.Screen name="Deliveries" component={DeliveriesListScreen} />
       <Tab.Screen name="Alerts" component={AlertsScreen} />
       <Tab.Screen name="More" component={MoreScreen} />

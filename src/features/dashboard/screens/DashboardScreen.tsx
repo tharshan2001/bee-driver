@@ -115,7 +115,7 @@ export default function DashboardScreen() {
 
       {dashboard?.recentDeliveries && dashboard.recentDeliveries.length > 0 && (
         <>
-          <SectionHeader title="RECENT" />
+          <SectionHeader title="RECENT" actionLabel="View all" onAction={() => navigation.navigate('MainTabs', { screen: 'Deliveries' } as any)} />
           {dashboard.recentDeliveries.slice(0, 5).map((delivery) => (
             <TouchableOpacity
               key={delivery.orderId}

@@ -1,29 +1,50 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 import { useNavigation, CommonActions } from '@react-navigation/native';
+import { useAuth } from '../../../context/AuthContext';
 import { colors } from '../../../shared/theme';
 
 export default function SplashScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const navigated = useRef(false);
+  const videoFinished = useRef(false);
+  const { isLoading, isAuthenticated, mustChangePassword } = useAuth();
 
   const navigateAway = useCallback(() => {
     if (navigated.current) return;
     navigated.current = true;
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: 'App' }],
-      })
-    );
-  }, [navigation]);
+    if (isAuthenticated) {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: mustChangePassword ? [{ name: 'SetPassword' }] : [{ name: 'App' }],
+        })
+      );
+    } else {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        })
+      );
+    }
+  }, [navigation, isAuthenticated, mustChangePassword]);
+
+  useEffect(() => {
+    if (!isLoading && videoFinished.current) {
+      navigateAway();
+    }
+  }, [isLoading, navigateAway]);
 
   function onPlaybackStatusUpdate(status: AVPlaybackStatus) {
     if (status.isLoaded && status.didJustFinish) {
-      navigateAway();
+      videoFinished.current = true;
+      if (!isLoading) {
+        navigateAway();
+      }
     }
   }
 
@@ -31,19 +52,15 @@ export default function SplashScreen() {
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <View style={styles.content}>
         <View style={styles.stamp}>
-          <View style={styles.stampRing}>
-            <View style={styles.stampInner}>
-              <Video
-                source={require('../../../../assets/buzz-pkg.mov')}
-                style={styles.video}
-                resizeMode={ResizeMode.CONTAIN}
-                shouldPlay
-                isLooping={false}
-                onPlaybackStatusUpdate={onPlaybackStatusUpdate}
-                onError={navigateAway}
-              />
-            </View>
-          </View>
+          <Video
+            source={require('../../../../assets/buzz-pkg.mov')}
+            style={styles.video}
+            resizeMode={ResizeMode.CONTAIN}
+            shouldPlay
+            isLooping={false}
+            onPlaybackStatusUpdate={onPlaybackStatusUpdate}
+            onError={() => { videoFinished.current = true; if (!isLoading) navigateAway(); }}
+          />
         </View>
         <Text style={styles.title}>eBee Go</Text>
         <Text style={styles.subtitle}>PARCEL MANIFEST SYSTEM</Text>
@@ -62,33 +79,18 @@ const styles = StyleSheet.create({
   },
   content: { alignItems: 'center' },
   stamp: {
-    width: 96,
-    height: 96,
+    width: 120,
+    height: 120,
     borderRadius: 14,
     borderWidth: 2,
     borderColor: colors.textPrimary,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
-  },
-  stampRing: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.textTertiary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  stampInner: {
-    width: 72,
-    height: 72,
-    borderRadius: 10,
-    overflow: 'hidden',
     backgroundColor: colors.primaryTint,
+    padding: 6,
   },
-  video: { width: 72, height: 72 },
+  video: { width: '100%', height: '100%' },
   title: {
     fontFamily: 'SpaceGrotesk_700Bold',
     fontSize: 22,

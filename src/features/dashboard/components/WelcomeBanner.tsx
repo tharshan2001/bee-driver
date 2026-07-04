@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Video, ResizeMode } from 'expo-av';
 import { colors } from '../../../shared/theme';
 
@@ -10,36 +11,58 @@ interface WelcomeBannerProps {
 export default function WelcomeBanner({ name }: WelcomeBannerProps) {
   return (
     <View style={styles.card}>
-      <View style={styles.body}>
-        <View>
-          <Text style={styles.greeting}>Welcome back</Text>
-          <Text style={styles.name}>{name}</Text>
+      <LinearGradient
+        colors={['#FFF7E0', '#FFF3CD', '#FFE082']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.gradient}
+      >
+        <LinearGradient
+          colors={['rgba(255,255,255,0.45)', 'rgba(255,255,255,0.05)']}
+          start={{ x: -0.3, y: -0.3 }}
+          end={{ x: 0.7, y: 0.7 }}
+          style={styles.shine}
+        />
+        <View style={styles.body}>
+          <View>
+            <Text style={styles.greeting}>Welcome back</Text>
+            <Text style={styles.name}>{name}</Text>
+          </View>
+          <View style={styles.routeSketch}>
+            <Video
+              source={require('../../../../assets/buzz-wave.mp4')}
+              style={styles.mascotVideo}
+              resizeMode={ResizeMode.CONTAIN}
+              shouldPlay
+              isLooping
+              isMuted
+            />
+          </View>
         </View>
-        <View style={styles.routeSketch}>
-          <Video
-            source={require('../../../../assets/buzz-wave.mp4')}
-            style={styles.mascotVideo}
-            resizeMode={ResizeMode.CONTAIN}
-            shouldPlay
-            isLooping
-            isMuted
-          />
-        </View>
-      </View>
+      </LinearGradient>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.elevated,
-    borderRadius: 10,
     marginTop: 16,
+    marginBottom: 16,
+    borderRadius: 10,
+    overflow: 'hidden',
     shadowColor: colors.shadow,
     shadowOpacity: 0.08,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
+  },
+  gradient: {
+    borderRadius: 10,
+    position: 'relative',
+  },
+  shine: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 10,
   },
   body: {
     padding: 16,
@@ -50,7 +73,7 @@ const styles = StyleSheet.create({
   greeting: {
     fontFamily: 'IBMPlexSans_400Regular',
     fontSize: 14,
-    color: colors.textSecondary,
+    color: 'rgba(0,0,0,0.55)',
     marginBottom: 2,
   },
   name: {
@@ -63,7 +86,7 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 10,
     overflow: 'hidden',
-    backgroundColor: colors.primaryTint,
+    backgroundColor: 'rgba(255,255,255,0.3)',
   },
   mascotVideo: {
     width: 80,

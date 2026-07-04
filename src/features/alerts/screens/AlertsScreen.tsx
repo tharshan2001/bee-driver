@@ -107,12 +107,15 @@ export default function AlertsScreen() {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      {Array.isArray(data) && data.some((a) => !a.read) && (
-        <TouchableOpacity style={styles.markAllBtn} onPress={markAllRead}>
-          <Text style={styles.markAllText}>Mark all read</Text>
-        </TouchableOpacity>
-      )}
+    <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Alerts</Text>
+        {Array.isArray(data) && data.some((a) => !a.read) && (
+          <TouchableOpacity onPress={markAllRead}>
+            <Text style={styles.markAllText}>Mark all read</Text>
+          </TouchableOpacity>
+        )}
+      </View>
       <FlatList
         data={data}
         keyExtractor={(item) => item.id}
@@ -145,7 +148,13 @@ export default function AlertsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  markAllBtn: { padding: 12, alignItems: 'flex-end', paddingRight: 16 },
+  header: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: 16, marginBottom: 8,
+  },
+  headerTitle: {
+    fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: colors.textPrimary,
+  },
   markAllText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 13, color: colors.primary },
   item: {
     flexDirection: 'row', paddingVertical: 14, alignItems: 'center',
