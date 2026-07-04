@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
+import { VideoView, useVideoPlayer } from 'expo-video';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { useAuth } from '../../../context/AuthContext';
 import { colors } from '../../../shared/theme';
@@ -12,6 +12,11 @@ export default function SplashScreen() {
   const navigated = useRef(false);
   const videoFinished = useRef(false);
   const { isLoading, isAuthenticated, mustChangePassword } = useAuth();
+
+  const player = useVideoPlayer(require('../../../../assets/buzz-pkg.mov'), (player) => {
+    player.loop = false;
+    player.muted = true;
+  });
 
   const navigateAway = useCallback(() => {
     if (navigated.current) return;
@@ -39,27 +44,33 @@ export default function SplashScreen() {
     }
   }, [isLoading, navigateAway]);
 
-  function onPlaybackStatusUpdate(status: AVPlaybackStatus) {
-    if (status.isLoaded && status.didJustFinish) {
+  useEffect(() => {
+    const onEnd = () => {
       videoFinished.current = true;
-      if (!isLoading) {
-        navigateAway();
+      if (!isLoading) navigateAway();
+    };
+    const onStatusChange = (e: { status: string }) => {
+      if (e.status === 'error') {
+        videoFinished.current = true;
+        if (!isLoading) navigateAway();
       }
-    }
-  }
+    };
+    player.addListener('playToEnd', onEnd);
+    player.addListener('statusChange', onStatusChange);
+    return () => {
+      player.removeListener('playToEnd', onEnd);
+      player.removeListener('statusChange', onStatusChange);
+    };
+  }, [player, isLoading, navigateAway]);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <View style={styles.content}>
         <View style={styles.stamp}>
-          <Video
-            source={require('../../../../assets/buzz-pkg.mov')}
+          <VideoView
             style={styles.video}
-            resizeMode={ResizeMode.CONTAIN}
-            shouldPlay
-            isLooping={false}
-            onPlaybackStatusUpdate={onPlaybackStatusUpdate}
-            onError={() => { videoFinished.current = true; if (!isLoading) navigateAway(); }}
+            player={player}
+            contentFit="contain"
           />
         </View>
         <Text style={styles.title}>eBee Go</Text>

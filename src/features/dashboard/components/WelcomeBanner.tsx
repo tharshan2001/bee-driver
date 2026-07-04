@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Video, ResizeMode } from 'expo-av';
+import { VideoView, useVideoPlayer } from 'expo-video';
 import { colors } from '../../../shared/theme';
 
 interface WelcomeBannerProps {
@@ -9,6 +9,11 @@ interface WelcomeBannerProps {
 }
 
 export default function WelcomeBanner({ name }: WelcomeBannerProps) {
+  const player = useVideoPlayer(require('../../../../assets/buzz-wave.mp4'), (player) => {
+    player.loop = true;
+    player.muted = true;
+  });
+
   return (
     <View style={styles.card}>
       <LinearGradient
@@ -29,13 +34,10 @@ export default function WelcomeBanner({ name }: WelcomeBannerProps) {
             <Text style={styles.name}>{name}</Text>
           </View>
           <View style={styles.routeSketch}>
-            <Video
-              source={require('../../../../assets/buzz-wave.mp4')}
+            <VideoView
               style={styles.mascotVideo}
-              resizeMode={ResizeMode.CONTAIN}
-              shouldPlay
-              isLooping
-              isMuted
+              player={player}
+              contentFit="contain"
             />
           </View>
         </View>
