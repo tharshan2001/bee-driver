@@ -129,7 +129,6 @@ export default function ProfileScreen() {
 
       <View style={styles.infoCard}>
         <InfoRow label="EMAIL" value={profile.email} />
-        <InfoRow label="DRIVER ID" value={profile.id} />
         <InfoRow label="MEMBER SINCE" value={formatDate(profile.memberSince)} />
       </View>
 
