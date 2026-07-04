@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import {
-  View, Text, TouchableOpacity, RefreshControl, StyleSheet, Switch, Alert,
+  View, Text, TouchableOpacity, RefreshControl, StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -21,7 +21,7 @@ type Nav = RootStackNav;
 
 export default function DashboardScreen() {
   const navigation = useNavigation<Nav>();
-  const { availability, setAvailability, isTracking } = useAuth();
+  const { isTracking } = useAuth();
   const [dashboard, setDashboard] = React.useState<DriverDashboard | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -51,20 +51,6 @@ export default function DashboardScreen() {
     fetchDashboard();
   }, [fetchDashboard]);
 
-  const hasActiveDeliveries = (dashboard?.activeDeliveries ?? 0) > 0;
-
-  const toggleAvailability = async (value: boolean) => {
-    if (hasActiveDeliveries && value) {
-      Alert.alert('Active Deliveries', 'Complete your current deliveries before going online.');
-      return;
-    }
-    try {
-      await setAvailability(value);
-    } catch (err: any) {
-      Alert.alert('Error', err?.response?.data?.message || 'Failed to update availability');
-    }
-  };
-
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -76,14 +62,6 @@ export default function DashboardScreen() {
   if (error) {
     return <ErrorScreen message={error} onRetry={() => { setLoading(true); fetchDashboard(); }} />;
   }
-
-  const statusColor = hasActiveDeliveries
-    ? colors.warning
-    : (availability ? colors.success : colors.danger);
-
-  const statusLabel = hasActiveDeliveries
-    ? 'ON DELIVERY'
-    : (availability ? 'ONLINE' : 'OFFLINE');
 
   return (
     <ScreenContainer scroll refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
@@ -100,28 +78,6 @@ export default function DashboardScreen() {
       </View>
 
       <WelcomeBanner name={dashboard?.driverName?.split(' ')[0] || 'Driver'} />
-
-      <Card padding={16} style={styles.availabilityCard}>
-        <View style={styles.availabilityInner}>
-          <View>
-            <Text style={styles.cardCaption}>STATUS</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
-              <Text style={[styles.statusText, { color: statusColor }]}>{statusLabel}</Text>
-            </View>
-          </View>
-          <View style={styles.toggleTrack}>
-            <Switch
-              value={availability}
-              onValueChange={toggleAvailability}
-              disabled={hasActiveDeliveries}
-              trackColor={{ false: colors.separator, true: colors.primary }}
-              thumbColor={colors.background}
-              style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
-            />
-          </View>
-        </View>
-      </Card>
 
       <Card variant="accent" padding={16} style={styles.trackingCard}>
         <View style={styles.trackingInner}>
@@ -159,7 +115,7 @@ export default function DashboardScreen() {
 
       {dashboard?.recentDeliveries && dashboard.recentDeliveries.length > 0 && (
         <>
-          <SectionHeader title="RECENT" actionLabel="View all" onAction={() => navigation.navigate('MainTabs')} />
+          <SectionHeader title="RECENT" />
           {dashboard.recentDeliveries.slice(0, 5).map((delivery) => (
             <TouchableOpacity
               key={delivery.orderId}
@@ -192,19 +148,10 @@ const styles = StyleSheet.create({
     fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: colors.textPrimary,
   },
   headerRight: { flexDirection: 'row', gap: 16 },
-  availabilityCard: { marginTop: 16 },
-  availabilityInner: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-  },
   cardCaption: {
     fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, color: colors.textTertiary,
     textTransform: 'uppercase', marginBottom: 4,
   },
-  statusDot: { width: 8, height: 8, borderRadius: 4 },
-  statusText: {
-    fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, textTransform: 'uppercase',
-  },
-  toggleTrack: { borderRadius: 14, overflow: 'hidden' },
   trackingCard: { marginTop: 0, marginBottom: 8 },
   trackingInner: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   iconSquare: {
