@@ -24,7 +24,6 @@
     "expo-image-picker": "~17.0.11",
     "expo-linear-gradient": "~15.0.8",
     "expo-location": "~19.0.8",
-    "expo-notifications": "~0.32.17",
     "expo-secure-store": "~15.0.8",
     "expo-splash-screen": "~31.0.13",
     "expo-status-bar": "~3.0.9",
@@ -46,7 +45,8 @@
     "tailwind-merge": "^3.6.0",
     "tailwind-variants": "^3.2.2",
     "tailwindcss": "^4.3.1",
-    "uniwind": "^1.9.0"
+    "uniwind": "^1.9.0",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@expo/ngrok": "^4.1.3",

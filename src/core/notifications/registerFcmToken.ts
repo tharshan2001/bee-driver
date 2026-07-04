@@ -4,6 +4,12 @@ import * as Notifications from 'expo-notifications';
 import api from '../api/client';
 
 export async function registerFcmToken(): Promise<void> {
+  // Skip on web - this is an Android-only app
+  if (Platform.OS === 'web') {
+    console.log('[FCM] Skipping FCM registration on web');
+    return;
+  }
+
   try {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
