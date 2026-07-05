@@ -5,7 +5,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import * as Notifications from 'expo-notifications';
+import messaging from '@react-native-firebase/messaging';
 import api from '../../../core/api/client';
 import { cacheData, getCachedData } from '../../../core/storage/storage';
 import type { Alert as AlertType } from '../../../core/api/types';
@@ -14,13 +14,13 @@ import ErrorScreen from '../../../shared/components/ErrorScreen';
 import { timeAgo } from '../../../core/utils/helpers';
 import { colors } from '../../../shared/theme';
 
-function notificationToAlert(n: Notifications.Notification): AlertType | null {
-  const { data } = n.request.content;
+function remoteMessageToAlert(remoteMessage: any): AlertType | null {
+  const data = remoteMessage?.data;
   if (!data || typeof data !== 'object') return null;
   const d = data as Record<string, any>;
   if (!d.type || !d.title) return null;
   return {
-    id: n.request.identifier,
+    id: remoteMessage.messageId || Date.now().toString(),
     type: d.type as string,
     title: d.title as string,
     message: (d.message || d.body || '') as string,
@@ -67,8 +67,8 @@ export default function AlertsScreen() {
   useFocusEffect(useCallback(() => { fetchAlerts(); }, [fetchAlerts]));
 
   useEffect(() => {
-    const sub = Notifications.addNotificationReceivedListener((notification) => {
-      const alert = notificationToAlert(notification);
+    const unsub = messaging().onMessage((remoteMessage) => {
+      const alert = remoteMessageToAlert(remoteMessage);
       if (!alert) return;
       setData((prev) => {
         const next = [alert, ...prev];
@@ -77,7 +77,7 @@ export default function AlertsScreen() {
         return next;
       });
     });
-    return () => sub.remove();
+    return () => unsub();
   }, []);
 
   async function markRead(id: string) {

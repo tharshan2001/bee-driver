@@ -60,7 +60,9 @@
         }
       ],
       "expo-font",
-      "expo-video"
+      "expo-video",
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging"
     ],
     "projectId": "9c17f6ca-6688-4c93-9847-16d86554ed6b",
     "extra": {

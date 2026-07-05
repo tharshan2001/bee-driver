@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import * as Notifications from 'expo-notifications';
+import messaging from '@react-native-firebase/messaging';
 import { useAuth } from '../context/AuthContext';
 import LoginScreen from '../features/auth/screens/LoginScreen';
 import SetPasswordScreen from '../features/auth/screens/SetPasswordScreen';
@@ -17,27 +17,16 @@ type RootParamList = {
 
 const RootStack = createNativeStackNavigator<RootParamList>();
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
-
 function navigateToDelivery(orderId: string, navigationRef: React.RefObject<NavigationContainerRef<RootParamList> | null>) {
   const nav = navigationRef.current;
   if (!nav) return;
   nav.navigate('App' as any, { screen: 'DeliveryDetail', params: { orderId } });
 }
 
-function extractOrderId(notification: Notifications.Notification): string | null {
-  const data = notification.request.content.data;
-  if (!data || typeof data !== 'object') return null;
-  const type = (data as any).type as string | undefined;
-  const orderId = (data as any).orderId as string | undefined;
+function extractOrderId(data: Record<string, any> | undefined): string | null {
+  if (!data) return null;
+  const type = data.type as string | undefined;
+  const orderId = data.orderId as string | undefined;
   const deliveryTypes = ['delivery_assigned', 'delivery_status', 'delivery_retry', 'delivery_failed', 'delivery_failed_permanent'];
   if (type && deliveryTypes.includes(type) && orderId) {
     return orderId;
@@ -56,8 +45,8 @@ export default function RootNavigator() {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    const tapSub = Notifications.addNotificationResponseReceivedListener((response) => {
-      const orderId = extractOrderId(response.notification);
+    const unsubOnOpened = messaging().onNotificationOpenedApp((remoteMessage) => {
+      const orderId = extractOrderId(remoteMessage.data as Record<string, any>);
       if (!orderId) return;
       if (isAuthenticatedRef.current) {
         navigateToDelivery(orderId, navigationRef);
@@ -66,9 +55,9 @@ export default function RootNavigator() {
       }
     });
 
-    Notifications.getLastNotificationResponseAsync().then((response) => {
-      if (response) {
-        const orderId = extractOrderId(response.notification);
+    messaging().getInitialNotification().then((remoteMessage) => {
+      if (remoteMessage) {
+        const orderId = extractOrderId(remoteMessage.data as Record<string, any>);
         if (orderId) {
           setTimeout(() => {
             if (isAuthenticatedRef.current) {
@@ -81,7 +70,7 @@ export default function RootNavigator() {
       }
     });
 
-    return () => tapSub.remove();
+    return () => unsubOnOpened();
   }, []);
 
   useEffect(() => {
