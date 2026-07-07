@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  View, Text, FlatList, TouchableOpacity, RefreshControl, StyleSheet, Alert,
+  View, Text, FlatList, TouchableOpacity, RefreshControl, StyleSheet, Alert, Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -67,17 +67,20 @@ export default function AlertsScreen() {
   useFocusEffect(useCallback(() => { fetchAlerts(); }, [fetchAlerts]));
 
   useEffect(() => {
-    const unsub = messaging().onMessage((remoteMessage) => {
-      const alert = remoteMessageToAlert(remoteMessage);
-      if (!alert) return;
-      setData((prev) => {
-        const next = [alert, ...prev];
-        cacheData('alerts', next);
-        cacheData('push-alerts', [alert, ...(prev.filter((a) => a.id !== alert.id))]);
-        return next;
+    if (Platform.OS === 'web') return;
+    try {
+      const unsub = messaging().onMessage((remoteMessage) => {
+        const alert = remoteMessageToAlert(remoteMessage);
+        if (!alert) return;
+        setData((prev) => {
+          const next = [alert, ...prev];
+          cacheData('alerts', next);
+          cacheData('push-alerts', [alert, ...(prev.filter((a) => a.id !== alert.id))]);
+          return next;
+        });
       });
-    });
-    return () => unsub();
+      return () => unsub();
+    } catch {}
   }, []);
 
   async function markRead(id: string) {

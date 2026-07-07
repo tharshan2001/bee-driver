@@ -9,7 +9,7 @@ export async function registerFcmToken(): Promise<void> {
         'POST_NOTIFICATIONS' as any,
       );
       if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-        console.log('[FCM] Notification permission not granted');
+        if (__DEV__) console.log('[FCM] Notification permission not granted');
         return;
       }
     }
@@ -17,9 +17,9 @@ export async function registerFcmToken(): Promise<void> {
     const fcmToken = await messaging().getToken();
     if (fcmToken) {
       await api.post('/driver/device-token', { fcmToken });
-      console.log('[FCM] Token registered:', fcmToken.substring(0, 30) + '...');
+      if (__DEV__) console.log('[FCM] Token registered:', fcmToken.substring(0, 30) + '...');
     }
   } catch (e) {
-    console.warn('[FCM] Registration failed:', e);
+    if (__DEV__) console.warn('[FCM] Registration failed:', e);
   }
 }

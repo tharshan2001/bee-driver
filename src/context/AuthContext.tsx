@@ -4,6 +4,7 @@ import api, { onAuthExpired } from '../core/api/client';
 import type { LoginResponse } from '../core/api/types';
 import { useLocationTracking } from '../features/location/hooks/useLocationTracking';
 import { registerFcmToken } from '../core/notifications/registerFcmToken';
+import messaging from '@react-native-firebase/messaging';
 
 interface AuthState {
   isLoading: boolean;
@@ -20,9 +21,13 @@ interface AuthContextType extends AuthState {
   updateAvailability: (available: boolean) => void;
   setAvailability: (available: boolean) => Promise<void>;
   clearMustChangePassword: () => void;
+  registerFcmNavigationHandler: (handler: (orderId: string, isAuthenticated: boolean) => void) => () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+let fcmNavigationHandler: ((orderId: string, isAuthenticated: boolean) => void) | null = null;
+let fcmDeepLinkingInitialized = false;
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>({
@@ -70,6 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               mustChangePassword: data.mustChangePassword ?? false,
             }));
             registerFcmToken();
+            setupFcmDeepLinking();
             return;
           }
         } catch {
@@ -81,9 +87,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const login = useCallback(async (email: string, password: string) => {
-    console.log('[Auth] Login attempt:', email);
+    if (__DEV__) console.log('[Auth] Login attempt:', email);
     const response = await api.post('/auth/login', { email, password });
-    console.log('[Auth] Login response:', JSON.stringify(response.data));
+    if (__DEV__) console.log('[Auth] Login response:', JSON.stringify(response.data));
     const data = response.data?.data as LoginResponse;
     if (!data) throw new Error('Login failed: no data in response');
 
@@ -99,9 +105,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       availability: data.availability,
       mustChangePassword: data.mustChangePassword ?? false,
     }));
-    console.log('[Auth] Login successful, driverId:', data.driverId);
+    if (__DEV__) console.log('[Auth] Login successful, driverId:', data.driverId);
 
     registerFcmToken();
+    setupFcmDeepLinking();
   }, []);
 
   const logout = useCallback(async () => {
@@ -120,12 +127,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setState((prev) => ({ ...prev, availability: available }));
   }, []);
 
+    function registerFcmNavigationHandler(handler: (orderId: string, isAuthenticated: boolean) => void) {
+    fcmNavigationHandler = handler;
+    return () => {
+      if (fcmNavigationHandler === handler) {
+        fcmNavigationHandler = null;
+      }
+    };
+  }
+
   const clearMustChangePassword = useCallback(() => {
     setState((prev) => ({ ...prev, mustChangePassword: false }));
   }, []);
 
+  function extractOrderId(data: Record<string, any> | undefined): string | null {
+    if (!data) return null;
+    const type = data.type as string | undefined;
+    const orderId = data.orderId as string | undefined;
+    const deliveryTypes = ['delivery_assigned', 'delivery_status', 'delivery_retry', 'delivery_failed', 'delivery_failed_permanent'];
+    if (type && deliveryTypes.includes(type) && orderId) {
+      return orderId;
+    }
+    return null;
+  }
+
+  function setupFcmDeepLinking() {
+    if (fcmDeepLinkingInitialized) return;
+    fcmDeepLinkingInitialized = true;
+
+    try {
+      const unsubOnOpened = messaging().onNotificationOpenedApp((remoteMessage) => {
+        const orderId = extractOrderId(remoteMessage.data as Record<string, any>);
+        const handler = fcmNavigationHandler;
+        if (!orderId || !handler) return;
+        handler(orderId, state.isAuthenticated);
+      });
+
+      messaging().getInitialNotification().then((remoteMessage) => {
+        if (remoteMessage) {
+          const orderId = extractOrderId(remoteMessage.data as Record<string, any>);
+          const handler = fcmNavigationHandler;
+          if (orderId && handler) {
+            setTimeout(() => {
+              handler(orderId, state.isAuthenticated);
+            }, 500);
+          }
+        }
+      }).catch(() => {});
+
+      return () => unsubOnOpened();
+    } catch {}
+  }
+
   return (
-    <AuthContext.Provider value={{ ...state, login, logout, updateAvailability, setAvailability, clearMustChangePassword }}>
+    <AuthContext.Provider value={{ ...state, login, logout, updateAvailability, setAvailability, clearMustChangePassword, registerFcmNavigationHandler }}>
       {children}
     </AuthContext.Provider>
   );

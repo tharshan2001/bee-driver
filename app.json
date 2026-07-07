@@ -66,8 +66,6 @@
     ],
     "projectId": "9c17f6ca-6688-4c93-9847-16d86554ed6b",
     "extra": {
-      "apiHost": "localhost",
-      "apiPort": "8085",
       "apiBaseUrl": "https://ebee.lk/api",
       "eas": {
         "projectId": "9c17f6ca-6688-4c93-9847-16d86554ed6b"

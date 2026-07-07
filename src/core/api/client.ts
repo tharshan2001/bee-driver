@@ -14,8 +14,8 @@ function notifyAuthExpired() {
   authListeners.forEach(l => l());
 }
 
-const BASE_URL = (Constants.expoConfig?.extra as Record<string, any>)?.apiBaseUrl || 'http://localhost:8085/api';
-console.log('[API] BASE_URL:', BASE_URL);
+const BASE_URL = ((Constants.expoConfig?.extra as Record<string, any>)?.apiBaseUrl as string) || 'https://ebee.lk/api';
+if (__DEV__) console.log('[API] BASE_URL:', BASE_URL);
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -117,11 +117,11 @@ api.interceptors.response.use(
 
 api.interceptors.response.use(
   (res) => {
-    console.log(`[API] ${res.config?.method?.toUpperCase()} ${res.config?.url} → ${res.status}`);
+    if (__DEV__) console.log(`[API] ${res.config?.method?.toUpperCase()} ${res.config?.url} → ${res.status}`);
     return res;
   },
   (err) => {
-    console.log(`[API] ${err.config?.method?.toUpperCase()} ${err.config?.url} → ${err.response?.status || err.code || err.message}`, err.response?.data || '');
+    if (__DEV__) console.log(`[API] ${err.config?.method?.toUpperCase()} ${err.config?.url} → ${err.response?.status || err.code || err.message}`, err.response?.data || '');
     return Promise.reject(err);
   }
 );

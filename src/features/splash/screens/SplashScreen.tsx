@@ -1,10 +1,14 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import { useAuth } from '../../../context/AuthContext';
 import { colors } from '../../../shared/theme';
+
+const SPLASH_VIDEO = Platform.OS === 'web'
+  ? require('../../../../assets/buzz-calm.mp4')
+  : require('../../../../assets/buzz-pkg.mov');
 
 export default function SplashScreen() {
   const insets = useSafeAreaInsets();
@@ -13,11 +17,15 @@ export default function SplashScreen() {
   const videoFinished = useRef(false);
   const { isLoading, isAuthenticated, mustChangePassword } = useAuth();
 
-  const player = useVideoPlayer(require('../../../../assets/buzz-pkg.mov'), (player) => {
+  const player = useVideoPlayer(SPLASH_VIDEO, (player) => {
     player.loop = false;
     player.muted = true;
     player.play();
   });
+
+  useEffect(() => {
+    player.play();
+  }, [player]);
 
   const navigateAway = useCallback(() => {
     if (navigated.current) return;
@@ -72,6 +80,7 @@ export default function SplashScreen() {
             style={styles.video}
             player={player}
             contentFit="contain"
+            nativeControls={false}
           />
         </View>
         <Text style={styles.title}>eBee Go</Text>

@@ -30,10 +30,7 @@ export default function Card({
 const styles = StyleSheet.create({
   base: {
     borderRadius: 10,
-    shadowColor: colors.shadow,
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 2 },
+    boxShadow: '0px 2px 12px rgba(0,0,0,0.08)',
     elevation: 3,
   },
 });

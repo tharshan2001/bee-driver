@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { HeroUINativeProvider } from 'heroui-native';
@@ -7,12 +7,19 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts, SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk';
 import { IBMPlexSans_400Regular, IBMPlexSans_500Medium } from '@expo-google-fonts/ibm-plex-sans';
 import { IBMPlexMono_500Medium } from '@expo-google-fonts/ibm-plex-mono';
+import { initializeApp, getApps } from '@react-native-firebase/app';
 import { AuthProvider } from './src/context/AuthContext';
 import RootNavigator from './src/navigation/RootNavigator';
 
 import './global.css';
 
 SplashScreen.preventAutoHideAsync();
+
+if (Platform.OS !== 'web' && getApps().length === 0) {
+  try {
+    initializeApp({} as any);
+  } catch {}
+}
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({

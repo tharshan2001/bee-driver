@@ -40,7 +40,7 @@ export function useLocationTracking(isActive: boolean) {
           initTracking();
         }
       } catch (e) {
-        console.log('Failed to check location tracking state:', e);
+        if (__DEV__) console.log('Failed to check location tracking state:', e);
         startedRef.current = false;
         initTracking();
       }
@@ -62,7 +62,7 @@ export function useLocationTracking(isActive: boolean) {
       try {
         alreadyStarted = await Location.hasStartedLocationUpdatesAsync(LOCATION_TASK_NAME);
       } catch (e) {
-        console.log('Failed to check if location tracking already started:', e);
+        if (__DEV__) console.log('Failed to check if location tracking already started:', e);
         alreadyStarted = false;
       }
     }
@@ -138,7 +138,7 @@ export function useLocationTracking(isActive: boolean) {
       cacheData(TRACKING_PREF_KEY, true);
       setIsTracking(true);
     } catch (e) {
-      console.log('Failed to start tracking:', e);
+      if (__DEV__) console.log('Failed to start tracking:', e);
       startedRef.current = false;
       setIsTracking(false);
       Alert.alert(
@@ -164,7 +164,7 @@ export function useLocationTracking(isActive: boolean) {
         startedRef.current = false;
         setIsTracking(false);
       } catch (e) {
-        console.log('Failed to stop tracking:', e);
+        if (__DEV__) console.log('Failed to stop tracking:', e);
         startedRef.current = false;
         setIsTracking(false);
       }

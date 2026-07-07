@@ -52,11 +52,13 @@ export default function DeliveryDetailScreen() {
       const res = await api.get(`/driver/deliveries/${orderId}`);
       if (res.data?.success && res.data?.data) {
         setDelivery(res.data.data);
-        console.log('[DeliveryDetail] RAW response:', JSON.stringify(res.data.data));
-        console.log('[DeliveryDetail] items count:', res.data.data.items?.length);
-        res.data.data.items?.forEach((item: any, i: number) => {
-          console.log(`[DeliveryDetail] item[${i}]:`, JSON.stringify(item));
-        });
+        if (__DEV__) {
+          console.log('[DeliveryDetail] RAW response:', JSON.stringify(res.data.data));
+          console.log('[DeliveryDetail] items count:', res.data.data.items?.length);
+          res.data.data.items?.forEach((item: any, i: number) => {
+            console.log(`[DeliveryDetail] item[${i}]:`, JSON.stringify(item));
+          });
+        }
         Animated.stagger(100, cardAnims.map((a) =>
           Animated.timing(a, { toValue: 1, duration: 300, useNativeDriver: true })
         )).start();

@@ -10,7 +10,7 @@ const proxiedConfig = {
     port: 8081,
     enhanceMiddleware: (middleware) => {
       return (req, res, next) => {
-        if (req.url.startsWith('/api')) {
+        if (__DEV__ && req.url.startsWith('/api')) {
           const options = {
             hostname: 'localhost',
             port: 8085,
@@ -26,7 +26,7 @@ const proxiedConfig = {
           });
 
           proxy.on('error', (err) => {
-            console.error('[Proxy] Error:', err.message);
+            if (__DEV__) console.error('[Proxy] Error:', err.message);
             res.statusCode = 502;
             res.end(JSON.stringify({ error: 'Proxy error', message: err.message }));
           });

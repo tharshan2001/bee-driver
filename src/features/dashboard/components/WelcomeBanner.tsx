@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { colors } from '../../../shared/theme';
 
@@ -14,6 +15,10 @@ export default function WelcomeBanner({ name }: WelcomeBannerProps) {
     player.muted = true;
     player.play();
   });
+
+  useEffect(() => {
+    player.play();
+  }, [player]);
 
   return (
     <View style={styles.card}>
@@ -29,6 +34,7 @@ export default function WelcomeBanner({ name }: WelcomeBannerProps) {
           end={{ x: 0.7, y: 0.7 }}
           style={styles.shine}
         />
+        <BlurView intensity={8} tint="light" style={styles.blur} />
         <View style={styles.body}>
           <View>
             <Text style={styles.greeting}>Welcome back</Text>
@@ -39,6 +45,7 @@ export default function WelcomeBanner({ name }: WelcomeBannerProps) {
               style={styles.mascotVideo}
               player={player}
               contentFit="contain"
+              nativeControls={false}
             />
           </View>
         </View>
@@ -53,10 +60,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 10,
     overflow: 'hidden',
-    shadowColor: colors.shadow,
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 2 },
+    boxShadow: '0px 2px 12px rgba(0,0,0,0.08)',
     elevation: 3,
   },
   gradient: {
@@ -64,6 +68,10 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   shine: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 10,
+  },
+  blur: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: 10,
   },
