@@ -16,6 +16,7 @@ import ExpensesScreen from '../features/expenses/screens/ExpensesScreen';
 import CreateExpenseScreen from '../features/expenses/screens/CreateExpenseScreen';
 import StatsScreen from '../features/stats/screens/StatsScreen';
 import AlertsScreen from '../features/alerts/screens/AlertsScreen';
+import LiveLocationScreen from '../features/location/screens/LiveLocationScreen';
 import MoreScreen from '../features/more/screens/MoreScreen';
 import type { RootStackParamList, TabParamList } from './types';
 
@@ -111,6 +112,11 @@ export default function AppNavigator() {
         name="Alerts"
         component={AlertsScreen}
         options={{ headerShown: true, headerTitle: 'Alerts', headerBackTitle: 'Back' }}
+      />
+      <Stack.Screen
+        name="LiveLocation"
+        component={LiveLocationScreen}
+        options={{ headerShown: true, headerTitle: 'Live Location', headerBackTitle: 'Back' }}
       />
     </Stack.Navigator>
     </View>

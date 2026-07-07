@@ -4,12 +4,10 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '../../../context/AuthContext';
 import api from '../../../core/api/client';
 import type { DriverDashboard } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
 import Badge from '../../../shared/components/StatusBadge';
-import Card from '../../../shared/components/Card';
 import SectionHeader from '../../../shared/components/SectionHeader';
 import ScreenContainer from '../../../shared/components/ScreenContainer';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
@@ -21,7 +19,6 @@ type Nav = RootStackNav;
 
 export default function DashboardScreen() {
   const navigation = useNavigation<Nav>();
-  const { isTracking } = useAuth();
   const [dashboard, setDashboard] = React.useState<DriverDashboard | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -79,26 +76,13 @@ export default function DashboardScreen() {
 
       <WelcomeBanner name={dashboard?.driverName?.split(' ')[0] || 'Driver'} />
 
-      <Card variant="accent" padding={16} style={styles.trackingCard}>
-        <View style={styles.trackingInner}>
-          <View style={styles.iconSquare}>
-            <Ionicons name="location-outline" size={20} color={colors.primary} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.cardCaption}>LIVE TRACKING</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <View style={[styles.trackingDot, { backgroundColor: isTracking ? colors.success : colors.danger }]} />
-              <Text style={[styles.trackingStatus, { color: isTracking ? colors.success : colors.danger }]}>
-                {isTracking ? 'Sharing location' : 'Location sharing disabled'}
-              </Text>
-            </View>
-          </View>
-        </View>
-      </Card>
-
       <SectionHeader title="QUICK ACTIONS" />
 
       <View style={styles.actionsRow}>
+        <TouchableOpacity onPress={() => navigation.navigate('LiveLocation')} style={styles.actionCard}>
+          <Ionicons name="location-outline" size={24} color={colors.primary} style={{ marginBottom: 8 }} />
+          <Text style={styles.actionLabel}>LOCATION</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('MainTabs')} style={styles.actionCard}>
           <Ionicons name="car-outline" size={24} color={colors.primary} style={{ marginBottom: 8 }} />
           <Text style={styles.actionLabel}>DELIVERIES</Text>
@@ -148,18 +132,6 @@ const styles = StyleSheet.create({
     fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: colors.textPrimary,
   },
   headerRight: { flexDirection: 'row', gap: 16 },
-  cardCaption: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, color: colors.textTertiary,
-    textTransform: 'uppercase', marginBottom: 4,
-  },
-  trackingCard: { marginTop: 0, marginBottom: 8 },
-  trackingInner: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  iconSquare: {
-    width: 36, height: 36, borderRadius: 10, borderWidth: 1.5, borderColor: colors.primary,
-    justifyContent: 'center', alignItems: 'center',
-  },
-  trackingDot: { width: 8, height: 8, borderRadius: 4 },
-  trackingStatus: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11 },
   actionsRow: { flexDirection: 'row', gap: 8, marginTop: 4 },
   actionCard: {
     flex: 1, alignItems: 'center', padding: 16, backgroundColor: colors.surface,

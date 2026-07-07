@@ -11,6 +11,7 @@ export type RootStackParamList = {
   CreateExpense: undefined;
   Stats: undefined;
   Alerts: undefined;
+  LiveLocation: undefined;
 };
 
 export type TabParamList = {
