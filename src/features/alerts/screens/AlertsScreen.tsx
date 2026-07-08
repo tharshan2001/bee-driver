@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import messaging from '@react-native-firebase/messaging';
+import { showLocalNotification } from '../../../core/notifications/setupNotifications';
 import api from '../../../core/api/client';
 import { cacheData, getCachedData } from '../../../core/storage/storage';
 import type { Alert as AlertType } from '../../../core/api/types';
@@ -69,7 +70,7 @@ export default function AlertsScreen() {
   useEffect(() => {
     if (Platform.OS === 'web') return;
     try {
-      const unsub = messaging().onMessage((remoteMessage) => {
+      const unsub = messaging().onMessage(async (remoteMessage) => {
         const alert = remoteMessageToAlert(remoteMessage);
         if (!alert) return;
         setData((prev) => {
@@ -78,6 +79,7 @@ export default function AlertsScreen() {
           cacheData('push-alerts', [alert, ...(prev.filter((a) => a.id !== alert.id))]);
           return next;
         });
+        await showLocalNotification(remoteMessage);
       });
       return () => unsub();
     } catch {}

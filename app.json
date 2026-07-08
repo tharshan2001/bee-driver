@@ -3,6 +3,8 @@
     "name": "eBee Go",
     "slug": "ebee-go",
     "version": "1.0.0",
+    "icon": "./assets/icon.png",
+    "favicon": "./assets/favicon.png",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "splash": {
@@ -25,6 +27,15 @@
     "android": {
       "googleServicesFile": "./google-services.json",
       "package": "com.ebee.driver",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "notification": {
+        "icon": "./assets/android-icon-monochrome.png",
+        "color": "#FFC107"
+      },
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
@@ -61,6 +72,7 @@
       ],
       "expo-font",
       "expo-video",
+      "expo-notifications",
       "@react-native-firebase/app",
       "@react-native-firebase/messaging"
     ],

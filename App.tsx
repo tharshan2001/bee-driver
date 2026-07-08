@@ -8,6 +8,7 @@ import { useFonts, SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk
 import { IBMPlexSans_400Regular, IBMPlexSans_500Medium } from '@expo-google-fonts/ibm-plex-sans';
 import { IBMPlexMono_500Medium } from '@expo-google-fonts/ibm-plex-mono';
 import { initializeApp, getApps } from '@react-native-firebase/app';
+import { setupNotificationChannel } from './src/core/notifications/setupNotifications';
 import { AuthProvider } from './src/context/AuthContext';
 import RootNavigator from './src/navigation/RootNavigator';
 
@@ -34,6 +35,12 @@ export default function App() {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      setupNotificationChannel();
+    }
+  }, []);
 
   if (!fontsLoaded && !fontError) return null;
 
