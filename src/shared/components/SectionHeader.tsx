@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textSecondary,
     letterSpacing: 0.3,
+    textAlign: 'left',
   },
   action: {
     fontFamily: 'IBMPlexSans_500Medium',

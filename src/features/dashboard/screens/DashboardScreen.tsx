@@ -122,7 +122,7 @@ export default function DashboardScreen() {
 
       {recentDeliveries.length > 0 && (
         <View style={styles.recentSection}>
-          <SectionHeader title="RECENT" actionLabel="View all" onAction={() => navigation.navigate('MainTabs', { screen: 'Deliveries' } as any)} />
+          <SectionHeader title="RECENT DELIVERIES" actionLabel="View all" onAction={() => navigation.navigate('MainTabs', { screen: 'Deliveries' } as any)} />
           <FlatList
             data={recentDeliveries}
             renderItem={renderRecentItem}
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, color: colors.textPrimary,
     textTransform: 'uppercase',
   },
-  recentSection: { flex: 1, paddingHorizontal: 16 },
+  recentSection: { flex: 1, paddingHorizontal: 20 },
   recentRow: {
     flexDirection: 'row', alignItems: 'center', paddingVertical: 12,
     borderBottomWidth: 1, borderBottomColor: colors.separator,
