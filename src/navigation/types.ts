@@ -1,5 +1,6 @@
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { Alert } from '../core/api/types';
 
 export type RootStackParamList = {
   MainTabs: undefined;
@@ -11,6 +12,7 @@ export type RootStackParamList = {
   CreateExpense: undefined;
   Stats: undefined;
   Alerts: undefined;
+  AlertDetail: { alert: Alert };
   LiveLocation: undefined;
 };
 
