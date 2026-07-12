@@ -24,19 +24,24 @@ Notifications.setNotificationHandler({
 });
 
 export async function showLocalNotification(remoteMessage: any) {
-  const data = remoteMessage?.data as Record<string, any> | undefined;
-  const title = data?.title || 'eBee Go';
-  const body = data?.message || data?.body || '';
-  const orderId = data?.orderId;
+  try {
+    const data = remoteMessage?.data as Record<string, any> | undefined;
+    const notif = remoteMessage?.notification as Record<string, any> | undefined;
+    const title = data?.title || notif?.title || 'eBee Go';
+    const body = data?.message || data?.body || notif?.body || '';
+    const orderId = data?.orderId;
 
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title,
-      body,
-      data: { orderId },
-      sound: true,
-      ...(Platform.OS === 'android' ? { channelId: CHANNEL_ID } : {}),
-    },
-    trigger: null,
-  });
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title,
+        body,
+        data: { orderId },
+        sound: true,
+        ...(Platform.OS === 'android' ? { channelId: CHANNEL_ID } : {}),
+      },
+      trigger: null,
+    });
+  } catch (e) {
+    if (__DEV__) console.log('[Notifications] Failed to show local notification:', e);
+  }
 }

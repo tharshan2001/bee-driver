@@ -71,15 +71,20 @@ export default function AlertsScreen() {
     if (Platform.OS === 'web') return;
     try {
       const unsub = messaging().onMessage(async (remoteMessage) => {
-        const alert = remoteMessageToAlert(remoteMessage);
-        if (!alert) return;
-        setData((prev) => {
-          const next = [alert, ...prev];
-          cacheData('alerts', next);
-          cacheData('push-alerts', [alert, ...(prev.filter((a) => a.id !== alert.id))]);
-          return next;
-        });
-        await showLocalNotification(remoteMessage);
+        try {
+          const alert = remoteMessageToAlert(remoteMessage);
+          if (alert) {
+            setData((prev) => {
+              const next = [alert, ...prev];
+              cacheData('alerts', next);
+              cacheData('push-alerts', [alert, ...(prev.filter((a) => a.id !== alert.id))]);
+              return next;
+            });
+          }
+          await showLocalNotification(remoteMessage);
+        } catch (e) {
+          if (__DEV__) console.log('[Alerts] onMessage error:', e);
+        }
       });
       return () => unsub();
     } catch {}

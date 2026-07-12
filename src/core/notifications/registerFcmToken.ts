@@ -1,14 +1,14 @@
-import { Platform, PermissionsAndroid } from 'react-native';
+import { Platform } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import api from '../api/client';
 
 export async function registerFcmToken(): Promise<void> {
   try {
     if (Platform.OS === 'android' && Platform.Version >= 33) {
-      const granted = await PermissionsAndroid.request(
-        'POST_NOTIFICATIONS' as any,
-      );
-      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+      const authStatus = await messaging().requestPermission();
+      const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED
+        || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+      if (!enabled) {
         if (__DEV__) console.log('[FCM] Notification permission not granted');
         return;
       }

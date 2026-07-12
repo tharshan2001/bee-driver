@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import {
   View, Text, StyleSheet, ActivityIndicator, Platform, Linking, TouchableOpacity,
 } from 'react-native';
@@ -8,42 +8,76 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../../context/AuthContext';
 import { colors } from '../../../shared/theme';
 
+const LOCATION_REFRESH_INTERVAL = 15_000;
+
 export default function LiveLocationScreen() {
   const insets = useSafeAreaInsets();
   const { isTracking } = useAuth();
   const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [address, setAddress] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [gpsOff, setGpsOff] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const mountedRef = useRef(true);
+
+  const fetchLocation = useCallback(async () => {
+    try {
+      if (Platform.OS === 'web') {
+        setError('Live location is only available on the mobile app');
+        return;
+      }
+      const { status } = await Location.getForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setError('Location permission denied');
+        setGpsOff(false);
+        return;
+      }
+      const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.BestForNavigation });
+      if (!mountedRef.current) return;
+      setLocation(loc);
+      setGpsOff(false);
+      setError(null);
+
+      const geocode = await Location.reverseGeocodeAsync({
+        latitude: loc.coords.latitude,
+        longitude: loc.coords.longitude,
+      });
+      if (!mountedRef.current) return;
+      if (geocode.length > 0) {
+        const a = geocode[0];
+        const parts = [a.name, a.street, a.district, a.city, a.region, a.country].filter(Boolean);
+        setAddress(parts.join(', '));
+      }
+    } catch (e: any) {
+      if (!mountedRef.current) return;
+      const msg = e?.message || 'Failed to get location';
+      if (msg.toLowerCase().includes('location') && (msg.toLowerCase().includes('disabled') || msg.toLowerCase().includes('off') || msg.toLowerCase().includes('turned'))) {
+        setGpsOff(true);
+        setError('Location services are turned off. Please enable them in Settings.');
+      } else {
+        setGpsOff(false);
+        setError(msg);
+      }
+    }
+  }, []);
 
   useEffect(() => {
-    (async () => {
-      try {
-        if (Platform.OS === 'web') {
-          setError('Live location is only available on the mobile app');
-          return;
-        }
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          setError('Location permission denied');
-          return;
-        }
-        const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.BestForNavigation });
-        setLocation(loc);
+    mountedRef.current = true;
+    fetchLocation();
 
-        const geocode = await Location.reverseGeocodeAsync({
-          latitude: loc.coords.latitude,
-          longitude: loc.coords.longitude,
-        });
-        if (geocode.length > 0) {
-          const a = geocode[0];
-          const parts = [a.name, a.street, a.district, a.city, a.region, a.country].filter(Boolean);
-          setAddress(parts.join(', '));
-        }
-      } catch (e: any) {
-        setError(e?.message || 'Failed to get location');
-      }
-    })();
-  }, []);
+    const interval = setInterval(() => {
+      if (mountedRef.current) fetchLocation();
+    }, LOCATION_REFRESH_INTERVAL);
+
+    return () => {
+      mountedRef.current = false;
+      clearInterval(interval);
+    };
+  }, [retryCount, fetchLocation]);
+
+  const openSettings = () => {
+    Linking.openSettings();
+  };
 
   const openInMaps = () => {
     if (!location) return;
@@ -72,12 +106,19 @@ export default function LiveLocationScreen() {
         <View style={styles.center}>
           <Ionicons name="location-outline" size={48} color={colors.danger} />
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity
-            onPress={() => { setError(null); setLocation(null); /* retry on remount */ }}
-            style={styles.retryBtn}
-          >
-            <Text style={styles.retryText}>RETRY</Text>
-          </TouchableOpacity>
+          <View style={styles.errorActions}>
+            {gpsOff && (
+              <TouchableOpacity onPress={openSettings} style={styles.settingsBtn}>
+                <Text style={styles.settingsText}>OPEN SETTINGS</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              onPress={() => setRetryCount((c) => c + 1)}
+              style={styles.retryBtn}
+            >
+              <Text style={styles.retryText}>RETRY</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       ) : !location ? (
         <View style={styles.center}>
@@ -191,6 +232,17 @@ const styles = StyleSheet.create({
   },
   retryText: {
     fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: '#fff',
+    textTransform: 'uppercase',
+  },
+  errorActions: {
+    flexDirection: 'row', gap: 12, marginTop: 8,
+  },
+  settingsBtn: {
+    paddingVertical: 10, paddingHorizontal: 24, backgroundColor: colors.surface,
+    borderRadius: 10, marginTop: 8, borderWidth: 1, borderColor: colors.primary,
+  },
+  settingsText: {
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.primary,
     textTransform: 'uppercase',
   },
 });

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StatusBar, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -22,6 +22,8 @@ if (Platform.OS !== 'web' && getApps().length === 0) {
   } catch {}
 }
 
+const FONT_TIMEOUT_MS = 10_000;
+
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
     SpaceGrotesk_700Bold,
@@ -29,12 +31,24 @@ export default function App() {
     IBMPlexSans_500Medium,
     IBMPlexMono_500Medium,
   });
+  const splashHiddenRef = useRef(false);
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
+    if ((fontsLoaded || fontError) && !splashHiddenRef.current) {
+      splashHiddenRef.current = true;
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!splashHiddenRef.current) {
+        splashHiddenRef.current = true;
+        SplashScreen.hideAsync();
+      }
+    }, FONT_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (Platform.OS !== 'web') {

@@ -57,7 +57,7 @@ export default function WelcomeBanner({ name }: WelcomeBannerProps) {
 const styles = StyleSheet.create({
   card: {
     marginTop: 16,
-    marginBottom: 16,
+    marginBottom: 8,
     borderRadius: 10,
     overflow: 'hidden',
     boxShadow: '0px 2px 12px rgba(0,0,0,0.08)',
