@@ -31,6 +31,7 @@ export interface DriverDelivery {
   orderInfo: OrderInfo;
   items: DeliveryItem[];
   status: string;
+  scheduledDate?: string;
   timeline: StatusTimeline[];
   photoUrl?: string;
   signatureUrl?: string;

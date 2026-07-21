@@ -12,7 +12,7 @@ import type { DriverDelivery } from '../../../core/api/types';
 import type { RootStackParamList, RootStackNav } from '../../../navigation/types';
 import Card from '../../../shared/components/Card';
 import Skeleton from '../../../shared/components/Skeleton';
-import { formatDateTime, getStatusColor, timeAgo } from '../../../core/utils/helpers';
+import { formatDate, formatDateTime, getStatusColor, timeAgo } from '../../../core/utils/helpers';
 import { colors } from '../../../shared/theme';
 
 type DetailRoute = RouteProp<RootStackParamList, 'DeliveryDetail'>;
@@ -153,6 +153,9 @@ export default function DeliveryDetailScreen() {
       <AnimatedCard index={1}>
         <Text style={styles.cardCaption}>ORDER INFO</Text>
         <InfoRow label="Order #" value={delivery.orderInfo.orderNumber} mono />
+        {delivery.scheduledDate && (
+          <InfoRow label="Scheduled" value={formatDate(delivery.scheduledDate)} />
+        )}
         <InfoRow label="Total" value={`LKR ${delivery.orderInfo.total.toFixed(2)}`} mono />
         <InfoRow label="Paid" value={`LKR ${delivery.orderInfo.paid.toFixed(2)}`} valueColor={colors.success} mono />
         <InfoRow label="Outstanding" value={`LKR ${delivery.orderInfo.outstanding.toFixed(2)}`} valueColor={colors.danger} mono />
