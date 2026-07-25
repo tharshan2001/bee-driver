@@ -14,7 +14,7 @@ import RootNavigator from './src/navigation/RootNavigator';
 
 import './global.css';
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 if (Platform.OS !== 'web' && getApps().length === 0) {
   try {
@@ -36,7 +36,7 @@ export default function App() {
   useEffect(() => {
     if ((fontsLoaded || fontError) && !splashHiddenRef.current) {
       splashHiddenRef.current = true;
-      SplashScreen.hideAsync();
+      SplashScreen.hideAsync().catch(() => {});
     }
   }, [fontsLoaded, fontError]);
 
@@ -44,7 +44,7 @@ export default function App() {
     const timer = setTimeout(() => {
       if (!splashHiddenRef.current) {
         splashHiddenRef.current = true;
-        SplashScreen.hideAsync();
+        SplashScreen.hideAsync().catch(() => {});
       }
     }, FONT_TIMEOUT_MS);
     return () => clearTimeout(timer);
@@ -55,8 +55,6 @@ export default function App() {
       setupNotificationChannel();
     }
   }, []);
-
-  if (!fontsLoaded && !fontError) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

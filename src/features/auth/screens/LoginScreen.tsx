@@ -3,6 +3,7 @@ import {
   View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView,
   Platform, ScrollView, ActivityIndicator, Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../../context/AuthContext';
 import { colors } from '../../../shared/theme';
@@ -12,6 +13,7 @@ export default function LoginScreen() {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
@@ -68,14 +70,19 @@ export default function LoginScreen() {
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
           <Text style={styles.label}>PASSWORD</Text>
-          <TextInput
-            style={[styles.input, errors.password && styles.inputError]}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            placeholder="Enter password"
-            placeholderTextColor={colors.textTertiary}
-          />
+          <View style={styles.passwordRow}>
+            <TextInput
+              style={[styles.input, styles.passwordInput, errors.password && styles.inputError]}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              placeholder="Enter password"
+              placeholderTextColor={colors.textTertiary}
+            />
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
+              <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
+            </TouchableOpacity>
+          </View>
           {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
           <TouchableOpacity
@@ -129,6 +136,9 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   inputError: { borderBottomColor: colors.danger },
+  passwordRow: { flexDirection: 'row', alignItems: 'center' },
+  passwordInput: { flex: 1 },
+  eyeBtn: { padding: 10 },
   errorText: { fontFamily: 'IBMPlexMono_500Medium', color: colors.danger, fontSize: 12, marginTop: 4 },
   button: {
     backgroundColor: colors.primary,

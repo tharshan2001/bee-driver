@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import api from '../../../core/api/client';
@@ -11,6 +12,9 @@ export default function ChangePasswordScreen() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function handleChange() {
@@ -32,9 +36,27 @@ export default function ChangePasswordScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 16 }]}>
-      <Field label="CURRENT PASSWORD" value={currentPassword} onChange={setCurrentPassword} secure />
-      <Field label="NEW PASSWORD" value={newPassword} onChange={setNewPassword} secure />
-      <Field label="CONFIRM NEW PASSWORD" value={confirmPassword} onChange={setConfirmPassword} secure />
+      <PasswordField
+        label="CURRENT PASSWORD"
+        value={currentPassword}
+        onChange={setCurrentPassword}
+        visible={showCurrent}
+        toggle={() => setShowCurrent((v) => !v)}
+      />
+      <PasswordField
+        label="NEW PASSWORD"
+        value={newPassword}
+        onChange={setNewPassword}
+        visible={showNew}
+        toggle={() => setShowNew((v) => !v)}
+      />
+      <PasswordField
+        label="CONFIRM NEW PASSWORD"
+        value={confirmPassword}
+        onChange={setConfirmPassword}
+        visible={showConfirm}
+        toggle={() => setShowConfirm((v) => !v)}
+      />
       <TouchableOpacity style={styles.button} onPress={handleChange} disabled={loading}>
         <Text style={styles.buttonText}>{loading ? 'Changing...' : 'Change Password'}</Text>
       </TouchableOpacity>
@@ -42,17 +64,24 @@ export default function ChangePasswordScreen() {
   );
 }
 
-function Field({ label, value, onChange, secure }: { label: string; value: string; onChange: (v: string) => void; secure?: boolean }) {
+function PasswordField({ label, value, onChange, visible, toggle }: {
+  label: string; value: string; onChange: (v: string) => void; visible: boolean; toggle: () => void;
+}) {
   return (
     <View style={styles.fieldGroup}>
       <Text style={styles.label}>{label}</Text>
-      <TextInput
-        style={styles.input}
-        value={value}
-        onChangeText={onChange}
-        secureTextEntry={secure}
-        placeholderTextColor={colors.textTertiary}
-      />
+      <View style={styles.passwordRow}>
+        <TextInput
+          style={[styles.input, styles.passwordInput]}
+          value={value}
+          onChangeText={onChange}
+          secureTextEntry={!visible}
+          placeholderTextColor={colors.textTertiary}
+        />
+        <TouchableOpacity onPress={toggle} style={styles.eyeBtn}>
+          <Ionicons name={visible ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -63,6 +92,9 @@ const styles = StyleSheet.create({
   fieldGroup: { marginBottom: 24 },
   label: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginBottom: 6, textTransform: 'uppercase' },
   input: { borderBottomWidth: 1, borderBottomColor: colors.separator, paddingVertical: 8, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
+  passwordRow: { flexDirection: 'row', alignItems: 'center' },
+  passwordInput: { flex: 1 },
+  eyeBtn: { padding: 10 },
   button: { backgroundColor: colors.primary, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 8 },
   buttonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary },
 });

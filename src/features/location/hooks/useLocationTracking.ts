@@ -28,7 +28,8 @@ export function useLocationTracking(isActive: boolean) {
       setIsTracking(false);
     });
 
-    return () => { stopTracking(); };
+    // No cleanup stopTracking here — background task must persist after app close.
+    // Only stopTracking when isActive becomes false (logout).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isActive]);
 

@@ -3,6 +3,7 @@ import {
   View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView,
   Platform, ScrollView, ActivityIndicator, Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../../context/AuthContext';
 import api from '../../../core/api/client';
@@ -14,6 +15,9 @@ export default function SetPasswordScreen() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -66,34 +70,31 @@ export default function SetPasswordScreen() {
         </Text>
 
         <View style={styles.form}>
-          <Text style={styles.label}>CURRENT PASSWORD</Text>
-          <TextInput
-            style={styles.input}
+          <PasswordField
+            label="CURRENT PASSWORD"
             value={currentPassword}
-            onChangeText={setCurrentPassword}
-            secureTextEntry
+            onChange={setCurrentPassword}
             placeholder="Enter current password"
-            placeholderTextColor={colors.textTertiary}
+            visible={showCurrent}
+            toggle={() => setShowCurrent((v) => !v)}
           />
 
-          <Text style={styles.label}>NEW PASSWORD</Text>
-          <TextInput
-            style={styles.input}
+          <PasswordField
+            label="NEW PASSWORD"
             value={newPassword}
-            onChangeText={setNewPassword}
-            secureTextEntry
+            onChange={setNewPassword}
             placeholder="At least 6 characters"
-            placeholderTextColor={colors.textTertiary}
+            visible={showNew}
+            toggle={() => setShowNew((v) => !v)}
           />
 
-          <Text style={styles.label}>CONFIRM NEW PASSWORD</Text>
-          <TextInput
-            style={styles.input}
+          <PasswordField
+            label="CONFIRM NEW PASSWORD"
             value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry
+            onChange={setConfirmPassword}
             placeholder="Re-enter new password"
-            placeholderTextColor={colors.textTertiary}
+            visible={showConfirm}
+            toggle={() => setShowConfirm((v) => !v)}
           />
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -112,6 +113,34 @@ export default function SetPasswordScreen() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+  );
+}
+
+function PasswordField({ label, value, onChange, placeholder, visible, toggle }: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder: string;
+  visible: boolean;
+  toggle: () => void;
+}) {
+  return (
+    <View>
+      <Text style={styles.label}>{label}</Text>
+      <View style={styles.passwordRow}>
+        <TextInput
+          style={[styles.input, styles.passwordInput]}
+          value={value}
+          onChangeText={onChange}
+          secureTextEntry={!visible}
+          placeholder={placeholder}
+          placeholderTextColor={colors.textTertiary}
+        />
+        <TouchableOpacity onPress={toggle} style={styles.eyeBtn}>
+          <Ionicons name={visible ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
@@ -148,6 +177,9 @@ const styles = StyleSheet.create({
     fontFamily: 'IBMPlexSans_400Regular',
     color: colors.textPrimary,
   },
+  passwordRow: { flexDirection: 'row', alignItems: 'center' },
+  passwordInput: { flex: 1 },
+  eyeBtn: { padding: 10 },
   error: {
     fontFamily: 'IBMPlexMono_500Medium', color: colors.danger, fontSize: 13, marginTop: 16,
   },

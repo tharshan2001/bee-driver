@@ -14,7 +14,9 @@ function notifyAuthExpired() {
   authListeners.forEach(l => l());
 }
 
-const BASE_URL = ((Constants.expoConfig?.extra as Record<string, any>)?.apiBaseUrl as string) || 'https://ebee.lk/api';
+const BASE_URL = __DEV__
+  ? 'http://192.168.1.228:8085/api'
+  : ((Constants.expoConfig?.extra as Record<string, any>)?.apiBaseUrl as string) || 'https://ebee.lk/api';
 if (__DEV__) console.log('[API] BASE_URL:', BASE_URL);
 
 const api = axios.create({
