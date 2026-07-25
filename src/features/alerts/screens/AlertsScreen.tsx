@@ -13,7 +13,6 @@ import type { Alert as AlertType } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
 import EmptyState from '../../../shared/components/EmptyState';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
-import InAppNotification from '../../../shared/components/InAppNotification';
 import { timeAgo } from '../../../core/utils/helpers';
 import { colors } from '../../../shared/theme';
 
@@ -97,7 +96,6 @@ export default function AlertsScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [popup, setPopup] = useState<AlertType | null>(null);
 
   const unreadCount = data.filter((a) => !a.read).length;
 
@@ -144,7 +142,21 @@ export default function AlertsScreen() {
               cacheData('push-alerts', [alert, ...(prev.filter((a) => a.id !== alert.id))]);
               return next;
             });
-            setPopup(alert);
+            const orderId = remoteMessage?.data?.orderId as string | undefined;
+            const isDelivery = alert.type?.toLowerCase().includes('delivery');
+            Alert.alert(alert.title, alert.message || '', [
+              { text: 'Dismiss', style: 'cancel' },
+              {
+                text: 'View',
+                onPress: () => {
+                  if (isDelivery && orderId) {
+                    navigation.navigate('DeliveryDetail', { orderId });
+                  } else {
+                    navigation.navigate('AlertDetail', { alert });
+                  }
+                },
+              },
+            ]);
           }
           await showLocalNotification(remoteMessage);
         } catch (e) {
@@ -200,17 +212,6 @@ export default function AlertsScreen() {
         ListEmptyComponent={<EmptyState title="No alerts" subtitle="You're all caught up!" />}
         contentContainerStyle={data.length === 0 ? { flex: 1 } : { paddingHorizontal: 16, paddingBottom: insets.bottom + 16, paddingTop: 4 }}
         showsVerticalScrollIndicator={false}
-      />
-
-      <InAppNotification
-        data={popup ? {
-          id: popup.id,
-          title: popup.title,
-          body: popup.message,
-          type: popup.type,
-          onPress: () => navigation.navigate('AlertDetail', { alert: popup }),
-          onDismiss: () => setPopup(null),
-        } : null}
       />
     </View>
   );
