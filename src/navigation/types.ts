@@ -14,6 +14,7 @@ export type RootStackParamList = {
   Alerts: undefined;
   AlertDetail: { alert: Alert };
   LiveLocation: undefined;
+  ForgotPassword: undefined;
 };
 
 export type TabParamList = {

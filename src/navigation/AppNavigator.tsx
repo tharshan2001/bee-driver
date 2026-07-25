@@ -18,6 +18,7 @@ import StatsScreen from '../features/stats/screens/StatsScreen';
 import AlertsScreen from '../features/alerts/screens/AlertsScreen';
 import AlertDetailScreen from '../features/alerts/screens/AlertDetailScreen';
 import LiveLocationScreen from '../features/location/screens/LiveLocationScreen';
+import ForgotPasswordScreen from '../features/auth/screens/ForgotPasswordScreen';
 import MoreScreen from '../features/more/screens/MoreScreen';
 import type { RootStackParamList, TabParamList } from './types';
 
@@ -123,6 +124,11 @@ export default function AppNavigator() {
         name="LiveLocation"
         component={LiveLocationScreen}
         options={{ headerShown: true, headerTitle: 'Live Location', headerBackTitle: 'Back' }}
+      />
+      <Stack.Screen
+        name="ForgotPassword"
+        component={ForgotPasswordScreen}
+        options={{ headerShown: false, headerTitle: 'Forgot Password' }}
       />
     </Stack.Navigator>
     </View>

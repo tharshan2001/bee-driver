@@ -5,11 +5,14 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../context/AuthContext';
+import type { RootStackNav } from '../../../navigation/types';
 import { colors } from '../../../shared/theme';
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<RootStackNav>();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -86,6 +89,13 @@ export default function LoginScreen() {
           {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
           <TouchableOpacity
+            style={styles.forgotBtn}
+            onPress={() => navigation.navigate('ForgotPassword')}
+          >
+            <Text style={styles.forgotText}>Forgot Password?</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             style={[styles.button, loading && styles.buttonDisabled]}
             onPress={handleLogin}
             disabled={loading}
@@ -140,6 +150,8 @@ const styles = StyleSheet.create({
   passwordInput: { flex: 1 },
   eyeBtn: { padding: 10 },
   errorText: { fontFamily: 'IBMPlexMono_500Medium', color: colors.danger, fontSize: 12, marginTop: 4 },
+  forgotBtn: { alignItems: 'flex-end', marginTop: 8 },
+  forgotText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 13, color: colors.primary },
   button: {
     backgroundColor: colors.primary,
     borderRadius: 10,
