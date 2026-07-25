@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
 import LoginScreen from '../features/auth/screens/LoginScreen';
 import SetPasswordScreen from '../features/auth/screens/SetPasswordScreen';
+import ForgotPasswordScreen from '../features/auth/screens/ForgotPasswordScreen';
 import SplashScreen from '../features/splash/screens/SplashScreen';
 import AppNavigator from './AppNavigator';
 
@@ -11,6 +12,7 @@ type RootParamList = {
   Splash: undefined;
   Login: undefined;
   SetPassword: undefined;
+  ForgotPassword: undefined;
   App: undefined;
 };
 
@@ -68,6 +70,11 @@ export default function RootNavigator() {
             options={{ animationTypeForReplace: 'pop' }}
           />
         )}
+        <RootStack.Screen
+          name="ForgotPassword"
+          component={ForgotPasswordScreen}
+          options={{ animationTypeForReplace: 'push' }}
+        />
       </RootStack.Navigator>
     </NavigationContainer>
   );
