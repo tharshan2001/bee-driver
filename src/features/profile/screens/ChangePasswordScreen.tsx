@@ -4,11 +4,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import api from '../../../core/api/client';
+import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
 
 export default function ChangePasswordScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const toast = useToast();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -25,7 +27,7 @@ export default function ChangePasswordScreen() {
     setLoading(true);
     try {
       await api.post('/auth/change-password', { currentPassword, newPassword });
-      Alert.alert('Success', 'Password changed successfully');
+      toast.show({ type: 'success', title: 'Password changed successfully' });
       navigation.goBack();
     } catch (err: any) {
       Alert.alert('Error', err?.response?.data?.message || 'Failed to change password');

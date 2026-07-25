@@ -9,6 +9,7 @@ import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import api from '../../../core/api/client';
 import { formatDate } from '../../../core/utils/helpers';
+import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
 
 const categories = ['FUEL', 'MAINTENANCE', 'PARKING', 'TOLL', 'OTHER'];
@@ -16,6 +17,7 @@ const categories = ['FUEL', 'MAINTENANCE', 'PARKING', 'TOLL', 'OTHER'];
 export default function CreateExpenseScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const toast = useToast();
   const [category, setCategory] = useState('FUEL');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
@@ -32,9 +34,9 @@ export default function CreateExpenseScreen() {
 
   async function handleSubmit() {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      return Alert.alert('Error', 'Enter a valid amount');
+      return toast.show({ type: 'error', title: 'Enter a valid amount' });
     }
-    if (!description.trim()) return Alert.alert('Error', 'Description is required');
+    if (!description.trim()) return toast.show({ type: 'error', title: 'Description is required' });
 
     setLoading(true);
     try {
@@ -56,10 +58,10 @@ export default function CreateExpenseScreen() {
       await api.post('/driver/expenses', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-      Alert.alert('Success', 'Expense created');
+      toast.show({ type: 'success', title: 'Expense created' });
       navigation.goBack();
     } catch (err: any) {
-      Alert.alert('Error', err?.response?.data?.message || 'Failed to create expense');
+      toast.show({ type: 'error', title: err?.response?.data?.message || 'Failed to create expense' });
     } finally {
       setLoading(false);
     }

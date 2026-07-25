@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import api from '../../../core/api/client';
+import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
 
 type Step = 'email' | 'otp' | 'reset';
@@ -14,6 +15,7 @@ type Step = 'email' | 'otp' | 'reset';
 export default function ForgotPasswordScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const toast = useToast();
   const [step, setStep] = useState<Step>('email');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -58,11 +60,11 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     try {
       await api.post('/auth/forgot-password', { email: email.trim() });
-      Alert.alert('OTP Sent', 'Check your email and phone for the OTP.');
+      toast.show({ type: 'info', title: 'OTP sent', message: 'Check your email and phone for the OTP.' });
       setStep('otp');
     } catch (err: any) {
       const msg = err?.response?.data?.message || 'Failed to send OTP';
-      Alert.alert('Error', msg);
+      toast.show({ type: 'error', title: msg });
     } finally {
       setLoading(false);
     }
@@ -76,11 +78,11 @@ export default function ForgotPasswordScreen() {
       const token = res.data?.data?.resetToken;
       if (!token) throw new Error('No reset token received');
       setResetToken(token);
-      Alert.alert('Verified', 'Create your new password.');
+      toast.show({ type: 'success', title: 'Verified', message: 'Create your new password.' });
       setStep('reset');
     } catch (err: any) {
       const msg = err?.response?.data?.message || err?.message || 'Invalid OTP';
-      Alert.alert('Error', msg);
+      toast.show({ type: 'error', title: msg });
     } finally {
       setLoading(false);
     }
@@ -91,12 +93,11 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     try {
       await api.post('/auth/reset-password', { resetToken, newPassword });
-      Alert.alert('Success', 'Password reset successfully. Please sign in.', [
-        { text: 'OK', onPress: () => navigation.goBack() },
-      ]);
+      toast.show({ type: 'success', title: 'Password reset', message: 'Please sign in.' });
+      navigation.goBack();
     } catch (err: any) {
       const msg = err?.response?.data?.message || 'Failed to reset password';
-      Alert.alert('Error', msg);
+      toast.show({ type: 'error', title: msg });
     } finally {
       setLoading(false);
     }

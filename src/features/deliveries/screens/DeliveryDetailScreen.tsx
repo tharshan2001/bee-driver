@@ -13,6 +13,7 @@ import type { RootStackParamList, RootStackNav } from '../../../navigation/types
 import Card from '../../../shared/components/Card';
 import Skeleton from '../../../shared/components/Skeleton';
 import { formatDate, formatDateTime, getStatusColor, timeAgo } from '../../../core/utils/helpers';
+import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
 
 type DetailRoute = RouteProp<RootStackParamList, 'DeliveryDetail'>;
@@ -36,6 +37,7 @@ export default function DeliveryDetailScreen() {
   const insets = useSafeAreaInsets();
   const route = useRoute<DetailRoute>();
   const navigation = useNavigation<Nav>();
+  const toast = useToast();
   const { orderId } = route.params;
   const [delivery, setDelivery] = useState<DriverDelivery | null>(null);
   const [loading, setLoading] = useState(true);
@@ -64,7 +66,7 @@ export default function DeliveryDetailScreen() {
         )).start();
       }
     } catch (err: any) {
-      Alert.alert('Error', err?.message || 'Failed to load');
+      toast.show({ type: 'error', title: err?.message || 'Failed to load' });
     } finally {
       setLoading(false);
     }
@@ -73,15 +75,15 @@ export default function DeliveryDetailScreen() {
   async function updateStatus(status: string, reason?: string) {
     try {
       await api.patch(`/driver/deliveries/${orderId}/status`, { status, reason });
-      Alert.alert('Success', 'Status updated');
+      toast.show({ type: 'success', title: 'Status updated' });
       fetchDetail();
     } catch (err: any) {
-      Alert.alert('Error', err?.response?.data?.message || 'Failed');
+      toast.show({ type: 'error', title: err?.response?.data?.message || 'Failed to update status' });
     }
   }
 
   function handleReportIssue() {
-    if (!issueReason.trim()) return Alert.alert('Error', 'Please enter a reason');
+    if (!issueReason.trim()) return toast.show({ type: 'error', title: 'Please enter a reason' });
     updateStatus('FAILED', issueReason.trim());
     setShowIssueModal(false);
     setIssueReason('');

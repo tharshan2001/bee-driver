@@ -7,11 +7,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../../context/AuthContext';
 import api from '../../../core/api/client';
+import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
 
 export default function SetPasswordScreen() {
   const insets = useSafeAreaInsets();
   const { clearMustChangePassword } = useAuth();
+  const toast = useToast();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -40,7 +42,7 @@ export default function SetPasswordScreen() {
     try {
       await api.post('/auth/change-password', { currentPassword, newPassword });
       clearMustChangePassword();
-      Alert.alert('Success', 'Password set successfully');
+      toast.show({ type: 'success', title: 'Password set successfully' });
     } catch (err: any) {
       const msg = err?.response?.data?.message || err?.message || 'Failed to set password';
       setError(msg.replace('Exception: ', ''));

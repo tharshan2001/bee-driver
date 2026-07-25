@@ -13,6 +13,7 @@ import SignatureView from 'react-native-signature-canvas';
 import api from '../../../core/api/client';
 import Card from '../../../shared/components/Card';
 import type { RootStackParamList } from '../../../navigation/types';
+import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -33,6 +34,7 @@ export default function DeliveryCompleteScreen() {
   const insets = useSafeAreaInsets();
   const route = useRoute<CompleteRoute>();
   const navigation = useNavigation<Nav>();
+  const toast = useToast();
   const { orderId } = route.params;
 
   const [step, setStep] = useState(0);
@@ -53,7 +55,7 @@ export default function DeliveryCompleteScreen() {
   async function takePhoto() {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
     if (!perm.granted) {
-      Alert.alert('Permission needed', 'Camera permission is required');
+      toast.show({ type: 'error', title: 'Camera permission is required' });
       return;
     }
     const result = await ImagePicker.launchCameraAsync({ quality: 0.8 });
@@ -102,11 +104,10 @@ export default function DeliveryCompleteScreen() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      Alert.alert('Delivery Completed!', 'The delivery has been successfully completed.', [
-        { text: 'OK', onPress: () => navigation.goBack() },
-      ]);
+      toast.show({ type: 'success', title: 'Delivery completed', message: 'The delivery has been successfully completed.' });
+      navigation.goBack();
     } catch (err: any) {
-      Alert.alert('Error', err?.response?.data?.message || 'Submission failed');
+      toast.show({ type: 'error', title: err?.response?.data?.message || 'Submission failed' });
     } finally {
       setLoading(false);
     }

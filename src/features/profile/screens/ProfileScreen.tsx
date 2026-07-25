@@ -11,6 +11,7 @@ import type { DriverProfile } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
 import { formatDate } from '../../../core/utils/helpers';
 import { useAuth } from '../../../context/AuthContext';
+import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
 
 type Nav = RootStackNav;
@@ -19,6 +20,7 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
   const { logout } = useAuth();
+  const toast = useToast();
   const [profile, setProfile] = useState<DriverProfile | null>(null);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -51,7 +53,7 @@ export default function ProfileScreen() {
         phoneNumber: phone.trim(),
         licenseNumber: license.trim(),
       });
-      Alert.alert('Success', 'Profile updated');
+      toast.show({ type: 'success', title: 'Profile updated' });
       setProfile((prev) => prev ? { ...prev, firstName: firstName.trim(), lastName: lastName.trim(), phoneNumber: phone.trim(), licenseNumber: license.trim() } : prev);
       setEditing(false);
     } catch (err: any) {
@@ -85,7 +87,7 @@ export default function ProfileScreen() {
         if (res.data?.success && res.data?.data) {
           setProfile(res.data.data as DriverProfile);
         }
-        Alert.alert('Success', 'Profile photo updated');
+        toast.show({ type: 'success', title: 'Profile photo updated' });
       } catch (err: any) {
         Alert.alert('Error', err?.response?.data?.message || 'Failed to upload photo');
       }

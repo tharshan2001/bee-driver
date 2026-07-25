@@ -13,6 +13,7 @@ import type { Alert as AlertType } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
 import EmptyState from '../../../shared/components/EmptyState';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
+import { useToast } from '../../../shared/context/ToastContext';
 import { timeAgo } from '../../../core/utils/helpers';
 import { colors } from '../../../shared/theme';
 
@@ -96,6 +97,7 @@ export default function AlertsScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   const unreadCount = data.filter((a) => !a.read).length;
 
@@ -171,8 +173,9 @@ export default function AlertsScreen() {
     try {
       await api.patch('/alerts/read-all');
       setData((prev) => prev.map((a) => ({ ...a, read: true })));
+      toast.show({ type: 'success', title: 'All alerts marked as read' });
     } catch (err: any) {
-      Alert.alert('Error', err?.response?.data?.message || 'Failed to mark all as read');
+      toast.show({ type: 'error', title: err?.response?.data?.message || 'Failed to mark all as read' });
     }
   }
 

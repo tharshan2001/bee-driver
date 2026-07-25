@@ -9,11 +9,13 @@ import { useAuth } from '../../../context/AuthContext';
 import api from '../../../core/api/client';
 import type { DriverProfile } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
+import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
 
 export default function MoreScreen() {
   const navigation = useNavigation<RootStackNav>();
   const insets = useSafeAreaInsets();
+  const toast = useToast();
   const { availability, setAvailability, logout } = useAuth();
   const [profile, setProfile] = useState<DriverProfile | null>(null);
 
@@ -31,7 +33,17 @@ export default function MoreScreen() {
       value ? 'Go online and start receiving deliveries?' : 'Go offline and stop receiving deliveries?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Confirm', onPress: () => setAvailability(value) },
+        {
+          text: 'Confirm',
+          onPress: async () => {
+            try {
+              await setAvailability(value);
+              toast.show({ type: 'success', title: value ? 'You are now online' : 'You are now offline' });
+            } catch {
+              toast.show({ type: 'error', title: 'Failed to change status' });
+            }
+          },
+        },
       ],
     );
   }

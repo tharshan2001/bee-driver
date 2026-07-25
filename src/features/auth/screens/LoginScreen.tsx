@@ -8,11 +8,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../context/AuthContext';
 import type { RootStackNav } from '../../../navigation/types';
+import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<RootStackNav>();
+  const toast = useToast();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,7 +40,7 @@ export default function LoginScreen() {
       await login(email.trim(), password);
     } catch (err: any) {
       const msg = err?.response?.data?.message || err?.message || 'Login failed';
-      Alert.alert('Error', msg.replace('Exception: ', ''));
+      toast.show({ type: 'error', title: msg.replace('Exception: ', '') });
     } finally {
       setLoading(false);
     }

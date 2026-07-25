@@ -10,6 +10,7 @@ import { IBMPlexMono_500Medium } from '@expo-google-fonts/ibm-plex-mono';
 import { initializeApp, getApps } from '@react-native-firebase/app';
 import { setupNotificationChannel } from './src/core/notifications/setupNotifications';
 import { AuthProvider } from './src/context/AuthContext';
+import { ToastProvider } from './src/shared/context/ToastContext';
 import RootNavigator from './src/navigation/RootNavigator';
 
 import './global.css';
@@ -60,10 +61,12 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <HeroUINativeProvider>
         <SafeAreaProvider>
-          <AuthProvider>
-            <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-            <RootNavigator />
-          </AuthProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+              <RootNavigator />
+            </AuthProvider>
+          </ToastProvider>
         </SafeAreaProvider>
       </HeroUINativeProvider>
     </GestureHandlerRootView>
