@@ -1,4 +1,5 @@
 import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 import { getTokens, saveTokens } from '../storage/storage';
 import axios from 'axios';
 
@@ -58,8 +59,8 @@ export async function connect(): Promise<void> {
 
   const newClient = new Client({
     webSocketFactory: () => {
-      if (__DEV__) console.log('[STOMP] Creating WebSocket with subprotocols');
-      return new WebSocket(WS_URL, ['v12.stomp', 'v11.stomp', 'v10.stomp']);
+      if (__DEV__) console.log('[STOMP] Creating SockJS connection to', 'https://ebee.lk/ws');
+      return new SockJS('https://ebee.lk/ws') as any;
     },
     connectHeaders: {
       Authorization: `Bearer ${token}`,
