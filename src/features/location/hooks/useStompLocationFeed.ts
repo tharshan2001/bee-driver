@@ -4,11 +4,12 @@ import * as Location from 'expo-location';
 import { connect, disconnect, sendLocation } from '../../../core/api/stompClient';
 
 const STOMP_THROTTLE_MS = 5_000;
+const POLL_INTERVAL_MS = 3_000;
 const CONNECT_RETRY_INTERVAL_MS = 10_000;
 
 export function useStompLocationFeed(isActive: boolean) {
   const lastSentRef = useRef(0);
-  const watchRef = useRef<Location.LocationSubscription | null>(null);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const appStateRef = useRef(AppState.currentState);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isConnectedRef = useRef(false);
@@ -39,51 +40,43 @@ export function useStompLocationFeed(isActive: boolean) {
     }, CONNECT_RETRY_INTERVAL_MS);
   }, []);
 
-  const startForegroundWatch = useCallback(async () => {
-    if (watchRef.current) return;
+  const pollLocation = useCallback(async () => {
+    if (!isConnectedRef.current) return;
+    const now = Date.now();
+    if (now - lastSentRef.current < STOMP_THROTTLE_MS) return;
+    lastSentRef.current = now;
 
     try {
-      const sub = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.BestForNavigation,
-          distanceInterval: 5,
-          timeInterval: 2_000,
-        },
-        (location) => {
-          try {
-            const now = Date.now();
-            if (__DEV__) console.log('[STOMP] Watch callback fired at', now);
-            if (now - lastSentRef.current < STOMP_THROTTLE_MS) {
-              if (__DEV__) console.log('[STOMP] Throttled:', now - lastSentRef.current, 'ms since last send');
-              return;
-            }
-            lastSentRef.current = now;
-
-            const { latitude, longitude, accuracy, heading, speed } = location.coords;
-            if (__DEV__) console.log('[STOMP] Watch pos:', latitude.toFixed(5), longitude.toFixed(5), 'acc:', accuracy);
-            const success = sendLocation({
-              latitude,
-              longitude,
-              accuracy: accuracy ?? null,
-              bearing: heading ?? null,
-              speed: speed ?? null,
-            });
-            if (__DEV__) console.log('[STOMP] Location sent:', latitude.toFixed(5), longitude.toFixed(5), success ? 'OK' : 'FAILED');
-          } catch (e) {
-            if (__DEV__) console.error('[STOMP] Location callback error:', e);
-          }
-        }
-      );
-      watchRef.current = sub;
-      if (__DEV__) console.log('[STOMP] Watch started, subscription:', !!sub);
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.BestForNavigation,
+      });
+      const { latitude, longitude, accuracy, heading, speed } = location.coords;
+      if (__DEV__) console.log('[STOMP] Poll pos:', latitude.toFixed(5), longitude.toFixed(5), 'acc:', accuracy);
+      const success = sendLocation({
+        latitude,
+        longitude,
+        accuracy: accuracy ?? null,
+        bearing: heading ?? null,
+        speed: speed ?? null,
+      });
+      if (__DEV__) console.log('[STOMP] Location sent:', latitude.toFixed(5), longitude.toFixed(5), success ? 'OK' : 'FAILED');
     } catch (e) {
-      if (__DEV__) console.warn('[STOMP] Failed to start foreground watch:', e);
+      if (__DEV__) console.warn('[STOMP] Poll error:', e);
     }
   }, []);
 
+  const startForegroundWatch = useCallback(() => {
+    if (pollIntervalRef.current) return;
+    pollLocation();
+    pollIntervalRef.current = setInterval(pollLocation, POLL_INTERVAL_MS);
+    if (__DEV__) console.log('[STOMP] Poll started at', POLL_INTERVAL_MS, 'ms interval');
+  }, [pollLocation]);
+
   const stopForegroundWatch = useCallback(() => {
-    watchRef.current?.remove();
-    watchRef.current = null;
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current);
+      pollIntervalRef.current = null;
+    }
   }, []);
 
   useEffect(() => {
