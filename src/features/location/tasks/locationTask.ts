@@ -4,9 +4,10 @@ import api from '../../../core/api/client';
 
 export const LOCATION_TASK_NAME = 'LOCATION_TRACKING';
 
-let lastSent = 0;
 const THROTTLE_MS = 15_000;
 const PENDING_LOC_KEY = 'pending-location-payload';
+
+let lastSent = 0;
 
 TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
   if (error) return;
@@ -29,16 +30,13 @@ TaskManager.defineTask(LOCATION_TASK_NAME, async ({ data, error }) => {
 
   try {
     await api.post('/driver/location', payload);
-    // Send succeeded — clear any cached pending payload
     try { await AsyncStorage.removeItem(PENDING_LOC_KEY); } catch {}
   } catch {
-    // Network failed — cache payload for retry on next successful send
     try {
       await AsyncStorage.setItem(PENDING_LOC_KEY, JSON.stringify(payload));
     } catch {}
   }
 
-  // Try sending any previously failed payload
   try {
     const pending = await AsyncStorage.getItem(PENDING_LOC_KEY);
     if (pending) {

@@ -1,6 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { getTokens, saveTokens, clearTokens } from '../storage/storage';
-import Constants from 'expo-constants';
 
 type AuthListener = () => void;
 let authListeners: AuthListener[] = [];
@@ -14,9 +13,8 @@ function notifyAuthExpired() {
   authListeners.forEach(l => l());
 }
 
-const BASE_URL = __DEV__
-  ? 'http://192.168.1.228:8085/api'
-  : ((Constants.expoConfig?.extra as Record<string, any>)?.apiBaseUrl as string) || 'https://ebee.lk/api';
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
+if (!BASE_URL) throw new Error('[API] Missing EXPO_PUBLIC_API_URL in .env');
 if (__DEV__) console.log('[API] BASE_URL:', BASE_URL);
 
 const api = axios.create({
