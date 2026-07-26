@@ -3,6 +3,7 @@ import { getTokens, saveTokens } from '../storage/storage';
 import axios from 'axios';
 
 const WS_URL = process.env.EXPO_PUBLIC_WS_URL;
+const WS_URL_FALLBACK = process.env.EXPO_PUBLIC_WS_URL_FALLBACK;
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 if (!WS_URL) throw new Error('[STOMP] Missing EXPO_PUBLIC_WS_URL in .env');
@@ -11,6 +12,7 @@ if (!API_URL) throw new Error('[STOMP] Missing EXPO_PUBLIC_API_URL in .env');
 let client: Client | null = null;
 let connectResolve: (() => void) | null = null;
 let connectReject: ((err: Error) => void) | null = null;
+let usingFallback = false;
 
 async function getValidToken(): Promise<string | null> {
   try {
@@ -39,6 +41,10 @@ async function refreshAccessToken(): Promise<string | null> {
   }
 }
 
+function getWsUrl(): string {
+  return usingFallback ? (WS_URL_FALLBACK || WS_URL) : WS_URL;
+}
+
 export async function connect(): Promise<void> {
   if (client?.connected) {
     return Promise.resolve();
@@ -54,11 +60,11 @@ export async function connect(): Promise<void> {
     throw new Error('No valid auth token');
   }
 
+  const wsUrl = getWsUrl();
+  if (__DEV__) console.log('[STOMP] Opening WebSocket to:', wsUrl);
+
   const newClient = new Client({
-    webSocketFactory: () => {
-      if (__DEV__) console.log('[STOMP] Opening WebSocket to:', WS_URL);
-      return new WebSocket(WS_URL);
-    },
+    webSocketFactory: () => new WebSocket(wsUrl),
     connectHeaders: {
       Authorization: `Bearer ${token}`,
     },
@@ -72,6 +78,7 @@ export async function connect(): Promise<void> {
   newClient.configure({
     onConnect: () => {
       if (__DEV__) console.log('[STOMP] Connected');
+      if (__DEV__ && usingFallback) console.log('[STOMP] Connected via fallback URL');
       if (timeoutId) clearTimeout(timeoutId);
       if (connectResolve) {
         connectResolve();
@@ -105,6 +112,12 @@ export async function connect(): Promise<void> {
   timeoutId = setTimeout(() => {
     if (__DEV__) console.warn('[STOMP] Connection timeout after 15s');
     newClient.deactivate();
+    if (!usingFallback && WS_URL_FALLBACK) {
+      if (__DEV__) console.log('[STOMP] Trying fallback URL...');
+      usingFallback = true;
+      connect().catch(() => {});
+      return;
+    }
     if (connectReject) {
       connectReject(new Error('Connection timeout'));
       connectReject = null;
@@ -132,6 +145,7 @@ export function disconnect(): void {
   client = null;
   connectResolve = null;
   connectReject = null;
+  usingFallback = false;
 }
 
 export function sendLocation(payload: {
