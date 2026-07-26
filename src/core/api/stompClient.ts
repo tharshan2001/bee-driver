@@ -55,7 +55,7 @@ export async function connect(): Promise<void> {
   }
 
   const newClient = new Client({
-    webSocketFactory: () => new WebSocket(WS_URL),
+    webSocketFactory: () => new WebSocket(WS_URL, ['v12.stomp', 'v11.stomp', 'v10.stomp']),
     connectHeaders: {
       Authorization: `Bearer ${token}`,
     },
