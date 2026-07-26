@@ -100,6 +100,7 @@ module.exports = {
           },
         },
       ],
+      'expo-task-manager',
       'expo-font',
       'expo-video',
       'expo-notifications',

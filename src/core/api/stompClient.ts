@@ -9,12 +9,21 @@ if (!WS_URL) throw new Error('[STOMP] Missing EXPO_PUBLIC_WS_URL in .env');
 if (!API_URL) throw new Error('[STOMP] Missing EXPO_PUBLIC_API_URL in .env');
 
 let client: Client | null = null;
-let connectPromise: Promise<void> | null = null;
-let isRefreshing = false;
+let connectResolve: (() => void) | null = null;
+let connectReject: ((err: Error) => void) | null = null;
+
+async function getValidToken(): Promise<string | null> {
+  try {
+    const tokens = await getTokens();
+    if (tokens?.accessToken) return tokens.accessToken;
+    const refreshed = await refreshAccessToken();
+    return refreshed;
+  } catch {
+    return null;
+  }
+}
 
 async function refreshAccessToken(): Promise<string | null> {
-  if (isRefreshing) return null;
-  isRefreshing = true;
   try {
     const tokens = await getTokens();
     if (!tokens?.refreshToken) return null;
@@ -27,76 +36,88 @@ async function refreshAccessToken(): Promise<string | null> {
     return data.token;
   } catch {
     return null;
-  } finally {
-    isRefreshing = false;
   }
 }
 
-async function getValidToken(): Promise<string | null> {
-  const tokens = await getTokens();
-  if (tokens?.accessToken) return tokens.accessToken;
-  return refreshAccessToken();
-}
+export function connect(): Promise<void> {
+  if (client?.connected) {
+    return Promise.resolve();
+  }
 
-function createClient(): Client {
-  const c = new Client({
-    webSocketFactory: () => new WebSocket(WS_URL),
+  if (client) {
+    client.deactivate();
+    client = null;
+  }
+
+  const newClient = new Client({
+    webSocketFactory: () => {
+      if (__DEV__) console.log('[STOMP] Opening WebSocket to:', WS_URL);
+      return new WebSocket(WS_URL);
+    },
     reconnectDelay: 5000,
     heartbeatIncoming: 10000,
     heartbeatOutgoing: 10000,
-    beforeConnect: async (cl) => {
-      const token = await getValidToken();
-      if (token) {
-        cl.connectHeaders = { Authorization: `Bearer ${token}` };
-      }
-    },
+  });
+
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  newClient.configure({
     onConnect: () => {
       if (__DEV__) console.log('[STOMP] Connected');
-    },
-    onDisconnect: () => {
-      if (__DEV__) console.log('[STOMP] Disconnected');
+      if (timeoutId) clearTimeout(timeoutId);
+      if (connectResolve) {
+        connectResolve();
+        connectResolve = null;
+        connectReject = null;
+      }
     },
     onStompError: (frame) => {
-      console.error('[STOMP] Error:', frame.headers['message'], frame.body);
+      console.error('[STOMP] STOMP error:', frame.headers['message'], frame.body);
+      if (timeoutId) clearTimeout(timeoutId);
+      if (connectReject) {
+        connectReject(new Error('STOMP error: ' + (frame.headers['message'] || frame.body)));
+        connectReject = null;
+        connectResolve = null;
+      }
+    },
+    onWebSocketClose: (evt) => {
+      if (__DEV__) console.log('[STOMP] WebSocket closed:', evt?.code, evt?.reason);
+      if (timeoutId) clearTimeout(timeoutId);
+      if (connectReject) {
+        connectReject(new Error('WebSocket closed'));
+        connectReject = null;
+        connectResolve = null;
+      }
+    },
+    beforeConnect: async () => {
+      const token = await getValidToken();
+      if (!token) {
+        if (__DEV__) console.warn('[STOMP] No valid token');
+        throw new Error('No valid auth token');
+      }
+      newClient.connectHeaders = { Authorization: `Bearer ${token}` };
     },
   });
-  return c;
-}
 
-export function connect(): Promise<void> {
-  if (connectPromise) return connectPromise;
+  timeoutId = setTimeout(() => {
+      if (__DEV__) console.warn('[STOMP] Connection timeout');
+    newClient.deactivate();
+    if (connectReject) {
+      connectReject(new Error('Connection timeout'));
+      connectReject = null;
+      connectResolve = null;
+    }
+  }, 15000);
 
-  if (!client) client = createClient();
-  if (client.connected) return Promise.resolve();
+  client = newClient;
 
-  connectPromise = new Promise<void>((resolve, reject) => {
-    let settled = false;
-
-    client!.configure({
-      onConnect: () => {
-        if (!settled) {
-          settled = true;
-          resolve();
-        }
-      },
-      onStompError: (frame) => {
-        if (!settled) {
-          settled = true;
-          connectPromise = null;
-          client = null;
-          reject(new Error(frame.headers['message'] || 'STOMP connection failed'));
-        }
-      },
-      onWebSocketClose: () => {
-        if (!settled) {
-          settled = true;
-          connectPromise = null;
-          client = null;
-        }
-      },
-    });
-    client!.activate();
+  const connectPromise = new Promise<void>((resolve, reject) => {
+    connectResolve = resolve;
+    connectReject = reject;
   });
+
+  if (__DEV__) console.log('[STOMP] Activating...');
+  newClient.activate();
 
   return connectPromise;
 }
@@ -106,7 +127,8 @@ export function disconnect(): void {
     client.deactivate();
   }
   client = null;
-  connectPromise = null;
+  connectResolve = null;
+  connectReject = null;
 }
 
 export function sendLocation(payload: {
@@ -117,13 +139,18 @@ export function sendLocation(payload: {
   speed: number | null;
 }): boolean {
   const c = client;
-  if (!c?.connected) return false;
+  if (!c?.connected) {
+    if (__DEV__) console.warn('[STOMP] sendLocation: not connected, dropped');
+    return false;
+  }
 
   try {
     c.publish({
       destination: '/app/driver-locations/update',
+      headers: { 'content-type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    if (__DEV__) console.log('[STOMP] Location sent:', payload.latitude.toFixed(5), payload.longitude.toFixed(5));
     return true;
   } catch (e) {
     if (__DEV__) console.warn('[STOMP] Failed to send location:', e);

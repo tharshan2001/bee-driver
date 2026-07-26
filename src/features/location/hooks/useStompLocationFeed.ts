@@ -4,11 +4,37 @@ import * as Location from 'expo-location';
 import { connect, disconnect, sendLocation } from '../../../core/api/stompClient';
 
 const STOMP_THROTTLE_MS = 3_000;
+const CONNECT_RETRY_INTERVAL_MS = 10_000;
 
 export function useStompLocationFeed(isActive: boolean) {
   const lastSentRef = useRef(0);
   const watchRef = useRef<Location.LocationSubscription | null>(null);
   const appStateRef = useRef(AppState.currentState);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isConnectedRef = useRef(false);
+
+  const clearRetryTimer = () => {
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+  };
+
+  const scheduleRetry = useCallback(() => {
+    clearRetryTimer();
+    retryTimerRef.current = setTimeout(() => {
+      if (isConnectedRef.current) return;
+      if (__DEV__) console.log('[STOMP] Retrying connection...');
+      connect()
+        .then(() => {
+          isConnectedRef.current = true;
+          startForegroundWatch();
+        })
+        .catch(() => {
+          scheduleRetry();
+        });
+    }, CONNECT_RETRY_INTERVAL_MS);
+  }, []);
 
   const startForegroundWatch = useCallback(async () => {
     if (watchRef.current) return;
@@ -48,34 +74,51 @@ export function useStompLocationFeed(isActive: boolean) {
 
   useEffect(() => {
     if (!isActive) {
+      isConnectedRef.current = false;
+      clearRetryTimer();
       disconnect();
       stopForegroundWatch();
       return;
     }
 
-    connect().catch((e) => {
-      if (__DEV__) console.warn('[STOMP] Connection failed:', e);
-    });
-    startForegroundWatch();
+    connect()
+      .then(() => {
+        isConnectedRef.current = true;
+        startForegroundWatch();
+      })
+      .catch((e) => {
+        if (__DEV__) console.warn('[STOMP] Initial connection failed:', e?.message);
+        scheduleRetry();
+      });
 
     const sub = AppState.addEventListener('change', (next) => {
       const prev = appStateRef.current;
       appStateRef.current = next;
 
       if (prev.match(/active/) && next.match(/inactive|background/)) {
-        // App went to background — stop STOMP watch (background task handles REST)
         stopForegroundWatch();
       } else if (prev.match(/inactive|background/) && next === 'active') {
-        // App came to foreground — reconnect STOMP + restart watch
-        connect().catch(() => {});
-        startForegroundWatch();
+        if (!isConnectedRef.current) {
+          connect()
+            .then(() => {
+              isConnectedRef.current = true;
+              startForegroundWatch();
+            })
+            .catch(() => {
+              scheduleRetry();
+            });
+        } else {
+          startForegroundWatch();
+        }
       }
     });
 
     return () => {
-      sub.remove();
+      isConnectedRef.current = false;
+      clearRetryTimer();
       disconnect();
       stopForegroundWatch();
+      sub.remove();
     };
-  }, [isActive, startForegroundWatch, stopForegroundWatch]);
+  }, [isActive, startForegroundWatch, stopForegroundWatch, scheduleRetry]);
 }
