@@ -3,7 +3,7 @@ import { AppState } from 'react-native';
 import * as Location from 'expo-location';
 import { connect, disconnect, sendLocation } from '../../../core/api/stompClient';
 
-const STOMP_THROTTLE_MS = 3_000;
+const STOMP_THROTTLE_MS = 5_000;
 const CONNECT_RETRY_INTERVAL_MS = 10_000;
 
 export function useStompLocationFeed(isActive: boolean) {
@@ -12,6 +12,7 @@ export function useStompLocationFeed(isActive: boolean) {
   const appStateRef = useRef(AppState.currentState);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isConnectedRef = useRef(false);
+  const reconnectAttemptsRef = useRef(0);
 
   const clearRetryTimer = () => {
     if (retryTimerRef.current) {
@@ -24,10 +25,12 @@ export function useStompLocationFeed(isActive: boolean) {
     clearRetryTimer();
     retryTimerRef.current = setTimeout(() => {
       if (isConnectedRef.current) return;
-      if (__DEV__) console.log('[STOMP] Retrying connection...');
+      if (__DEV__) console.log('[STOMP] Retrying connection... attempt', reconnectAttemptsRef.current + 1);
+      reconnectAttemptsRef.current += 1;
       connect()
         .then(() => {
           isConnectedRef.current = true;
+          reconnectAttemptsRef.current = 0;
           startForegroundWatch();
         })
         .catch(() => {
@@ -43,7 +46,7 @@ export function useStompLocationFeed(isActive: boolean) {
       const sub = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.BestForNavigation,
-          distanceInterval: 3,
+          distanceInterval: 5,
           timeInterval: 2_000,
         },
         (location) => {
@@ -52,13 +55,14 @@ export function useStompLocationFeed(isActive: boolean) {
           lastSentRef.current = now;
 
           const { latitude, longitude, accuracy, heading, speed } = location.coords;
-          sendLocation({
+          const success = sendLocation({
             latitude,
             longitude,
             accuracy: accuracy ?? null,
             bearing: heading ?? null,
             speed: speed ?? null,
           });
+          if (__DEV__) console.log('[STOMP] Location sent:', latitude.toFixed(5), longitude.toFixed(5), success ? 'OK' : 'FAILED');
         }
       );
       watchRef.current = sub;
@@ -75,6 +79,7 @@ export function useStompLocationFeed(isActive: boolean) {
   useEffect(() => {
     if (!isActive) {
       isConnectedRef.current = false;
+      reconnectAttemptsRef.current = 0;
       clearRetryTimer();
       disconnect();
       stopForegroundWatch();
@@ -84,6 +89,8 @@ export function useStompLocationFeed(isActive: boolean) {
     connect()
       .then(() => {
         isConnectedRef.current = true;
+        reconnectAttemptsRef.current = 0;
+        if (__DEV__) console.log('[STOMP] Connected successfully');
         startForegroundWatch();
       })
       .catch((e) => {
@@ -96,8 +103,10 @@ export function useStompLocationFeed(isActive: boolean) {
       appStateRef.current = next;
 
       if (prev.match(/active/) && next.match(/inactive|background/)) {
+        if (__DEV__) console.log('[STOMP] App backgrounded, stopping watch');
         stopForegroundWatch();
       } else if (prev.match(/inactive|background/) && next === 'active') {
+        if (__DEV__) console.log('[STOMP] App foregrounded, reconnecting');
         if (!isConnectedRef.current) {
           connect()
             .then(() => {
@@ -115,6 +124,7 @@ export function useStompLocationFeed(isActive: boolean) {
 
     return () => {
       isConnectedRef.current = false;
+      reconnectAttemptsRef.current = 0;
       clearRetryTimer();
       disconnect();
       stopForegroundWatch();
