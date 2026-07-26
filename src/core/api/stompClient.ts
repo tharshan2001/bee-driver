@@ -51,11 +51,16 @@ export async function connect(): Promise<void> {
 
   const token = await getValidToken();
   if (!token) {
+    if (__DEV__) console.warn('[STOMP] No valid auth token, cannot connect');
     throw new Error('No valid auth token');
   }
+  if (__DEV__) console.log('[STOMP] Token obtained, connecting to', WS_URL);
 
   const newClient = new Client({
-    webSocketFactory: () => new WebSocket(WS_URL, ['v12.stomp', 'v11.stomp', 'v10.stomp']),
+    webSocketFactory: () => {
+      if (__DEV__) console.log('[STOMP] Creating WebSocket with subprotocols');
+      return new WebSocket(WS_URL, ['v12.stomp', 'v11.stomp', 'v10.stomp']);
+    },
     connectHeaders: {
       Authorization: `Bearer ${token}`,
     },
@@ -95,7 +100,7 @@ export async function connect(): Promise<void> {
       }
     },
     onWebSocketError: (evt) => {
-      console.error('[STOMP] WebSocket error:', evt);
+      if (__DEV__) console.error('[STOMP] WebSocket error:', evt);
     },
   });
 
