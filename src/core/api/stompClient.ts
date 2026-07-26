@@ -39,7 +39,7 @@ async function refreshAccessToken(): Promise<string | null> {
   }
 }
 
-export function connect(): Promise<void> {
+export async function connect(): Promise<void> {
   if (client?.connected) {
     return Promise.resolve();
   }
@@ -49,10 +49,18 @@ export function connect(): Promise<void> {
     client = null;
   }
 
+  const token = await getValidToken();
+  if (!token) {
+    throw new Error('No valid auth token');
+  }
+
   const newClient = new Client({
     webSocketFactory: () => {
       if (__DEV__) console.log('[STOMP] Opening WebSocket to:', WS_URL);
       return new WebSocket(WS_URL);
+    },
+    connectHeaders: {
+      Authorization: `Bearer ${token}`,
     },
     reconnectDelay: 5000,
     heartbeatIncoming: 10000,
@@ -89,18 +97,13 @@ export function connect(): Promise<void> {
         connectResolve = null;
       }
     },
-    beforeConnect: async () => {
-      const token = await getValidToken();
-      if (!token) {
-        if (__DEV__) console.warn('[STOMP] No valid token');
-        throw new Error('No valid auth token');
-      }
-      newClient.connectHeaders = { Authorization: `Bearer ${token}` };
+    onWebSocketError: (evt) => {
+      console.error('[STOMP] WebSocket error:', evt);
     },
   });
 
   timeoutId = setTimeout(() => {
-      if (__DEV__) console.warn('[STOMP] Connection timeout');
+    if (__DEV__) console.warn('[STOMP] Connection timeout after 15s');
     newClient.deactivate();
     if (connectReject) {
       connectReject(new Error('Connection timeout'));
