@@ -50,22 +50,32 @@ export function useStompLocationFeed(isActive: boolean) {
           timeInterval: 2_000,
         },
         (location) => {
-          const now = Date.now();
-          if (now - lastSentRef.current < STOMP_THROTTLE_MS) return;
-          lastSentRef.current = now;
+          try {
+            const now = Date.now();
+            if (__DEV__) console.log('[STOMP] Watch callback fired at', now);
+            if (now - lastSentRef.current < STOMP_THROTTLE_MS) {
+              if (__DEV__) console.log('[STOMP] Throttled:', now - lastSentRef.current, 'ms since last send');
+              return;
+            }
+            lastSentRef.current = now;
 
-          const { latitude, longitude, accuracy, heading, speed } = location.coords;
-          const success = sendLocation({
-            latitude,
-            longitude,
-            accuracy: accuracy ?? null,
-            bearing: heading ?? null,
-            speed: speed ?? null,
-          });
-          if (__DEV__) console.log('[STOMP] Location sent:', latitude.toFixed(5), longitude.toFixed(5), success ? 'OK' : 'FAILED');
+            const { latitude, longitude, accuracy, heading, speed } = location.coords;
+            if (__DEV__) console.log('[STOMP] Watch pos:', latitude.toFixed(5), longitude.toFixed(5), 'acc:', accuracy);
+            const success = sendLocation({
+              latitude,
+              longitude,
+              accuracy: accuracy ?? null,
+              bearing: heading ?? null,
+              speed: speed ?? null,
+            });
+            if (__DEV__) console.log('[STOMP] Location sent:', latitude.toFixed(5), longitude.toFixed(5), success ? 'OK' : 'FAILED');
+          } catch (e) {
+            if (__DEV__) console.error('[STOMP] Location callback error:', e);
+          }
         }
       );
       watchRef.current = sub;
+      if (__DEV__) console.log('[STOMP] Watch started, subscription:', !!sub);
     } catch (e) {
       if (__DEV__) console.warn('[STOMP] Failed to start foreground watch:', e);
     }
