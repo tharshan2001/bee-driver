@@ -30,7 +30,7 @@ const tabIcons: Record<string, { active: IoniconsName; inactive: IoniconsName }>
   Home: { active: 'home', inactive: 'home-outline' },
   Deliveries: { active: 'cube', inactive: 'cube-outline' },
   Alerts: { active: 'notifications', inactive: 'notifications-outline' },
-  More: { active: 'ellipsis-horizontal-circle', inactive: 'ellipsis-horizontal-circle-outline' },
+  Profile: { active: 'person-circle', inactive: 'person-circle-outline' },
 };
 
 function MainTabs() {
@@ -64,7 +64,7 @@ function MainTabs() {
       <Tab.Screen name="Home" component={DashboardScreen} />
       <Tab.Screen name="Deliveries" component={DeliveriesListScreen} />
       <Tab.Screen name="Alerts" component={AlertsScreen} />
-      <Tab.Screen name="More" component={MoreScreen} />
+      <Tab.Screen name="Profile" component={MoreScreen} />
     </Tab.Navigator>
   );
 }

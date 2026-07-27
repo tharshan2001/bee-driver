@@ -62,7 +62,7 @@ export default function MoreScreen() {
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-        <Text style={styles.headerTitle}>More</Text>
+        <Text style={styles.headerTitle}>Profile</Text>
       </View>
 
       <ScrollView

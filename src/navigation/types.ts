@@ -21,7 +21,7 @@ export type TabParamList = {
   Home: undefined;
   Deliveries: undefined;
   Alerts: undefined;
-  More: undefined;
+  Profile: undefined;
 };
 
 export type RootStackNav = NativeStackNavigationProp<RootStackParamList>;
