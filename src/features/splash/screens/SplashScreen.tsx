@@ -10,6 +10,8 @@ const SPLASH_VIDEO = Platform.OS === 'web'
   ? require('../../../../assets/buzz-calm.mp4')
   : require('../../../../assets/buzz-pkg.mov');
 
+const SPLASH_TIMEOUT_MS = 8_000;
+
 export default function SplashScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -71,6 +73,14 @@ export default function SplashScreen() {
       player.removeListener('statusChange', onStatusChange);
     };
   }, [player, isLoading, navigateAway]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      videoFinished.current = true;
+      navigateAway();
+    }, SPLASH_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [navigateAway]);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
