@@ -3,7 +3,7 @@ import { getTokens, clearTokens, saveTokens, saveDriverId, getDriverId, saveAvai
 import api, { onAuthExpired } from '../core/api/client';
 import type { LoginResponse } from '../core/api/types';
 import { useLocationTracking } from '../features/location/hooks/useLocationTracking';
-import { useStompLocationFeed } from '../features/location/hooks/useStompLocationFeed';
+import { useAppPermissions } from '../features/permissions/hooks/useAppPermissions';
 import { registerFcmToken } from '../core/notifications/registerFcmToken';
 import messaging from '@react-native-firebase/messaging';
 
@@ -40,8 +40,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     mustChangePassword: false,
   });
 
-  const { isTracking } = useLocationTracking(state.isAuthenticated);
-  useStompLocationFeed(state.isAuthenticated);
+  useAppPermissions();
+  const { isTracking } = useLocationTracking(state.isAuthenticated, state.driverId ?? undefined);
 
   useEffect(() => {
     setState((prev) => ({ ...prev, isTracking }));

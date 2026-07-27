@@ -137,6 +137,10 @@ export function disconnect(): void {
   connectReject = null;
 }
 
+export function isConnected(): boolean {
+  return !!(client?.connected);
+}
+
 export function sendLocation(payload: {
   latitude: number;
   longitude: number;
