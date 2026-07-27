@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, TouchableOpacity, StyleSheet, ScrollView, Switch, Alert,
+  View, Text, TouchableOpacity, StyleSheet, ScrollView, Switch, Alert, Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -74,7 +74,7 @@ export default function MoreScreen() {
         <View style={styles.profileHeader}>
           <View style={styles.avatar}>
             {profile?.photoUrl ? (
-              <Text style={styles.avatarText}>{initials}</Text>
+              <Image source={{ uri: profile.photoUrl }} style={styles.avatarImage} />
             ) : (
               <Text style={styles.avatarText}>{initials}</Text>
             )}
@@ -152,8 +152,9 @@ const styles = StyleSheet.create({
   },
   avatar: {
     width: 72, height: 72, borderRadius: 36, backgroundColor: colors.primaryTint,
-    justifyContent: 'center', alignItems: 'center', marginBottom: 12,
+    justifyContent: 'center', alignItems: 'center', marginBottom: 12, overflow: 'hidden',
   },
+  avatarImage: { width: 72, height: 72, borderRadius: 36 },
   avatarText: {
     fontFamily: 'SpaceGrotesk_700Bold', fontSize: 24, color: colors.primary,
   },
