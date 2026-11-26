@@ -12,13 +12,19 @@ import { formatDate } from '../../../core/utils/helpers';
 import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
 
-const categories = ['FUEL', 'MAINTENANCE', 'PARKING', 'TOLL', 'OTHER'];
+// Must be values of the backend's ExpenseCategory.
+const categories = ['PETROL', 'MAINTENANCE', 'PARKING', 'TOLL', 'OTHER'];
+
+// The date as picked on the phone. toISOString() is UTC, which is yesterday before 5.30am in Sri Lanka.
+function localDate(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
 
 export default function CreateExpenseScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const toast = useToast();
-  const [category, setCategory] = useState('FUEL');
+  const [category, setCategory] = useState('PETROL');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState(new Date());
@@ -41,12 +47,17 @@ export default function CreateExpenseScreen() {
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append('expense', JSON.stringify({
-        category,
-        amount: Number(amount),
-        description: description.trim(),
-        date: date.toISOString().split('T')[0],
-      }));
+      // The server only reads this part if it is labelled as JSON. React Native does that for
+      // a { string, type } part; a plain string is rejected with 415.
+      formData.append('expense', {
+        string: JSON.stringify({
+          category,
+          amount: Number(amount),
+          description: description.trim(),
+          dateIncurred: localDate(date),
+        }),
+        type: 'application/json',
+      } as any);
       if (receipt) {
         formData.append('receipt', {
           uri: receipt,

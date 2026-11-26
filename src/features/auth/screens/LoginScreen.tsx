@@ -39,7 +39,8 @@ export default function LoginScreen() {
     try {
       await login(email.trim(), password);
     } catch (err: any) {
-      const msg = err?.response?.data?.message || err?.message || 'Login failed';
+      let msg: string = err?.response?.data?.message || err?.message || 'Login failed';
+      if (msg.startsWith('Invalid role for login')) msg = 'This app is for drivers. Sign in with a driver account.';
       toast.show({ type: 'error', title: msg.replace('Exception: ', '') });
     } finally {
       setLoading(false);

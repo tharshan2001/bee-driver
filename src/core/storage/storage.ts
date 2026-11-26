@@ -32,11 +32,21 @@ async function secureDelete(key: string) {
   await AsyncStorage.removeItem(key);
 }
 
+type TokenListener = (accessToken: string) => void;
+const tokenListeners = new Set<TokenListener>();
+
+/** Called with each new access token, for whatever holds its own copy (live location). */
+export function onTokenChange(listener: TokenListener) {
+  tokenListeners.add(listener);
+  return () => { tokenListeners.delete(listener); };
+}
+
 export async function saveTokens(accessToken: string, refreshToken: string) {
   await Promise.all([
     secureSet(ACCESS_TOKEN_KEY, accessToken),
     secureSet(REFRESH_TOKEN_KEY, refreshToken),
   ]);
+  tokenListeners.forEach((listener) => listener(accessToken));
 }
 
 export async function getTokens(): Promise<{
