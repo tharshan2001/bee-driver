@@ -44,3 +44,6 @@ GoogleService-Info.plist
 # generated native folders
 /ios
 /android
+
+# Build output of local native modules
+modules/*/android/build/
