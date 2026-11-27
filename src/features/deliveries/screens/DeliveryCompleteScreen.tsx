@@ -99,6 +99,9 @@ export default function DeliveryCompleteScreen() {
         } as any);
       }
       if (notes.trim()) formData.append('driverNotes', notes.trim());
+      // Photo, signature and notes are all optional, but Android refuses to send a multipart body
+      // with no parts. The server ignores this field.
+      if (!photo && !signatureBase64 && !notes.trim()) formData.append('noAttachments', 'true');
 
       await api.post(`/driver/deliveries/${orderId}/complete`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
