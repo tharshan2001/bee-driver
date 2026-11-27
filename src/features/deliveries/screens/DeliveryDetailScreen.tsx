@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, StyleSheet, Alert, TextInput, Modal, Linking, Image, Platform } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Alert, TextInput, Modal, Linking, Image } from 'react-native';
 import { haptics } from '../../../shared/haptics';
 import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +11,7 @@ import type { DriverDelivery } from '../../../core/api/types';
 import type { RootStackParamList, RootStackNav } from '../../../navigation/types';
 import Card from '../../../shared/components/Card';
 import Appear from '../../../shared/components/Appear';
+import ContactButtons from '../../../shared/components/ContactButtons';
 import Skeleton from '../../../shared/components/Skeleton';
 import { formatDate, formatDateTime, getStatusColor, timeAgo, formatMoney } from '../../../core/utils/helpers';
 import SwipeToConfirm from '../../../shared/components/SwipeToConfirm';
@@ -68,10 +69,6 @@ export default function DeliveryDetailScreen() {
     } finally {
       setLoading(false);
     }
-  }
-
-  function openLink(url: string, failure: string) {
-    Linking.openURL(url).catch(() => toast.show({ type: 'error', title: failure }));
   }
 
   async function updateStatus(status: string, reason?: string) {
@@ -144,18 +141,7 @@ export default function DeliveryDetailScreen() {
           <Ionicons name="location-outline" size={16} color={colors.textSecondary} style={{ marginRight: 6 }} />
           <Text style={{ fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary, flex: 1 }}>{delivery.customer.address}</Text>
         </View>
-        <View style={styles.contactRow}>
-          <Touchable style={styles.contactButton} accessibilityRole="button" accessibilityLabel={`Call ${delivery.customer.phone}`}
-            onPress={() => openLink(`tel:${delivery.customer.phone}`, "Couldn't open the phone")}>
-            <Ionicons name="call-outline" size={18} color={colors.success} />
-            <Text style={styles.contactText}>Call {delivery.customer.phone}</Text>
-          </Touchable>
-          <Touchable style={styles.contactButton} accessibilityRole="button" accessibilityLabel="Navigate to the address"
-            onPress={() => openLink(mapUrl(delivery.customer.address), "Couldn't open a map")}>
-            <Ionicons name="navigate-outline" size={18} color={colors.success} />
-            <Text style={styles.contactText}>Navigate</Text>
-          </Touchable>
-        </View>
+        <ContactButtons phone={delivery.customer.phone} address={delivery.customer.address} />
       </AnimatedCard>
 
       {delivery.orderInfo.outstanding > 0 && !['DELIVERED', 'FAILED', 'FAILED_PERMANENT'].includes(delivery.status.toUpperCase()) && (
@@ -287,12 +273,6 @@ export default function DeliveryDetailScreen() {
   );
 }
 
-/** The phone's map app, searching for the address. */
-function mapUrl(address: string): string {
-  const q = encodeURIComponent(address);
-  return Platform.OS === 'ios' ? `http://maps.apple.com/?q=${q}` : `geo:0,0?q=${q}`;
-}
-
 function AnimatedCard({ children, index, style }: { children: React.ReactNode; index: number; style?: any }) {
   return (
     <Appear index={index}>
@@ -347,12 +327,6 @@ const styles = StyleSheet.create({
   customerName: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 16, color: colors.textPrimary },
   district: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 12, color: colors.textSecondary },
   linkRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
-  contactRow: { flexDirection: 'row', gap: 8, marginTop: 8 },
-  contactButton: {
-    flexGrow: 1, minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    paddingHorizontal: 12, borderRadius: 10, backgroundColor: colors.successTint,
-  },
-  contactText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.success },
   collect: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     backgroundColor: colors.primaryTint, borderRadius: 14, padding: 16,
