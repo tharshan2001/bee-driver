@@ -1,17 +1,17 @@
-import React, { useCallback } from 'react';
-import { View, Text, RefreshControl, StyleSheet, ScrollView } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import { View, Text, RefreshControl, StyleSheet, FlatList } from 'react-native';
 import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../../../core/api/client';
-import type { DriverDashboard, DriverDelivery, DeliverySummary, PageResponse } from '../../../core/api/types';
+import type { DriverDashboard, DeliverySummary } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
 import Badge from '../../../shared/components/StatusBadge';
 import SectionHeader from '../../../shared/components/SectionHeader';
+import ScreenContainer from '../../../shared/components/ScreenContainer';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
 import WelcomeBanner from '../components/WelcomeBanner';
-import TodayPanel from '../components/TodayPanel';
 import { timeAgo } from '../../../core/utils/helpers';
 import { colors } from '../../../shared/theme';
 
@@ -24,18 +24,6 @@ export default function DashboardScreen() {
   const [loading, setLoading] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
-  const [stops, setStops] = React.useState<DriverDelivery[] | null>(null);
-
-  // The active trip's deliveries, for the next stop and the cash to collect.
-  const fetchStops = useCallback(async () => {
-    try {
-      const res = await api.get('/driver/deliveries', { params: { page: 0, size: 200 } });
-      const page = res.data?.data as PageResponse<DriverDelivery> | undefined;
-      if (page) setStops(page.content);
-    } catch {
-      // Keep what is on screen; with nothing loaded yet the panel says so.
-    }
-  }, []);
 
   const fetchDashboard = useCallback(async () => {
     setError(null);
@@ -54,21 +42,16 @@ export default function DashboardScreen() {
     }
   }, []);
 
-  // Also on every return to the tab, so statuses and totals are current.
-  useFocusEffect(useCallback(() => {
-    fetchDashboard();
-    fetchStops();
-  }, [fetchDashboard, fetchStops]));
+  useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchStops();
     fetchDashboard();
-  }, [fetchDashboard, fetchStops]);
+  }, [fetchDashboard]);
 
   const recentDeliveries = dashboard?.recentDeliveries?.slice(0, 5) ?? [];
 
-  const renderRecentItem = (item: DeliverySummary) => (
+  const renderRecentItem = useCallback(({ item }: { item: DeliverySummary }) => (
     <Touchable
       key={item.orderId}
       onPress={() => navigation.navigate('DeliveryDetail', { orderId: item.orderId })}
@@ -83,7 +66,7 @@ export default function DashboardScreen() {
         <Text style={styles.recentTime}>{timeAgo(item.createdAt)}</Text>
       </View>
     </Touchable>
-  );
+  ), [navigation]);
 
   if (loading) {
     return (
@@ -93,17 +76,13 @@ export default function DashboardScreen() {
     );
   }
 
-  // A failed refresh keeps what is already on screen.
-  if (error && !dashboard) {
-    return <ErrorScreen message={error} onRetry={() => { setLoading(true); fetchDashboard(); fetchStops(); }} />;
+  if (error) {
+    return <ErrorScreen message={error} onRetry={() => { setLoading(true); fetchDashboard(); }} />;
   }
 
   return (
-    <View style={[styles.outer, { paddingTop: insets.top + Math.min(insets.top, 12) }]}>
-      <ScrollView
-        contentContainerStyle={styles.content}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-      >
+    <View style={[styles.outer, { paddingTop: Math.min(insets.top, 12) }]}>
+      <ScreenContainer>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Dashboard</Text>
           <View style={styles.headerRight}>
@@ -118,13 +97,7 @@ export default function DashboardScreen() {
 
         <WelcomeBanner name={dashboard?.driverName?.split(' ')[0] || 'Driver'} />
 
-        <TodayPanel
-          deliveries={stops}
-          deliveredToday={dashboard?.completedToday ?? 0}
-          onOpen={(orderId) => navigation.navigate('DeliveryDetail', { orderId })}
-        />
-
-        <SectionHeader title="QUICK ACTIONS" />
+        <SectionHeader title="Quick actions" />
 
         <View style={styles.actionsRow}>
           <Touchable onPress={() => navigation.navigate('LiveLocation')} style={styles.actionCard}>
@@ -144,14 +117,21 @@ export default function DashboardScreen() {
             <Text style={styles.actionLabel}>STATS</Text>
           </Touchable>
         </View>
+      </ScreenContainer>
 
-        {recentDeliveries.length > 0 && (
-          <View style={styles.recentSection}>
-            <SectionHeader title="RECENT DELIVERIES" actionLabel="View all" onAction={() => navigation.navigate('MainTabs', { screen: 'Deliveries' } as any)} />
-            {recentDeliveries.map(renderRecentItem)}
-          </View>
-        )}
-      </ScrollView>
+      {recentDeliveries.length > 0 && (
+        <View style={styles.recentSection}>
+          <SectionHeader title="Recent" actionLabel="View all" onAction={() => navigation.navigate('MainTabs', { screen: 'Deliveries' } as any)} />
+          <FlatList
+            data={recentDeliveries}
+            renderItem={renderRecentItem}
+            keyExtractor={(item) => item.orderId}
+            nestedScrollEnabled
+            contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -176,8 +156,7 @@ const styles = StyleSheet.create({
     fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, color: colors.textPrimary,
     textTransform: 'uppercase',
   },
-  content: { paddingHorizontal: 16, paddingBottom: 24 },
-  recentSection: { marginTop: 8, paddingHorizontal: 4 },
+  recentSection: { flex: 1, paddingHorizontal: 20 },
   recentRow: {
     flexDirection: 'row', alignItems: 'center', paddingVertical: 12,
     borderBottomWidth: 1, borderBottomColor: colors.separator,

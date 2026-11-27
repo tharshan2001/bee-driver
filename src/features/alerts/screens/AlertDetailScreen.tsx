@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert as RNAlert } from 'react-native';
 import Touchable from '../../../shared/components/Touchable';
+import { haptics } from '../../../shared/haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -49,6 +50,7 @@ export default function AlertDetailScreen() {
       await api.patch(`/alerts/${alertItem.id}/read`);
       setRead(true);
     } catch (err: any) {
+      haptics.error();
       RNAlert.alert('Error', err?.response?.data?.message || 'Failed to mark as read');
     }
   }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Switch, Alert, Image } from 'react-native';
 import Touchable from '../../../shared/components/Touchable';
+import { haptics } from '../../../shared/haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -37,8 +38,10 @@ export default function MoreScreen() {
           onPress: async () => {
             try {
               await setAvailability(value);
+              haptics.confirm();
               toast.show({ type: 'success', title: value ? 'You are now online' : 'You are now offline' });
             } catch {
+              haptics.error();
               toast.show({ type: 'error', title: 'Failed to change status' });
             }
           },

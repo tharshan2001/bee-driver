@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Alert, ScrollView } from 'react-native';
 import Touchable from '../../../shared/components/Touchable';
+import { haptics } from '../../../shared/haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -21,16 +22,18 @@ export default function ChangePasswordScreen() {
   const [loading, setLoading] = useState(false);
 
   async function handleChange() {
-    if (!currentPassword || !newPassword) return Alert.alert('Error', 'All fields required');
-    if (newPassword.length < 6) return Alert.alert('Error', 'New password min 6 characters');
-    if (newPassword !== confirmPassword) return Alert.alert('Error', 'Passwords do not match');
+    if (!currentPassword || !newPassword) { haptics.error(); return Alert.alert('Error', 'All fields required'); }
+    if (newPassword.length < 6) { haptics.error(); return Alert.alert('Error', 'New password min 6 characters'); }
+    if (newPassword !== confirmPassword) { haptics.error(); return Alert.alert('Error', 'Passwords do not match'); }
 
     setLoading(true);
     try {
       await api.post('/auth/change-password', { currentPassword, newPassword });
+      haptics.success();
       toast.show({ type: 'success', title: 'Password changed successfully' });
       navigation.goBack();
     } catch (err: any) {
+      haptics.error();
       Alert.alert('Error', err?.response?.data?.message || 'Failed to change password');
     } finally {
       setLoading(false);
@@ -94,7 +97,7 @@ const styles = StyleSheet.create({
   content: { padding: 24 },
   fieldGroup: { marginBottom: 24 },
   label: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginBottom: 6, textTransform: 'uppercase' },
-  input: { borderBottomWidth: 1, borderBottomColor: colors.separator, paddingVertical: 8, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
+  input: { backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
   passwordRow: { flexDirection: 'row', alignItems: 'center' },
   passwordInput: { flex: 1 },
   eyeBtn: { padding: 10 },

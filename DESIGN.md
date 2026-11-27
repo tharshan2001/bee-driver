@@ -17,12 +17,14 @@ and muted captions.
 | Surface         | `#F5F5F7` | Grouped/inset section fill    |
 | Elevated        | `#FFFFFF` | Cards, sheets, popovers       |
 | Text Primary    | `#1D1D1F` | Headlines, body text          |
-| Text Secondary  | `#86868B` | Subheadings, metadata         |
-| Text Tertiary   | `#AEAEB2` | Captions, placeholders        |
-| Text on Color   | `#FFFFFF` | Text on accent/dark bg        |
+| Text Secondary  | `#5F5F66` | Subheadings, metadata         |
+| Text Tertiary   | `#6E6E73` | Captions, placeholders        |
+| Text on Yellow  | `#1D1D1F` | Text and icons on yellow      |
+| Text on Color   | `#FFFFFF` | Text on green, red or dark bg |
 | Sunflower Yellow| `#FFC107` | The one accent color          |
 | Sunflower Deep  | `#D4A000` | Pressed CTA state             |
 | Sunflower Tint  | `#FFF3CD` | Light accent fills            |
+| Sunflower Text  | `#8A6100` | Links and accent text on light|
 | Manifest Green  | `#2F6F4E` | Delivered/approved/online     |
 | Green Tint      | `#E1ECE3` | Success badge backing         |
 | Customs Red     | `#B23A2E` | Failed/rejected/urgent        |
@@ -77,6 +79,7 @@ Letter-spacing: body +0, captions +0.3, buttons +0.5.
    separators between list items.
 2. **One accent color.** Sunflower Yellow appears only on CTAs, active tab state,
    and interactive elements. Statuses use their own semantic colors.
+   Never use it for text, or put white text on it: neither is readable outdoors.
 3. **Typography is the hierarchy.** Size and weight differences between screen title,
    section title, body, and caption are the primary wayfinding mechanism —
    not boxes, borders, or colored backgrounds.
@@ -97,4 +100,4 @@ mono uppercase 10px text. Compact variant: circular 6px dot + mono uppercase lab
 
 ### Tab Bar
 White background. Active tab: filled icon + `#1D1D1F` label. Inactive: outline
-icon + `#AEAEB2`. No tick mark, no top border.
+icon + `#6E6E73`. No tick mark, no top border.
