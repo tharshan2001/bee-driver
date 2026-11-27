@@ -100,7 +100,7 @@ export default function LiveLocationScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: insets.bottom + 12 }]}>
       {error ? (
         <View style={styles.center}>
           <Ionicons name="location-outline" size={48} color={colors.danger} />
@@ -131,7 +131,8 @@ export default function LiveLocationScreen() {
             <Text style={styles.mapPlaceholderText}>Your location</Text>
           </View>
 
-          <View style={[styles.card, { marginHorizontal: 16, marginTop: -32 }]}>
+          <View style={styles.card}>
+            <Text style={styles.caption}>YOUR LOCATION</Text>
             <View style={styles.statusRow}>
               <View style={[styles.dot, { backgroundColor: isTracking ? colors.success : colors.danger }]} />
               <Text style={styles.statusLabel}>
@@ -164,8 +165,8 @@ export default function LiveLocationScreen() {
           </View>
 
           <Touchable onPress={openInMaps} style={styles.actionButton}>
-            <Ionicons name="compass-outline" size={20} color="#fff" />
-            <Text style={styles.actionText}>OPEN IN GOOGLE MAPS</Text>
+            <Ionicons name="navigate-outline" size={18} color={colors.textOnPrimary} />
+            <Text style={styles.actionText}>Open in Google Maps</Text>
           </Touchable>
         </>
       )}
@@ -179,18 +180,13 @@ const styles = StyleSheet.create({
     flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12,
     padding: 32,
   },
-  mapPlaceholder: {
-    height: 240, backgroundColor: colors.surface,
-    justifyContent: 'center', alignItems: 'center', gap: 8,
-    marginHorizontal: 16, marginTop: 16, borderRadius: 10,
-  },
+  mapPlaceholder: { flex: 1, backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center', gap: 8 },
   mapPlaceholderText: {
     fontFamily: 'IBMPlexMono_500Medium', fontSize: 11,
     color: colors.textTertiary, textTransform: 'uppercase',
   },
-  card: {
-    backgroundColor: colors.surface, borderRadius: 10, padding: 16, gap: 12,
-  },
+  card: { backgroundColor: colors.elevated, borderRadius: 10, padding: 16, gap: 10, marginHorizontal: 16, marginTop: 12, boxShadow: '0px 2px 12px rgba(0,0,0,0.08)' },
+  caption: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary },
   statusRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   dot: { width: 8, height: 8, borderRadius: 4 },
   statusLabel: {
@@ -210,14 +206,10 @@ const styles = StyleSheet.create({
     fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, color: colors.textTertiary,
   },
   actionButton: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
-    backgroundColor: colors.primary, marginHorizontal: 16, marginTop: 16,
-    paddingVertical: 14, borderRadius: 10,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, minHeight: 48,
+    backgroundColor: colors.primary, marginHorizontal: 16, marginTop: 8, borderRadius: 10,
   },
-  actionText: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textOnPrimary,
-    textTransform: 'uppercase',
-  },
+  actionText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary },
   errorText: {
     fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.danger,
     textAlign: 'center',

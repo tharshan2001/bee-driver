@@ -60,20 +60,15 @@ function NotificationCard({ item, index, onPress }: { item: AlertType; index: nu
         style={[styles.card, !item.read && styles.cardUnread]}
         onPress={onPress}
       >
-        <View style={[styles.iconCircle, { backgroundColor: icColor + '15' }]}>
-          <Ionicons name={icon} size={18} color={icColor} />
+        <View style={styles.iconCircle}>
+          <Ionicons name={icon} size={18} color={colors.textPrimary} />
         </View>
         <View style={styles.cardContent}>
-          <View style={styles.cardTopRow}>
-            <Text style={[styles.cardTitle, !item.read && styles.cardTitleUnread]} numberOfLines={1}>
-              {item.title}
-            </Text>
-            {!item.read && <View style={styles.unreadDot} />}
-          </View>
+          <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
           <Text style={styles.cardMessage} numberOfLines={1}>{item.message}</Text>
           <Text style={styles.cardTime}>{timeAgo(item.createdAt)}</Text>
         </View>
-        <Ionicons name="chevron-forward" size={14} color={colors.textTertiary} />
+        {!item.read && <View style={styles.unreadDot} accessibilityLabel="Unread" />}
       </Touchable>
     </Appear>
   );
@@ -177,16 +172,9 @@ export default function AlertsScreen() {
   return (
     <View style={[styles.container, { paddingTop: insets.top + 12 }]}>
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>Alerts</Text>
-          {unreadCount > 0 && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{unreadCount > 99 ? '99+' : unreadCount}</Text>
-            </View>
-          )}
-        </View>
+        <Text style={styles.headerTitle}>Alerts</Text>
         {unreadCount > 0 && (
-          <Touchable onPress={markAllRead} style={styles.markAllBtn}>
+          <Touchable onPress={markAllRead} style={styles.markAllBtn} accessibilityRole="button">
             <Text style={styles.markAllText}>Mark all read</Text>
           </Touchable>
         )}
@@ -213,51 +201,20 @@ export default function AlertsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  header: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: 20, marginBottom: 12,
-  },
-  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  headerTitle: {
-    fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: colors.textPrimary,
-  },
-  badge: {
-    backgroundColor: colors.danger, borderRadius: 10,
-    minWidth: 20, height: 20, paddingHorizontal: 6,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  badgeText: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: '#fff',
-  },
-  markAllBtn: {
-    paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8,
-    backgroundColor: colors.surface,
-  },
-  markAllText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textSecondary },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 16, marginBottom: 12 },
+  headerTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: colors.textPrimary },
+  markAllBtn: { paddingVertical: 10 },
+  markAllText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 13, color: colors.primaryText },
   card: {
-    flexDirection: 'row', alignItems: 'center',
+    flexDirection: 'row', alignItems: 'center', gap: 12,
     backgroundColor: colors.elevated, borderRadius: 10, padding: 14, marginBottom: 12,
     boxShadow: '0px 2px 12px rgba(0,0,0,0.08)',
   },
-  cardUnread: {}, // the dot beside the title marks unread
-  iconCircle: {
-    width: 36, height: 36, borderRadius: 18,
-    alignItems: 'center', justifyContent: 'center',
-    marginRight: 12,
-  },
+  cardUnread: {}, // the dot marks unread
+  iconCircle: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
   cardContent: { flex: 1 },
-  cardTopRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  cardTitle: {
-    fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary, flex: 1,
-  },
-  cardTitleUnread: { fontFamily: 'IBMPlexSans_500Medium' },
-  cardMessage: {
-    fontFamily: 'IBMPlexSans_400Regular', fontSize: 12, color: colors.textSecondary, marginTop: 2,
-  },
-  cardTime: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, color: colors.textTertiary, marginTop: 4,
-  },
-  unreadDot: {
-    width: 7, height: 7, borderRadius: 4, backgroundColor: colors.primary,
-  },
+  cardTitle: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 16, color: colors.textPrimary },
+  cardMessage: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary, marginTop: 2 },
+  cardTime: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginTop: 4 },
+  unreadDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary },
 });

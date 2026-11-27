@@ -79,7 +79,11 @@ export default function AppNavigator() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Stack.Navigator screenOptions={{ headerShown: false, animation: push }}>
+      <Stack.Navigator screenOptions={{
+        headerShown: false, animation: push, headerShadowVisible: false, headerTintColor: colors.textPrimary,
+        headerStyle: { backgroundColor: colors.background },
+        headerTitleStyle: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 17 },
+      }}>
       <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen
         name="DeliveryDetail"
@@ -92,7 +96,7 @@ export default function AppNavigator() {
         options={{ headerShown: true, headerTitle: 'Complete Delivery', headerBackTitle: 'Back', animation: task }}
       />
       <Stack.Screen
-        name="Profile"
+        name="EditProfile"
         component={ProfileScreen}
         options={{ headerShown: true, headerTitle: 'Profile', headerBackTitle: 'Back' }}
       />

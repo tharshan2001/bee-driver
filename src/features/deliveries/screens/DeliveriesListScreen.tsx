@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4,
   },
   headerTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: colors.textPrimary },
   filterRow: {

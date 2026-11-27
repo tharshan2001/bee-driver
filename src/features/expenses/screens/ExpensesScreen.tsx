@@ -42,7 +42,7 @@ export default function ExpensesScreen() {
 
   const categoryIcon = (cat: string) => {
     const icons: Record<string, keyof typeof Ionicons.glyphMap> = {
-      FUEL: 'car-outline', MAINTENANCE: 'build-outline', PARKING: 'car-outline',
+      PETROL: 'car-outline', FUEL: 'car-outline', MAINTENANCE: 'build-outline', PARKING: 'car-outline',
       TOLL: 'cash-outline', OTHER: 'receipt-outline',
     };
     return icons[cat.toUpperCase()] || 'receipt-outline';
@@ -73,7 +73,7 @@ export default function ExpensesScreen() {
             <Ionicons name={categoryIcon(item.category)} size={20} color={colors.textTertiary} style={{ marginRight: 12 }} />
             <View style={styles.itemContent}>
               <Text style={styles.description}>{item.description}</Text>
-              <Text style={styles.meta}>{item.category} • {formatDate(item.date)}</Text>
+              <Text style={styles.meta}>{item.category} · {formatDate(item.date)}</Text>
             </View>
             <View style={styles.itemRight}>
               <Text style={styles.amount}>{formatMoney(item.amount)}</Text>
@@ -105,12 +105,11 @@ const styles = StyleSheet.create({
   filterUnderline: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, backgroundColor: colors.primary, borderRadius: 2 },
   item: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: colors.elevated,
-    padding: 14, borderRadius: 10, marginBottom: 8,
-    shadowColor: colors.shadow, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 3,
+    padding: 14, borderRadius: 10, marginBottom: 12, boxShadow: '0px 2px 12px rgba(0,0,0,0.08)',
   },
   itemContent: { flex: 1 },
-  description: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.textPrimary },
-  meta: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginTop: 2 },
+  description: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 16, color: colors.textPrimary },
+  meta: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginTop: 2, textTransform: 'uppercase' },
   itemRight: { alignItems: 'flex-end', gap: 4 },
   amount: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 15, color: colors.textPrimary },
   fab: {
