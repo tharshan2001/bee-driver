@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Image, TextInput,
-  LayoutAnimation, Platform, UIManager,
-} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Alert, Image, TextInput, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { haptics } from '../../../shared/haptics';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -107,9 +106,11 @@ export default function DeliveryCompleteScreen() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
+      haptics.success();
       toast.show({ type: 'success', title: 'Delivery completed', message: 'The delivery has been successfully completed.' });
       navigation.goBack();
     } catch (err: any) {
+      haptics.error();
       toast.show({ type: 'error', title: err?.response?.data?.message || 'Submission failed' });
     } finally {
       setLoading(false);
@@ -138,15 +139,15 @@ export default function DeliveryCompleteScreen() {
             {photo ? (
               <View style={{ width: '100%' }}>
                 <Image source={{ uri: photo }} style={styles.previewImage} />
-                <TouchableOpacity onPress={() => setPhoto(null)}>
+                <Touchable onPress={() => setPhoto(null)}>
                   <Text style={styles.removeText}>Remove Photo</Text>
-                </TouchableOpacity>
+                </Touchable>
               </View>
             ) : (
-              <TouchableOpacity style={styles.uploadArea} onPress={handlePhotoPick}>
+              <Touchable style={styles.uploadArea} onPress={handlePhotoPick}>
                 <Ionicons name="camera-outline" size={32} color={colors.primary} style={{ marginBottom: 8 }} />
                 <Text style={styles.uploadText}>Add photo</Text>
-              </TouchableOpacity>
+              </Touchable>
             )}
           </Card>
         );
@@ -160,9 +161,9 @@ export default function DeliveryCompleteScreen() {
                   style={styles.signaturePreview}
                   resizeMode="contain"
                 />
-                <TouchableOpacity onPress={handleSignatureClear}>
+                <Touchable onPress={handleSignatureClear}>
                   <Text style={styles.removeText}>Clear & redo</Text>
-                </TouchableOpacity>
+                </Touchable>
               </View>
             ) : (
               <SignatureView
@@ -229,11 +230,11 @@ export default function DeliveryCompleteScreen() {
 
       <View style={styles.navRow}>
         {step > 0 && (
-          <TouchableOpacity style={[styles.navButton, styles.navButtonSecondary]} onPress={goBack} disabled={loading}>
+          <Touchable style={[styles.navButton, styles.navButtonSecondary]} onPress={goBack} disabled={loading}>
             <Text style={styles.navButtonText}>Back</Text>
-          </TouchableOpacity>
+          </Touchable>
         )}
-        <TouchableOpacity
+        <Touchable
           style={[styles.navButton, styles.navButtonPrimary]}
           onPress={goNext}
           disabled={loading}
@@ -241,7 +242,7 @@ export default function DeliveryCompleteScreen() {
           <Text style={[styles.navButtonText, { color: colors.textOnPrimary }]}>
             {loading ? 'Submitting...' : step < 3 ? 'Next' : 'Submit'}
           </Text>
-        </TouchableOpacity>
+        </Touchable>
       </View>
     </ScrollView>
   );

@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
-import {
-  View, Text, StyleSheet, Animated, TouchableOpacity, PanResponder, StatusBar,
-} from 'react-native';
+import { View, Text, StyleSheet, Animated, PanResponder, StatusBar } from 'react-native';
+import Touchable from '../components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
@@ -137,9 +136,9 @@ function ToastItem({ toast, index, onHide }: { toast: ToastMessage; index: numbe
         <Text style={styles.title}>{toast.title}</Text>
         {toast.message ? <Text style={styles.message}>{toast.message}</Text> : null}
       </View>
-      <TouchableOpacity onPress={onHide} style={styles.closeBtn} hitSlop={8}>
+      <Touchable onPress={onHide} style={styles.closeBtn} hitSlop={8}>
         <Ionicons name="close" size={18} color={colors.textTertiary} />
-      </TouchableOpacity>
+      </Touchable>
     </Animated.View>
   );
 }

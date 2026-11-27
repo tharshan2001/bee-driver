@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  View, Text, FlatList, TouchableOpacity, RefreshControl, StyleSheet, ActivityIndicator,
-  Animated, Platform, UIManager,
-} from 'react-native';
+import { View, Text, FlatList, RefreshControl, StyleSheet, ActivityIndicator, Animated, Platform, UIManager } from 'react-native';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -128,7 +126,7 @@ export default function DeliveriesListScreen() {
 
     return (
       <Animated.View style={{ opacity, transform: [{ translateY }] }}>
-        <TouchableOpacity
+        <Touchable
           onPress={() => navigation.navigate('DeliveryDetail', { orderId: item.orderId })}
           style={styles.item}
         >
@@ -140,7 +138,7 @@ export default function DeliveriesListScreen() {
             <Badge status={item.status} compact />
             <Text style={styles.timeAgo}>{timeAgo(item.createdAt)}</Text>
           </View>
-        </TouchableOpacity>
+        </Touchable>
       </Animated.View>
     );
   }
@@ -149,14 +147,14 @@ export default function DeliveriesListScreen() {
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Deliveries</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
+        <Touchable onPress={() => navigation.navigate('Alerts')}>
           <Ionicons name="notifications-outline" size={22} color={colors.textPrimary} />
-        </TouchableOpacity>
+        </Touchable>
       </View>
 
       <View style={styles.filterRow}>
         {statusFilters.map((item) => (
-          <TouchableOpacity
+          <Touchable
             key={item || 'all'}
             style={[styles.filterTab, filter === item && styles.filterTabActive]}
             onPress={() => {
@@ -167,7 +165,7 @@ export default function DeliveriesListScreen() {
               {item?.replace(/_/g, ' ') || 'All'}
             </Text>
             {filter === item && <View style={styles.filterUnderline} />}
-          </TouchableOpacity>
+          </Touchable>
         ))}
       </View>
 

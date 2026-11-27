@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView,
-  Platform, ScrollView, ActivityIndicator, Alert,
-} from 'react-native';
+import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../../context/AuthContext';
@@ -101,7 +99,7 @@ export default function SetPasswordScreen() {
 
           {error ? <Text style={styles.error}>{error}</Text> : null}
 
-          <TouchableOpacity
+          <Touchable
             style={[styles.button, loading && styles.buttonDisabled]}
             onPress={handleSetPassword}
             disabled={loading}
@@ -111,7 +109,7 @@ export default function SetPasswordScreen() {
             ) : (
               <Text style={styles.buttonText}>Set Password</Text>
             )}
-          </TouchableOpacity>
+          </Touchable>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -138,9 +136,9 @@ function PasswordField({ label, value, onChange, placeholder, visible, toggle }:
           placeholder={placeholder}
           placeholderTextColor={colors.textTertiary}
         />
-        <TouchableOpacity onPress={toggle} style={styles.eyeBtn}>
+        <Touchable onPress={toggle} style={styles.eyeBtn}>
           <Ionicons name={visible ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
-        </TouchableOpacity>
+        </Touchable>
       </View>
     </View>
   );

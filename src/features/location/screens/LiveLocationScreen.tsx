@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import {
-  View, Text, StyleSheet, ActivityIndicator, Platform, Linking, TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Platform, Linking } from 'react-native';
+import Touchable from '../../../shared/components/Touchable';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -108,16 +107,16 @@ export default function LiveLocationScreen() {
           <Text style={styles.errorText}>{error}</Text>
           <View style={styles.errorActions}>
             {gpsOff && (
-              <TouchableOpacity onPress={openSettings} style={styles.settingsBtn}>
+              <Touchable onPress={openSettings} style={styles.settingsBtn}>
                 <Text style={styles.settingsText}>OPEN SETTINGS</Text>
-              </TouchableOpacity>
+              </Touchable>
             )}
-            <TouchableOpacity
+            <Touchable
               onPress={() => setRetryCount((c) => c + 1)}
               style={styles.retryBtn}
             >
               <Text style={styles.retryText}>RETRY</Text>
-            </TouchableOpacity>
+            </Touchable>
           </View>
         </View>
       ) : !location ? (
@@ -164,10 +163,10 @@ export default function LiveLocationScreen() {
             </View>
           </View>
 
-          <TouchableOpacity onPress={openInMaps} style={styles.actionButton}>
+          <Touchable onPress={openInMaps} style={styles.actionButton}>
             <Ionicons name="compass-outline" size={20} color="#fff" />
             <Text style={styles.actionText}>OPEN IN GOOGLE MAPS</Text>
-          </TouchableOpacity>
+          </Touchable>
         </>
       )}
     </View>

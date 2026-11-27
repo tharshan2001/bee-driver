@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, TextInput, Modal, Linking, Image,
-  Animated,
-} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Alert, TextInput, Modal, Linking, Image, Animated } from 'react-native';
+import { haptics } from '../../../shared/haptics';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
@@ -75,9 +74,11 @@ export default function DeliveryDetailScreen() {
   async function updateStatus(status: string, reason?: string) {
     try {
       await api.patch(`/driver/deliveries/${orderId}/status`, { status, reason });
+      haptics.confirm();
       toast.show({ type: 'success', title: 'Status updated' });
       fetchDetail();
     } catch (err: any) {
+      haptics.error();
       toast.show({ type: 'error', title: err?.response?.data?.message || 'Failed to update status' });
     }
   }
@@ -142,10 +143,10 @@ export default function DeliveryDetailScreen() {
             {delivery.customer.district && <Text style={styles.district}>{delivery.customer.district}</Text>}
           </View>
         </View>
-        <TouchableOpacity onPress={() => Linking.openURL(`tel:${delivery.customer.phone}`)} style={styles.linkRow}>
+        <Touchable onPress={() => Linking.openURL(`tel:${delivery.customer.phone}`)} style={styles.linkRow}>
           <Ionicons name="call-outline" size={14} color={colors.success} style={{ marginRight: 6 }} />
           <Text style={styles.linkText}>{delivery.customer.phone}</Text>
-        </TouchableOpacity>
+        </Touchable>
         <View style={styles.linkRow}>
           <Ionicons name="location-outline" size={14} color={colors.textSecondary} style={{ marginRight: 6 }} />
           <Text style={{ fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary, flex: 1 }}>{delivery.customer.address}</Text>
@@ -196,7 +197,7 @@ export default function DeliveryDetailScreen() {
       </AnimatedCard>
 
       {getActions(delivery.status).map((btn: any, idx: number) => (
-        <TouchableOpacity
+        <Touchable
           key={idx}
           style={[
             styles.actionButton,
@@ -206,29 +207,29 @@ export default function DeliveryDetailScreen() {
           onPress={btn.action}
         >
           <Text style={[styles.actionButtonText, { color: btn.textColor }]}>{btn.label}</Text>
-        </TouchableOpacity>
+        </Touchable>
       ))}
 
       {delivery.status.toUpperCase() === 'DELIVERED' && (delivery.photoUrl || delivery.signatureUrl) && (
         <AnimatedCard index={4}>
           <Text style={styles.cardCaption}>DELIVERY PROOF</Text>
           {delivery.photoUrl && (
-            <TouchableOpacity onPress={() => Linking.openURL(delivery.photoUrl!)} style={{ marginBottom: 8 }}>
+            <Touchable onPress={() => Linking.openURL(delivery.photoUrl!)} style={{ marginBottom: 8 }}>
               <Image source={{ uri: delivery.photoUrl }} style={styles.proofImage} />
               <View style={styles.linkRow}>
                 <Ionicons name="camera-outline" size={14} color={colors.primary} style={{ marginRight: 6 }} />
                 <Text style={styles.linkText}>Tap to open photo</Text>
               </View>
-            </TouchableOpacity>
+            </Touchable>
           )}
           {delivery.signatureUrl && (
-            <TouchableOpacity onPress={() => Linking.openURL(delivery.signatureUrl!)}>
+            <Touchable onPress={() => Linking.openURL(delivery.signatureUrl!)}>
               <Image source={{ uri: delivery.signatureUrl }} style={styles.proofImage} />
               <View style={styles.linkRow}>
                 <Ionicons name="create-outline" size={14} color={colors.primary} style={{ marginRight: 6 }} />
                 <Text style={styles.linkText}>Tap to open signature</Text>
               </View>
-            </TouchableOpacity>
+            </Touchable>
           )}
         </AnimatedCard>
       )}
@@ -254,12 +255,12 @@ export default function DeliveryDetailScreen() {
               onChangeText={setIssueReason}
               multiline
             />
-            <TouchableOpacity style={[styles.modalButton, { backgroundColor: colors.danger }]} onPress={handleReportIssue}>
+            <Touchable style={[styles.modalButton, { backgroundColor: colors.danger }]} onPress={handleReportIssue}>
               <Text style={styles.modalButtonText}>Submit Report</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowIssueModal(false)}>
+            </Touchable>
+            <Touchable onPress={() => setShowIssueModal(false)}>
               <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
+            </Touchable>
           </View>
         </View>
       </Modal>

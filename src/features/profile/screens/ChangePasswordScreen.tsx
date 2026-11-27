@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert, ScrollView } from 'react-native';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -59,9 +60,9 @@ export default function ChangePasswordScreen() {
         visible={showConfirm}
         toggle={() => setShowConfirm((v) => !v)}
       />
-      <TouchableOpacity style={styles.button} onPress={handleChange} disabled={loading}>
+      <Touchable style={styles.button} onPress={handleChange} disabled={loading}>
         <Text style={styles.buttonText}>{loading ? 'Changing...' : 'Change Password'}</Text>
-      </TouchableOpacity>
+      </Touchable>
     </ScrollView>
   );
 }
@@ -80,9 +81,9 @@ function PasswordField({ label, value, onChange, visible, toggle }: {
           secureTextEntry={!visible}
           placeholderTextColor={colors.textTertiary}
         />
-        <TouchableOpacity onPress={toggle} style={styles.eyeBtn}>
+        <Touchable onPress={toggle} style={styles.eyeBtn}>
           <Ionicons name={visible ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
-        </TouchableOpacity>
+        </Touchable>
       </View>
     </View>
   );

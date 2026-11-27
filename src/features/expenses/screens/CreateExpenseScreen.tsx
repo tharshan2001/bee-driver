@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import {
-  View, Text, ScrollView, TextInput, TouchableOpacity, StyleSheet, Alert, Image, Platform,
-} from 'react-native';
+import { View, Text, ScrollView, TextInput, StyleSheet, Alert, Image, Platform } from 'react-native';
+import { haptics } from '../../../shared/haptics';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -40,9 +40,13 @@ export default function CreateExpenseScreen() {
 
   async function handleSubmit() {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+      haptics.error();
       return toast.show({ type: 'error', title: 'Enter a valid amount' });
     }
-    if (!description.trim()) return toast.show({ type: 'error', title: 'Description is required' });
+    if (!description.trim()) {
+      haptics.error();
+      return toast.show({ type: 'error', title: 'Description is required' });
+    }
 
     setLoading(true);
     try {
@@ -69,9 +73,11 @@ export default function CreateExpenseScreen() {
       await api.post('/driver/expenses', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
+      haptics.success();
       toast.show({ type: 'success', title: 'Expense created' });
       navigation.goBack();
     } catch (err: any) {
+      haptics.error();
       toast.show({ type: 'error', title: err?.response?.data?.message || 'Failed to create expense' });
     } finally {
       setLoading(false);
@@ -81,20 +87,20 @@ export default function CreateExpenseScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 16 }]}>
       <Field label="CATEGORY">
-        <TouchableOpacity style={styles.selector} onPress={() => setShowCategories(!showCategories)}>
+        <Touchable style={styles.selector} onPress={() => setShowCategories(!showCategories)}>
           <Text style={styles.selectorText}>{category}</Text>
           <Text style={{ fontFamily: 'IBMPlexMono_500Medium', color: colors.textTertiary }}>▼</Text>
-        </TouchableOpacity>
+        </Touchable>
         {showCategories && (
           <View style={styles.dropdown}>
             {categories.map((c) => (
-              <TouchableOpacity
+              <Touchable
                 key={c}
                 style={[styles.dropdownItem, category === c && styles.dropdownItemActive]}
                 onPress={() => { setCategory(c); setShowCategories(false); }}
               >
                 <Text style={[styles.dropdownText, category === c && styles.dropdownTextActive]}>{c}</Text>
-              </TouchableOpacity>
+              </Touchable>
             ))}
           </View>
         )}
@@ -123,9 +129,9 @@ export default function CreateExpenseScreen() {
       </Field>
 
       <Field label="DATE">
-        <TouchableOpacity style={styles.selector} onPress={() => setShowDatePicker(true)}>
+        <Touchable style={styles.selector} onPress={() => setShowDatePicker(true)}>
           <Text style={styles.selectorText}>{formatDate(date)}</Text>
-        </TouchableOpacity>
+        </Touchable>
         {showDatePicker && (
           <DateTimePicker
             value={date}
@@ -143,21 +149,21 @@ export default function CreateExpenseScreen() {
         {receipt ? (
           <View>
             <Image source={{ uri: receipt }} style={styles.receiptPreview} />
-            <TouchableOpacity onPress={() => setReceipt(null)}>
+            <Touchable onPress={() => setReceipt(null)}>
               <Text style={styles.removeText}>Remove</Text>
-            </TouchableOpacity>
+            </Touchable>
           </View>
         ) : (
-          <TouchableOpacity style={styles.uploadBtn} onPress={pickReceipt}>
+          <Touchable style={styles.uploadBtn} onPress={pickReceipt}>
             <Ionicons name="camera-outline" size={18} color={colors.primary} style={{ marginRight: 6 }} />
             <Text style={styles.uploadBtnText}>Upload Receipt</Text>
-          </TouchableOpacity>
+          </Touchable>
         )}
       </Field>
 
-      <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit} disabled={loading}>
+      <Touchable style={styles.submitBtn} onPress={handleSubmit} disabled={loading}>
         <Text style={styles.submitBtnText}>{loading ? 'Submitting...' : 'Submit Expense'}</Text>
-      </TouchableOpacity>
+      </Touchable>
     </ScrollView>
   );
 }

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import {
-  View, Text, TouchableOpacity, StyleSheet, Alert as RNAlert,
-} from 'react-native';
+import { View, Text, StyleSheet, Alert as RNAlert } from 'react-native';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -73,10 +72,10 @@ export default function AlertDetailScreen() {
       <Text style={styles.message}>{alertItem.message}</Text>
 
       {!read && (
-        <TouchableOpacity onPress={markRead} style={styles.markReadBtn}>
+        <Touchable onPress={markRead} style={styles.markReadBtn}>
           <Ionicons name="checkmark-circle-outline" size={18} color={colors.primary} />
           <Text style={styles.markReadText}>Mark as read</Text>
-        </TouchableOpacity>
+        </Touchable>
       )}
 
       {read && (

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView,
-  Platform, ScrollView, ActivityIndicator, Alert,
-} from 'react-native';
+import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { haptics } from '../../../shared/haptics';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -41,6 +40,7 @@ export default function LoginScreen() {
     } catch (err: any) {
       let msg: string = err?.response?.data?.message || err?.message || 'Login failed';
       if (msg.startsWith('Invalid role for login')) msg = 'This app is for drivers. Sign in with a driver account.';
+      haptics.error();
       toast.show({ type: 'error', title: msg.replace('Exception: ', '') });
     } finally {
       setLoading(false);
@@ -85,20 +85,20 @@ export default function LoginScreen() {
               placeholder="Enter password"
               placeholderTextColor={colors.textTertiary}
             />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
+            <Touchable onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
               <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
-            </TouchableOpacity>
+            </Touchable>
           </View>
           {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
-          <TouchableOpacity
+          <Touchable
             style={styles.forgotBtn}
             onPress={() => navigation.navigate('ForgotPassword')}
           >
             <Text style={styles.forgotText}>Forgot Password?</Text>
-          </TouchableOpacity>
+          </Touchable>
 
-          <TouchableOpacity
+          <Touchable
             style={[styles.button, loading && styles.buttonDisabled]}
             onPress={handleLogin}
             disabled={loading}
@@ -108,7 +108,7 @@ export default function LoginScreen() {
             ) : (
               <Text style={styles.buttonText}>Sign In</Text>
             )}
-          </TouchableOpacity>
+          </Touchable>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

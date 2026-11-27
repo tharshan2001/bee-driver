@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View, Text, TouchableOpacity, StyleSheet, ScrollView, Switch, Alert, Image,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, Alert, Image } from 'react-native';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -120,9 +119,9 @@ export default function MoreScreen() {
         </View>
 
         {/* Logout */}
-        <TouchableOpacity style={styles.logoutRow} onPress={handleLogout}>
+        <Touchable style={styles.logoutRow} onPress={handleLogout}>
           <Text style={styles.logoutText}>Log Out</Text>
-        </TouchableOpacity>
+        </Touchable>
       </ScrollView>
     </View>
   );
@@ -132,11 +131,11 @@ function MenuRow({ icon, label, onPress }: {
   icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void;
 }) {
   return (
-    <TouchableOpacity style={styles.menuRow} onPress={onPress} activeOpacity={0.6}>
+    <Touchable style={styles.menuRow} onPress={onPress}>
       <Ionicons name={icon} size={18} color={colors.textSecondary} style={{ marginRight: 14 }} />
       <Text style={styles.menuLabel}>{label}</Text>
       <Text style={styles.menuArrow}>›</Text>
-    </TouchableOpacity>
+    </Touchable>
   );
 }
 
