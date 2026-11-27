@@ -1,15 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Alert, TextInput, Modal, Linking, Image, Animated, Platform } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, ScrollView, StyleSheet, Alert, TextInput, Modal, Linking, Image, Platform } from 'react-native';
 import { haptics } from '../../../shared/haptics';
 import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../../../core/api/client';
 import type { DriverDelivery } from '../../../core/api/types';
 import type { RootStackParamList, RootStackNav } from '../../../navigation/types';
 import Card from '../../../shared/components/Card';
+import Appear from '../../../shared/components/Appear';
 import Skeleton from '../../../shared/components/Skeleton';
 import { formatDate, formatDateTime, getStatusColor, timeAgo, formatMoney } from '../../../core/utils/helpers';
 import SwipeToConfirm from '../../../shared/components/SwipeToConfirm';
@@ -43,11 +44,11 @@ export default function DeliveryDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [showIssueModal, setShowIssueModal] = useState(false);
   const [issueReason, setIssueReason] = useState('');
-  const cardAnims = useRef([0, 1, 2, 3, 4, 5].map(() => new Animated.Value(0))).current;
 
-  useEffect(() => {
+  // Also on return, e.g. after completing the delivery, so the status and actions are current.
+  useFocusEffect(useCallback(() => {
     fetchDetail();
-  }, [orderId]);
+  }, [orderId]));
 
   async function fetchDetail() {
     try {
@@ -61,9 +62,6 @@ export default function DeliveryDetailScreen() {
             console.log(`[DeliveryDetail] item[${i}]:`, JSON.stringify(item));
           });
         }
-        Animated.stagger(100, cardAnims.map((a) =>
-          Animated.timing(a, { toValue: 1, duration: 300, useNativeDriver: true })
-        )).start();
       }
     } catch (err: any) {
       toast.show({ type: 'error', title: err?.message || 'Failed to load' });
@@ -119,15 +117,6 @@ export default function DeliveryDetailScreen() {
     }
   }
 
-  function AnimatedCard({ children, index, style }: { children: React.ReactNode; index: number; style?: any }) {
-    const opacity = cardAnims[index] || 1;
-    return (
-      <Animated.View style={{ opacity, transform: [{ translateY: cardAnims[index]?.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) || 0 }] }}>
-        <Card padding={16} style={style}>{children}</Card>
-      </Animated.View>
-    );
-  }
-
   if (loading) {
     return <ScrollView style={styles.container}><DetailSkeletons /></ScrollView>;
   }
@@ -170,10 +159,10 @@ export default function DeliveryDetailScreen() {
       </AnimatedCard>
 
       {delivery.orderInfo.outstanding > 0 && !['DELIVERED', 'FAILED', 'FAILED_PERMANENT'].includes(delivery.status.toUpperCase()) && (
-        <View style={styles.collect}>
+        <Appear index={1} style={styles.collect}>
           <Text style={styles.collectLabel}>TO COLLECT</Text>
           <Text style={styles.collectAmount}>{formatMoney(delivery.orderInfo.outstanding)}</Text>
-        </View>
+        </Appear>
       )}
 
       <AnimatedCard index={1}>
@@ -302,6 +291,14 @@ export default function DeliveryDetailScreen() {
 function mapUrl(address: string): string {
   const q = encodeURIComponent(address);
   return Platform.OS === 'ios' ? `http://maps.apple.com/?q=${q}` : `geo:0,0?q=${q}`;
+}
+
+function AnimatedCard({ children, index, style }: { children: React.ReactNode; index: number; style?: any }) {
+  return (
+    <Appear index={index}>
+      <Card padding={16} style={style}>{children}</Card>
+    </Appear>
+  );
 }
 
 function ItemImage({ imageUrl }: { imageUrl?: string }) {

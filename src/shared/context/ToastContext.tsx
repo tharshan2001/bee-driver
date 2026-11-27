@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Animated, PanResponder, StatusBar } from 'react-native';
+import { useReducedMotion } from 'react-native-reanimated';
 import Touchable from '../components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -83,7 +84,9 @@ function ToastContainer({ toasts, hide }: { toasts: ToastMessage[]; hide: (id: s
 }
 
 function ToastItem({ toast, index, onHide }: { toast: ToastMessage; index: number; onHide: () => void }) {
-  const translateY = useRef(new Animated.Value(-120)).current;
+  // With reduce motion on, the toast fades in where it sits instead of sliding down.
+  const reduceMotion = useReducedMotion();
+  const translateY = useRef(new Animated.Value(reduceMotion ? 0 : -120)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const { icon, bg } = colorMap[toast.type];
 

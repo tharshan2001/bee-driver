@@ -55,7 +55,8 @@ export default function RootNavigator() {
 
   return (
     <NavigationContainer ref={navigationRef}>
-      <RootStack.Navigator screenOptions={{ headerShown: false }}>
+      {/* Splash, sign-in and the app cross-fade into each other. */}
+      <RootStack.Navigator screenOptions={{ headerShown: false, animation: 'fade' }}>
         <RootStack.Screen name="Splash" component={SplashScreen} />
         {isAuthenticated ? (
           mustChangePassword ? (

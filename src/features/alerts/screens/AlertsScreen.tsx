@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, FlatList, RefreshControl, StyleSheet, Alert, Platform, Animated } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, FlatList, RefreshControl, StyleSheet, Alert, Platform } from 'react-native';
 import Touchable from '../../../shared/components/Touchable';
+import Appear from '../../../shared/components/Appear';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -48,23 +49,12 @@ function remoteMessageToAlert(remoteMessage: any): AlertType | null {
 }
 
 function NotificationCard({ item, index, onPress }: { item: AlertType; index: number; onPress: () => void }) {
-  const anim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(anim, {
-      toValue: 1,
-      duration: 350,
-      delay: index * 60,
-      useNativeDriver: true,
-    }).start();
-  }, []);
-
   const type = item.type?.toUpperCase() || 'INFO';
   const icon = iconMap[type] || 'information-circle-outline';
   const icColor = iconColorMap[type] || colors.textTertiary;
 
   return (
-    <Animated.View style={{ opacity: anim, transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [15, 0] }) }] }}>
+    <Appear index={index}>
       <Touchable
         style={[styles.card, !item.read && styles.cardUnread]}
         onPress={onPress}
@@ -84,7 +74,7 @@ function NotificationCard({ item, index, onPress }: { item: AlertType; index: nu
         </View>
         <Ionicons name="chevron-forward" size={14} color={colors.textTertiary} />
       </Touchable>
-    </Animated.View>
+    </Appear>
   );
 }
 

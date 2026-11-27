@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, FlatList, RefreshControl, StyleSheet, ActivityIndicator, Animated, Platform, UIManager } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, FlatList, RefreshControl, StyleSheet, ActivityIndicator } from 'react-native';
 import Touchable from '../../../shared/components/Touchable';
+import Appear from '../../../shared/components/Appear';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,10 +15,6 @@ import EmptyState from '../../../shared/components/EmptyState';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
 import { timeAgo } from '../../../core/utils/helpers';
 import { colors } from '../../../shared/theme';
-
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 type Nav = RootStackNav;
 
@@ -50,7 +47,6 @@ export default function DeliveriesListScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const fadeAnims = useRef<Animated.Value[]>([]);
 
   const fetchDeliveries = useCallback(async (pageNum: number, append = false) => {
     setError(null);
@@ -65,7 +61,6 @@ export default function DeliveriesListScreen() {
           setData((prev) => [...prev, ...pageData.content]);
         } else {
           setData(pageData.content);
-          fadeAnims.current = pageData.content.map(() => new Animated.Value(0));
         }
         setHasMore(!pageData.last);
         cacheData(cacheKey, pageData);
@@ -108,24 +103,8 @@ export default function DeliveriesListScreen() {
   };
 
   function renderItem({ item, index }: { item: any; index: number }) {
-    const anim = fadeAnims.current[index];
-    const opacity = anim ?? 1;
-    const translateY = anim?.interpolate({
-      inputRange: [0, 1],
-      outputRange: [10, 0],
-    }) || 0;
-
-    if (anim) {
-      Animated.timing(anim, {
-        toValue: 1,
-        duration: 300,
-        delay: index * 50,
-        useNativeDriver: true,
-      }).start();
-    }
-
     return (
-      <Animated.View style={{ opacity, transform: [{ translateY }] }}>
+      <Appear index={index}>
         <Touchable
           onPress={() => navigation.navigate('DeliveryDetail', { orderId: item.orderId })}
           style={styles.item}
@@ -139,7 +118,7 @@ export default function DeliveriesListScreen() {
             <Text style={styles.timeAgo}>{timeAgo(item.createdAt)}</Text>
           </View>
         </Touchable>
-      </Animated.View>
+      </Appear>
     );
   }
 
