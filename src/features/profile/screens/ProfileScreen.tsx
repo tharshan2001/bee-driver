@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {
-  View, Text, ScrollView, TextInput, TouchableOpacity, StyleSheet, Alert, Image,
-} from 'react-native';
+import { View, Text, ScrollView, TextInput, StyleSheet, Alert, Image } from 'react-native';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -102,7 +101,7 @@ export default function ProfileScreen() {
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}>
       <View style={styles.headerSection}>
-        <TouchableOpacity onPress={pickPhoto}>
+        <Touchable onPress={pickPhoto}>
           <View style={styles.avatar}>
             {profile.photoUrl ? (
               <Image source={{ uri: profile.photoUrl }} style={styles.avatarImage} />
@@ -113,10 +112,10 @@ export default function ProfileScreen() {
               <Ionicons name="camera-outline" size={12} color={colors.textPrimary} />
             </View>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setEditing(!editing)}>
+        </Touchable>
+        <Touchable onPress={() => setEditing(!editing)}>
           <Text style={styles.editText}>{editing ? 'Cancel' : 'Edit'}</Text>
-        </TouchableOpacity>
+        </Touchable>
       </View>
 
       <View style={styles.formCard}>
@@ -126,9 +125,9 @@ export default function ProfileScreen() {
         <InputField label="LICENSE NUMBER" value={license} onChange={setLicense} editable={editing} />
 
         {editing && (
-          <TouchableOpacity style={styles.saveButton} onPress={saveProfile} disabled={saving}>
+          <Touchable style={styles.saveButton} onPress={saveProfile} disabled={saving}>
             <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save changes'}</Text>
-          </TouchableOpacity>
+          </Touchable>
         )}
       </View>
 
@@ -137,15 +136,15 @@ export default function ProfileScreen() {
         <InfoRow label="MEMBER SINCE" value={formatDate(profile.memberSince)} />
       </View>
 
-      <TouchableOpacity style={styles.menuRow} onPress={() => navigation.navigate('ChangePassword')}>
+      <Touchable style={styles.menuRow} onPress={() => navigation.navigate('ChangePassword')}>
         <Ionicons name="key-outline" size={18} color={colors.textTertiary} style={{ marginRight: 12 }} />
         <Text style={styles.menuText}>Change password</Text>
         <Text style={{ color: colors.textTertiary, fontFamily: 'IBMPlexMono_500Medium', fontSize: 14 }}>›</Text>
-      </TouchableOpacity>
+      </Touchable>
 
-      <TouchableOpacity style={styles.logoutRow} onPress={handleLogout}>
+      <Touchable style={styles.logoutRow} onPress={handleLogout}>
         <Text style={styles.logoutText}>Log out</Text>
-      </TouchableOpacity>
+      </Touchable>
     </ScrollView>
   );
 }
@@ -185,9 +184,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center', alignItems: 'center', marginBottom: 8, overflow: 'hidden',
   },
   avatarImage: { width: 80, height: 80, borderRadius: 40 },
-  avatarText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 24, color: colors.primary },
+  avatarText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 24, color: colors.primaryText },
   cameraIcon: { position: 'absolute', bottom: 2, right: 2, backgroundColor: colors.elevated, borderRadius: 10, shadowColor: colors.shadow, shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 1 }, padding: 4 },
-  editText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.primary },
+  editText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.primaryText },
   formCard: { backgroundColor: colors.elevated, marginTop: 16, padding: 16, borderRadius: 10, marginHorizontal: 16, shadowColor: colors.shadow, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
   fieldGroup: { marginBottom: 16 },
   fieldLabel: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginBottom: 4, textTransform: 'uppercase' },

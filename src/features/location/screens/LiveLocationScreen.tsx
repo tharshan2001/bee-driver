@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import {
-  View, Text, StyleSheet, ActivityIndicator, Platform, Linking, TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Platform, Linking } from 'react-native';
+import Touchable from '../../../shared/components/Touchable';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -108,16 +107,16 @@ export default function LiveLocationScreen() {
           <Text style={styles.errorText}>{error}</Text>
           <View style={styles.errorActions}>
             {gpsOff && (
-              <TouchableOpacity onPress={openSettings} style={styles.settingsBtn}>
+              <Touchable onPress={openSettings} style={styles.settingsBtn}>
                 <Text style={styles.settingsText}>OPEN SETTINGS</Text>
-              </TouchableOpacity>
+              </Touchable>
             )}
-            <TouchableOpacity
+            <Touchable
               onPress={() => setRetryCount((c) => c + 1)}
               style={styles.retryBtn}
             >
               <Text style={styles.retryText}>RETRY</Text>
-            </TouchableOpacity>
+            </Touchable>
           </View>
         </View>
       ) : !location ? (
@@ -164,10 +163,10 @@ export default function LiveLocationScreen() {
             </View>
           </View>
 
-          <TouchableOpacity onPress={openInMaps} style={styles.actionButton}>
+          <Touchable onPress={openInMaps} style={styles.actionButton}>
             <Ionicons name="compass-outline" size={20} color="#fff" />
             <Text style={styles.actionText}>OPEN IN GOOGLE MAPS</Text>
-          </TouchableOpacity>
+          </Touchable>
         </>
       )}
     </View>
@@ -216,7 +215,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14, borderRadius: 10,
   },
   actionText: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: '#fff',
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textOnPrimary,
     textTransform: 'uppercase',
   },
   errorText: {
@@ -231,7 +230,7 @@ const styles = StyleSheet.create({
     borderRadius: 10, marginTop: 8,
   },
   retryText: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: '#fff',
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textOnPrimary,
     textTransform: 'uppercase',
   },
   errorActions: {
@@ -242,7 +241,7 @@ const styles = StyleSheet.create({
     borderRadius: 10, marginTop: 8, borderWidth: 1, borderColor: colors.primary,
   },
   settingsText: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.primary,
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.primaryText,
     textTransform: 'uppercase',
   },
 });

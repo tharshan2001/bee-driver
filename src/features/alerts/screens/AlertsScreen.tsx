@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  View, Text, FlatList, TouchableOpacity, RefreshControl, StyleSheet, Alert, Platform, Animated,
-} from 'react-native';
+import { View, Text, FlatList, RefreshControl, StyleSheet, Alert, Platform, Animated } from 'react-native';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -66,10 +65,9 @@ function NotificationCard({ item, index, onPress }: { item: AlertType; index: nu
 
   return (
     <Animated.View style={{ opacity: anim, transform: [{ translateY: anim.interpolate({ inputRange: [0, 1], outputRange: [15, 0] }) }] }}>
-      <TouchableOpacity
+      <Touchable
         style={[styles.card, !item.read && styles.cardUnread]}
         onPress={onPress}
-        activeOpacity={0.7}
       >
         <View style={[styles.iconCircle, { backgroundColor: icColor + '15' }]}>
           <Ionicons name={icon} size={18} color={icColor} />
@@ -85,7 +83,7 @@ function NotificationCard({ item, index, onPress }: { item: AlertType; index: nu
           <Text style={styles.cardTime}>{timeAgo(item.createdAt)}</Text>
         </View>
         <Ionicons name="chevron-forward" size={14} color={colors.textTertiary} />
-      </TouchableOpacity>
+      </Touchable>
     </Animated.View>
   );
 }
@@ -195,9 +193,9 @@ export default function AlertsScreen() {
           )}
         </View>
         {unreadCount > 0 && (
-          <TouchableOpacity onPress={markAllRead} style={styles.markAllBtn}>
+          <Touchable onPress={markAllRead} style={styles.markAllBtn}>
             <Text style={styles.markAllText}>Mark all read</Text>
-          </TouchableOpacity>
+          </Touchable>
         )}
       </View>
 

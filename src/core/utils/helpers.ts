@@ -52,3 +52,9 @@ export function getStatusColor(status: string): string {
   };
   return map[status.toUpperCase()] || colors.textMuted;
 }
+
+/** LKR 8,500.00 */
+export function formatMoney(amount: number): string {
+  const [whole, cents] = Math.abs(amount).toFixed(2).split('.');
+  return `${amount < 0 ? '-' : ''}LKR ${whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}.${cents}`;
+}

@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
-import {
-  View, Text, TouchableOpacity, RefreshControl, StyleSheet, FlatList,
-} from 'react-native';
+import { View, Text, RefreshControl, StyleSheet, FlatList } from 'react-native';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -53,7 +52,7 @@ export default function DashboardScreen() {
   const recentDeliveries = dashboard?.recentDeliveries?.slice(0, 5) ?? [];
 
   const renderRecentItem = useCallback(({ item }: { item: DeliverySummary }) => (
-    <TouchableOpacity
+    <Touchable
       key={item.orderId}
       onPress={() => navigation.navigate('DeliveryDetail', { orderId: item.orderId })}
       style={styles.recentRow}
@@ -66,7 +65,7 @@ export default function DashboardScreen() {
         <Badge status={item.status} compact />
         <Text style={styles.recentTime}>{timeAgo(item.createdAt)}</Text>
       </View>
-    </TouchableOpacity>
+    </Touchable>
   ), [navigation]);
 
   if (loading) {
@@ -87,12 +86,12 @@ export default function DashboardScreen() {
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Dashboard</Text>
           <View style={styles.headerRight}>
-            <TouchableOpacity onPress={() => navigation.navigate('Alerts')}>
+            <Touchable onPress={() => navigation.navigate('Alerts')}>
               <Ionicons name="notifications-outline" size={22} color={colors.textPrimary} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            </Touchable>
+            <Touchable onPress={() => navigation.navigate('Profile')}>
               <Ionicons name="person-outline" size={22} color={colors.textPrimary} />
-            </TouchableOpacity>
+            </Touchable>
           </View>
         </View>
 
@@ -101,22 +100,22 @@ export default function DashboardScreen() {
         <SectionHeader title="QUICK ACTIONS" />
 
         <View style={styles.actionsRow}>
-          <TouchableOpacity onPress={() => navigation.navigate('LiveLocation')} style={styles.actionCard}>
+          <Touchable onPress={() => navigation.navigate('LiveLocation')} style={styles.actionCard}>
             <Ionicons name="location-outline" size={24} color={colors.primary} style={{ marginBottom: 8 }} />
             <Text style={styles.actionLabel}>LOCATION</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('MainTabs')} style={styles.actionCard}>
+          </Touchable>
+          <Touchable onPress={() => navigation.navigate('MainTabs', { screen: 'Deliveries' } as any)} style={styles.actionCard}>
             <Ionicons name="cube-outline" size={24} color="#2196F3" style={{ marginBottom: 8 }} />
             <Text style={styles.actionLabel}>DELIVERIES</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('CreateExpense')} style={styles.actionCard}>
+          </Touchable>
+          <Touchable onPress={() => navigation.navigate('CreateExpense')} style={styles.actionCard}>
             <Ionicons name="receipt-outline" size={24} color={colors.warning} style={{ marginBottom: 8 }} />
             <Text style={styles.actionLabel}>EXPENSE</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Stats')} style={styles.actionCard}>
+          </Touchable>
+          <Touchable onPress={() => navigation.navigate('Stats')} style={styles.actionCard}>
             <Ionicons name="bar-chart-outline" size={24} color={colors.success} style={{ marginBottom: 8 }} />
             <Text style={styles.actionLabel}>STATS</Text>
-          </TouchableOpacity>
+          </Touchable>
         </View>
       </ScreenContainer>
 

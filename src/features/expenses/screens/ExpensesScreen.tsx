@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  View, Text, FlatList, TouchableOpacity, RefreshControl, StyleSheet, Alert,
-} from 'react-native';
+import { View, Text, FlatList, RefreshControl, StyleSheet, Alert } from 'react-native';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,7 +9,7 @@ import type { Expense } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
 import Badge from '../../../shared/components/StatusBadge';
 import EmptyState from '../../../shared/components/EmptyState';
-import { formatDate } from '../../../core/utils/helpers';
+import { formatDate, formatMoney } from '../../../core/utils/helpers';
 import { colors } from '../../../shared/theme';
 
 type Nav = RootStackNav;
@@ -53,7 +52,7 @@ export default function ExpensesScreen() {
     <View style={styles.container}>
       <View style={styles.filterRow}>
         {filters.map((item) => (
-          <TouchableOpacity
+          <Touchable
             key={item || 'all'}
             style={[styles.filterTab, filter === item && styles.filterTabActive]}
             onPress={() => setFilter(item)}
@@ -62,7 +61,7 @@ export default function ExpensesScreen() {
               {item || 'All'}
             </Text>
             {filter === item && <View style={styles.filterUnderline} />}
-          </TouchableOpacity>
+          </Touchable>
         ))}
       </View>
 
@@ -77,7 +76,7 @@ export default function ExpensesScreen() {
               <Text style={styles.meta}>{item.category} • {formatDate(item.date)}</Text>
             </View>
             <View style={styles.itemRight}>
-              <Text style={styles.amount}>LKR {item.amount.toFixed(2)}</Text>
+              <Text style={styles.amount}>{formatMoney(item.amount)}</Text>
               <Badge status={item.status} compact />
             </View>
           </View>
@@ -87,9 +86,9 @@ export default function ExpensesScreen() {
         contentContainerStyle={data.length === 0 ? { flex: 1, paddingBottom: insets.bottom + 16 } : { paddingHorizontal: 16, paddingTop: 8, paddingBottom: insets.bottom + 16 }}
       />
 
-      <TouchableOpacity style={[styles.fab, { bottom: insets.bottom + 16 }]} onPress={() => navigation.navigate('CreateExpense')}>
+      <Touchable style={[styles.fab, { bottom: insets.bottom + 16 }]} onPress={() => navigation.navigate('CreateExpense')}>
         <Text style={styles.fabText}>+</Text>
-      </TouchableOpacity>
+      </Touchable>
     </View>
   );
 }

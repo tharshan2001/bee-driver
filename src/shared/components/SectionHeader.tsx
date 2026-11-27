@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import Touchable from './Touchable';
 import { colors } from '../theme';
 
 interface SectionHeaderProps {
@@ -13,9 +14,9 @@ export default function SectionHeader({ title, actionLabel, onAction }: SectionH
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
       {actionLabel && onAction && (
-        <TouchableOpacity onPress={onAction}>
+        <Touchable onPress={onAction}>
           <Text style={styles.action}>{actionLabel}</Text>
-        </TouchableOpacity>
+        </Touchable>
       )}
     </View>
   );
@@ -40,6 +41,6 @@ const styles = StyleSheet.create({
   action: {
     fontFamily: 'IBMPlexSans_500Medium',
     fontSize: 13,
-    color: colors.primary,
+    color: colors.primaryText,
   },
 });

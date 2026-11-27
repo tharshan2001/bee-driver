@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView,
-  Platform, ScrollView, ActivityIndicator, Alert,
-} from 'react-native';
+import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -119,9 +117,9 @@ export default function ForgotPasswordScreen() {
             placeholderTextColor={colors.textTertiary}
           />
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-          <TouchableOpacity style={[styles.button, loading && styles.buttonDisabled]} onPress={handleSendOtp} disabled={loading}>
+          <Touchable style={[styles.button, loading && styles.buttonDisabled]} onPress={handleSendOtp} disabled={loading}>
             {loading ? <ActivityIndicator color={colors.textOnPrimary} /> : <Text style={styles.buttonText}>Send OTP</Text>}
-          </TouchableOpacity>
+          </Touchable>
         </View>
       );
     }
@@ -141,12 +139,12 @@ export default function ForgotPasswordScreen() {
             placeholderTextColor={colors.textTertiary}
           />
           {errors.otp && <Text style={styles.errorText}>{errors.otp}</Text>}
-          <TouchableOpacity style={[styles.button, loading && styles.buttonDisabled]} onPress={handleVerifyOtp} disabled={loading}>
+          <Touchable style={[styles.button, loading && styles.buttonDisabled]} onPress={handleVerifyOtp} disabled={loading}>
             {loading ? <ActivityIndicator color={colors.textOnPrimary} /> : <Text style={styles.buttonText}>Verify</Text>}
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.linkButton} onPress={() => setStep('email')}>
+          </Touchable>
+          <Touchable style={styles.linkButton} onPress={() => setStep('email')}>
             <Text style={styles.linkText}>Back to email</Text>
-          </TouchableOpacity>
+          </Touchable>
         </View>
       );
     }
@@ -164,9 +162,9 @@ export default function ForgotPasswordScreen() {
             placeholder="Min 8 chars, upper/lower/digit/symbol"
             placeholderTextColor={colors.textTertiary}
           />
-          <TouchableOpacity onPress={() => setShowNew((v) => !v)} style={styles.eyeBtn}>
+          <Touchable onPress={() => setShowNew((v) => !v)} style={styles.eyeBtn}>
             <Ionicons name={showNew ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
-          </TouchableOpacity>
+          </Touchable>
         </View>
         {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
@@ -180,15 +178,15 @@ export default function ForgotPasswordScreen() {
             placeholder="Re-enter new password"
             placeholderTextColor={colors.textTertiary}
           />
-          <TouchableOpacity onPress={() => setShowConfirm((v) => !v)} style={styles.eyeBtn}>
+          <Touchable onPress={() => setShowConfirm((v) => !v)} style={styles.eyeBtn}>
             <Ionicons name={showConfirm ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
-          </TouchableOpacity>
+          </Touchable>
         </View>
         {errors.confirm && <Text style={styles.errorText}>{errors.confirm}</Text>}
 
-        <TouchableOpacity style={[styles.button, loading && styles.buttonDisabled]} onPress={handleResetPassword} disabled={loading}>
+        <Touchable style={[styles.button, loading && styles.buttonDisabled]} onPress={handleResetPassword} disabled={loading}>
           {loading ? <ActivityIndicator color={colors.textOnPrimary} /> : <Text style={styles.buttonText}>Reset Password</Text>}
-        </TouchableOpacity>
+        </Touchable>
       </View>
     );
   }
@@ -196,9 +194,9 @@ export default function ForgotPasswordScreen() {
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={[styles.content, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 16 }]} keyboardShouldPersistTaps="handled">
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+        <Touchable onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
-        </TouchableOpacity>
+        </Touchable>
         <Text style={styles.title}>Forgot Password</Text>
         {renderStep()}
       </ScrollView>
@@ -246,5 +244,5 @@ const styles = StyleSheet.create({
     fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary,
   },
   linkButton: { alignItems: 'center', marginTop: 16 },
-  linkText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.primary },
+  linkText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.primaryText },
 });

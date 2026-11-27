@@ -1,8 +1,10 @@
 import React, { useRef, useState } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, Image, TextInput,
+  View, Text, ScrollView, StyleSheet, Alert, Image, TextInput,
   LayoutAnimation, Platform, UIManager,
 } from 'react-native';
+import { haptics } from '../../../shared/haptics';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -90,6 +92,7 @@ export default function DeliveryCompleteScreen() {
 
   async function handleSubmit() {
     if (!photo || !signatureBase64) {
+      haptics.error();
       toast.show({ type: 'error', title: !photo ? 'Add a delivery photo' : 'Add the customer signature' });
       moveTo(!photo ? 0 : 1);
       return;
@@ -105,9 +108,11 @@ export default function DeliveryCompleteScreen() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
+      haptics.success();
       toast.show({ type: 'success', title: 'Delivery completed', message: 'The delivery has been successfully completed.' });
       navigation.goBack();
     } catch (err: any) {
+      haptics.error();
       toast.show({ type: 'error', title: err?.response?.data?.message || 'Submission failed' });
     } finally {
       setLoading(false);
@@ -116,6 +121,7 @@ export default function DeliveryCompleteScreen() {
 
   function goNext() {
     if (step === 0 && !photo) {
+      haptics.error();
       toast.show({ type: 'error', title: 'Add a delivery photo to continue' });
       return;
     }
@@ -142,15 +148,15 @@ export default function DeliveryCompleteScreen() {
             {photo ? (
               <View style={{ width: '100%' }}>
                 <Image source={{ uri: photo }} style={styles.previewImage} />
-                <TouchableOpacity onPress={() => setPhoto(null)}>
+                <Touchable onPress={() => setPhoto(null)}>
                   <Text style={styles.removeText}>Remove Photo</Text>
-                </TouchableOpacity>
+                </Touchable>
               </View>
             ) : (
-              <TouchableOpacity style={styles.uploadArea} onPress={handlePhotoPick}>
+              <Touchable style={styles.uploadArea} onPress={handlePhotoPick}>
                 <Ionicons name="camera-outline" size={32} color={colors.primary} style={{ marginBottom: 8 }} />
                 <Text style={styles.uploadText}>Add photo</Text>
-              </TouchableOpacity>
+              </Touchable>
             )}
           </Card>
         );
@@ -164,16 +170,19 @@ export default function DeliveryCompleteScreen() {
                   style={styles.signaturePreview}
                   resizeMode="contain"
                 />
-                <TouchableOpacity onPress={handleSignatureClear}>
+                <Touchable onPress={handleSignatureClear}>
                   <Text style={styles.removeText}>Clear & redo</Text>
-                </TouchableOpacity>
+                </Touchable>
               </View>
             ) : (
               <View>
               <SignatureView
                 ref={signaturePad}
                 onOK={handleSignature}
-                onEmpty={() => toast.show({ type: 'error', title: 'Ask the customer to sign to continue' })}
+                onEmpty={() => {
+                  haptics.error();
+                  toast.show({ type: 'error', title: 'Ask the customer to sign to continue' });
+                }}
                 descriptionText="Sign here"
                 clearText="Clear"
                 confirmText="Save"
@@ -182,9 +191,9 @@ export default function DeliveryCompleteScreen() {
                 webStyle={`.m-signature-pad--footer { display: none; } .m-signature-pad { border: none; }`}
                 style={styles.signaturePad}
               />
-              <TouchableOpacity onPress={() => signaturePad.current?.clearSignature()}>
+              <Touchable onPress={() => signaturePad.current?.clearSignature()}>
                 <Text style={styles.removeText}>Clear</Text>
-              </TouchableOpacity>
+              </Touchable>
               </View>
             )}
           </Card>
@@ -239,11 +248,11 @@ export default function DeliveryCompleteScreen() {
 
       <View style={styles.navRow}>
         {step > 0 && (
-          <TouchableOpacity style={[styles.navButton, styles.navButtonSecondary]} onPress={goBack} disabled={loading}>
+          <Touchable style={[styles.navButton, styles.navButtonSecondary]} onPress={goBack} disabled={loading}>
             <Text style={styles.navButtonText}>Back</Text>
-          </TouchableOpacity>
+          </Touchable>
         )}
-        <TouchableOpacity
+        <Touchable
           style={[styles.navButton, styles.navButtonPrimary]}
           onPress={goNext}
           disabled={loading}
@@ -251,7 +260,7 @@ export default function DeliveryCompleteScreen() {
           <Text style={[styles.navButtonText, { color: colors.textOnPrimary }]}>
             {loading ? 'Submitting...' : step < 3 ? 'Next' : 'Submit'}
           </Text>
-        </TouchableOpacity>
+        </Touchable>
       </View>
     </ScrollView>
   );
@@ -288,7 +297,7 @@ const styles = StyleSheet.create({
     height: 180, borderWidth: 1.5, borderColor: colors.separator, borderRadius: 10,
     borderStyle: 'dashed', justifyContent: 'center', alignItems: 'center', backgroundColor: colors.surface, width: '100%',
   },
-  uploadText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 12, color: colors.primary, textTransform: 'uppercase' },
+  uploadText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 12, color: colors.primaryText, textTransform: 'uppercase' },
   previewImage: { width: '100%', height: 200, borderRadius: 10, marginBottom: 8 },
   signaturePad: { height: 250, borderRadius: 10, borderWidth: 1, borderColor: colors.separator },
   signaturePreview: { width: '100%', height: 200, borderRadius: 10, marginBottom: 8, backgroundColor: colors.surface },

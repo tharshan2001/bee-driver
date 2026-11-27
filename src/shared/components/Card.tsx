@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
+import { View, StyleSheet, ViewStyle } from 'react-native';
+import Touchable from './Touchable';
 import { colors } from '../theme';
 
 interface CardProps {
@@ -23,7 +24,7 @@ export default function Card({
       {children}
     </View>
   );
-  if (onPress) return <TouchableOpacity onPress={onPress} activeOpacity={0.7}>{inner}</TouchableOpacity>;
+  if (onPress) return <Touchable onPress={onPress}>{inner}</Touchable>;
   return inner;
 }
 

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import Touchable from './Touchable';
 import { colors } from '../theme';
 
 interface ErrorScreenProps {
@@ -15,9 +16,9 @@ export default function ErrorScreen({ message, onRetry }: ErrorScreenProps) {
       </View>
       <Text style={styles.message}>{message}</Text>
       {onRetry && (
-        <TouchableOpacity style={styles.button} onPress={onRetry}>
+        <Touchable style={styles.button} onPress={onRetry}>
           <Text style={styles.buttonText}>Retry</Text>
-        </TouchableOpacity>
+        </Touchable>
       )}
     </View>
   );

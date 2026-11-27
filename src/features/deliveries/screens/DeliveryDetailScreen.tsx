@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert, TextInput, Modal, Linking, Image,
-  Animated,
-} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Alert, TextInput, Modal, Linking, Image, Animated, Platform } from 'react-native';
+import { haptics } from '../../../shared/haptics';
+import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
@@ -12,7 +11,8 @@ import type { DriverDelivery } from '../../../core/api/types';
 import type { RootStackParamList, RootStackNav } from '../../../navigation/types';
 import Card from '../../../shared/components/Card';
 import Skeleton from '../../../shared/components/Skeleton';
-import { formatDate, formatDateTime, getStatusColor, timeAgo } from '../../../core/utils/helpers';
+import { formatDate, formatDateTime, getStatusColor, timeAgo, formatMoney } from '../../../core/utils/helpers';
+import SwipeToConfirm from '../../../shared/components/SwipeToConfirm';
 import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
 
@@ -72,12 +72,18 @@ export default function DeliveryDetailScreen() {
     }
   }
 
+  function openLink(url: string, failure: string) {
+    Linking.openURL(url).catch(() => toast.show({ type: 'error', title: failure }));
+  }
+
   async function updateStatus(status: string, reason?: string) {
     try {
       await api.patch(`/driver/deliveries/${orderId}/status`, { status, reason });
+      haptics.confirm();
       toast.show({ type: 'success', title: 'Status updated' });
-      fetchDetail();
+      await fetchDetail(); // the slider stays busy until the next step is on screen
     } catch (err: any) {
+      haptics.error();
       toast.show({ type: 'error', title: err?.response?.data?.message || 'Failed to update status' });
     }
   }
@@ -93,12 +99,12 @@ export default function DeliveryDetailScreen() {
     switch (status.toUpperCase()) {
       case 'ASSIGNED':
         return [
-          { label: 'Mark Picked Up', action: () => updateStatus('PICKED_UP'), color: colors.primary, textColor: colors.textOnPrimary },
+          { label: 'Mark Picked Up', swipe: true, action: () => updateStatus('PICKED_UP'), color: colors.primary, textColor: colors.textOnPrimary },
           { label: 'Report Issue', action: () => setShowIssueModal(true), color: 'transparent', textColor: colors.danger, outline: true },
         ];
       case 'PICKED_UP':
         return [
-          { label: 'Start Transit', action: () => updateStatus('IN_TRANSIT'), color: colors.warning, textColor: colors.textOnPrimary },
+          { label: 'Start Transit', swipe: true, action: () => updateStatus('IN_TRANSIT'), color: colors.primary, textColor: colors.textOnPrimary },
           { label: 'Report Issue', action: () => setShowIssueModal(true), color: 'transparent', textColor: colors.danger, outline: true },
         ];
       case 'IN_TRANSIT':
@@ -129,8 +135,11 @@ export default function DeliveryDetailScreen() {
     return <View style={styles.center}><Text style={{ fontFamily: 'IBMPlexSans_400Regular' }}>Delivery not found</Text></View>;
   }
 
+  const actions = getActions(delivery.status);
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 16, gap: 12 }}>
+    <View style={styles.container}>
+    <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: actions.length ? 16 : insets.bottom + 16, gap: 12 }}>
       <AnimatedCard index={0}>
         <Text style={styles.cardCaption}>CUSTOMER</Text>
         <View style={styles.customerRow}>
@@ -142,15 +151,30 @@ export default function DeliveryDetailScreen() {
             {delivery.customer.district && <Text style={styles.district}>{delivery.customer.district}</Text>}
           </View>
         </View>
-        <TouchableOpacity onPress={() => Linking.openURL(`tel:${delivery.customer.phone}`)} style={styles.linkRow}>
-          <Ionicons name="call-outline" size={14} color={colors.success} style={{ marginRight: 6 }} />
-          <Text style={styles.linkText}>{delivery.customer.phone}</Text>
-        </TouchableOpacity>
         <View style={styles.linkRow}>
-          <Ionicons name="location-outline" size={14} color={colors.textSecondary} style={{ marginRight: 6 }} />
+          <Ionicons name="location-outline" size={16} color={colors.textSecondary} style={{ marginRight: 6 }} />
           <Text style={{ fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary, flex: 1 }}>{delivery.customer.address}</Text>
         </View>
+        <View style={styles.contactRow}>
+          <Touchable style={styles.contactButton} accessibilityRole="button" accessibilityLabel={`Call ${delivery.customer.phone}`}
+            onPress={() => openLink(`tel:${delivery.customer.phone}`, "Couldn't open the phone")}>
+            <Ionicons name="call-outline" size={18} color={colors.success} />
+            <Text style={styles.contactText}>Call {delivery.customer.phone}</Text>
+          </Touchable>
+          <Touchable style={styles.contactButton} accessibilityRole="button" accessibilityLabel="Navigate to the address"
+            onPress={() => openLink(mapUrl(delivery.customer.address), "Couldn't open a map")}>
+            <Ionicons name="navigate-outline" size={18} color={colors.success} />
+            <Text style={styles.contactText}>Navigate</Text>
+          </Touchable>
+        </View>
       </AnimatedCard>
+
+      {delivery.orderInfo.outstanding > 0 && !['DELIVERED', 'FAILED', 'FAILED_PERMANENT'].includes(delivery.status.toUpperCase()) && (
+        <View style={styles.collect}>
+          <Text style={styles.collectLabel}>TO COLLECT</Text>
+          <Text style={styles.collectAmount}>{formatMoney(delivery.orderInfo.outstanding)}</Text>
+        </View>
+      )}
 
       <AnimatedCard index={1}>
         <Text style={styles.cardCaption}>ORDER INFO</Text>
@@ -158,9 +182,9 @@ export default function DeliveryDetailScreen() {
         {delivery.scheduledDate && (
           <InfoRow label="Scheduled" value={formatDate(delivery.scheduledDate)} />
         )}
-        <InfoRow label="Total" value={`LKR ${delivery.orderInfo.total.toFixed(2)}`} mono />
-        <InfoRow label="Paid" value={`LKR ${delivery.orderInfo.paid.toFixed(2)}`} valueColor={colors.success} mono />
-        <InfoRow label="Outstanding" value={`LKR ${delivery.orderInfo.outstanding.toFixed(2)}`} valueColor={colors.danger} mono />
+        <InfoRow label="Total" value={formatMoney(delivery.orderInfo.total)} mono />
+        <InfoRow label="Paid" value={formatMoney(delivery.orderInfo.paid)} valueColor={colors.success} mono />
+        <InfoRow label="Outstanding" value={formatMoney(delivery.orderInfo.outstanding)} valueColor={colors.danger} mono />
         <InfoRow label="Payment" value={delivery.orderInfo.paymentStatus.replace(/_/g, ' ')} />
       </AnimatedCard>
 
@@ -171,7 +195,7 @@ export default function DeliveryDetailScreen() {
             <ItemImage imageUrl={item.imageUrl} />
             <Text style={{ flex: 1, fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary }}>{item.name}</Text>
             <Text style={{ marginRight: 16, fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.textSecondary }}>x{item.quantity}</Text>
-            <Text style={{ fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.textPrimary }}>LKR {(item.unitPrice * item.quantity).toFixed(2)}</Text>
+            <Text style={{ fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.textPrimary }}>{formatMoney(item.unitPrice * item.quantity)}</Text>
           </View>
         ))}
       </AnimatedCard>
@@ -195,40 +219,26 @@ export default function DeliveryDetailScreen() {
         ))}
       </AnimatedCard>
 
-      {getActions(delivery.status).map((btn: any, idx: number) => (
-        <TouchableOpacity
-          key={idx}
-          style={[
-            styles.actionButton,
-            { backgroundColor: btn.color },
-            btn.outline && { borderWidth: 1.5, borderColor: colors.danger },
-          ]}
-          onPress={btn.action}
-        >
-          <Text style={[styles.actionButtonText, { color: btn.textColor }]}>{btn.label}</Text>
-        </TouchableOpacity>
-      ))}
-
       {delivery.status.toUpperCase() === 'DELIVERED' && (delivery.photoUrl || delivery.signatureUrl) && (
         <AnimatedCard index={4}>
           <Text style={styles.cardCaption}>DELIVERY PROOF</Text>
           {delivery.photoUrl && (
-            <TouchableOpacity onPress={() => Linking.openURL(delivery.photoUrl!)} style={{ marginBottom: 8 }}>
+            <Touchable onPress={() => Linking.openURL(delivery.photoUrl!)} style={{ marginBottom: 8 }}>
               <Image source={{ uri: delivery.photoUrl }} style={styles.proofImage} />
               <View style={styles.linkRow}>
                 <Ionicons name="camera-outline" size={14} color={colors.primary} style={{ marginRight: 6 }} />
                 <Text style={styles.linkText}>Tap to open photo</Text>
               </View>
-            </TouchableOpacity>
+            </Touchable>
           )}
           {delivery.signatureUrl && (
-            <TouchableOpacity onPress={() => Linking.openURL(delivery.signatureUrl!)}>
+            <Touchable onPress={() => Linking.openURL(delivery.signatureUrl!)}>
               <Image source={{ uri: delivery.signatureUrl }} style={styles.proofImage} />
               <View style={styles.linkRow}>
                 <Ionicons name="create-outline" size={14} color={colors.primary} style={{ marginRight: 6 }} />
                 <Text style={styles.linkText}>Tap to open signature</Text>
               </View>
-            </TouchableOpacity>
+            </Touchable>
           )}
         </AnimatedCard>
       )}
@@ -239,8 +249,6 @@ export default function DeliveryDetailScreen() {
           <Text style={{ fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textSecondary }}>{delivery.driverNotes}</Text>
         </AnimatedCard>
       )}
-
-      <View style={{ height: 40 }} />
 
       <Modal visible={showIssueModal} transparent animationType="slide">
         <View style={styles.modalOverlay}>
@@ -254,17 +262,46 @@ export default function DeliveryDetailScreen() {
               onChangeText={setIssueReason}
               multiline
             />
-            <TouchableOpacity style={[styles.modalButton, { backgroundColor: colors.danger }]} onPress={handleReportIssue}>
+            <Touchable style={[styles.modalButton, { backgroundColor: colors.danger }]} onPress={handleReportIssue}>
               <Text style={styles.modalButtonText}>Submit Report</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowIssueModal(false)}>
+            </Touchable>
+            <Touchable onPress={() => setShowIssueModal(false)}>
               <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
+            </Touchable>
           </View>
         </View>
       </Modal>
     </ScrollView>
+
+    {/* Pinned, so the next step is always in view and clear of the system gesture area. */}
+    {actions.length > 0 && (
+      <View style={[styles.actionBar, { paddingBottom: insets.bottom + 12 }]}>
+        {actions.map((btn: any, idx: number) => btn.swipe ? (
+          // Keyed by label so the next step starts with a fresh slider.
+          <SwipeToConfirm key={btn.label} label={btn.label} color={btn.color} onConfirm={btn.action} />
+        ) : (
+          <Touchable
+            key={idx}
+            style={[
+              styles.actionButton,
+              { backgroundColor: btn.color },
+              btn.outline && { borderWidth: 1.5, borderColor: colors.danger },
+            ]}
+            onPress={btn.action}
+          >
+            <Text style={[styles.actionButtonText, { color: btn.textColor }]}>{btn.label}</Text>
+          </Touchable>
+        ))}
+      </View>
+    )}
+    </View>
   );
+}
+
+/** The phone's map app, searching for the address. */
+function mapUrl(address: string): string {
+  const q = encodeURIComponent(address);
+  return Platform.OS === 'ios' ? `http://maps.apple.com/?q=${q}` : `geo:0,0?q=${q}`;
 }
 
 function ItemImage({ imageUrl }: { imageUrl?: string }) {
@@ -309,10 +346,22 @@ const styles = StyleSheet.create({
     width: 48, height: 48, borderRadius: 24, backgroundColor: colors.primaryTint,
     justifyContent: 'center', alignItems: 'center', marginRight: 12,
   },
-  avatarText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 18, color: colors.primary },
+  avatarText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 18, color: colors.primaryText },
   customerName: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 16, color: colors.textPrimary },
   district: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 12, color: colors.textSecondary },
   linkRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
+  contactRow: { flexDirection: 'row', gap: 8, marginTop: 8 },
+  contactButton: {
+    flexGrow: 1, minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8,
+    paddingHorizontal: 12, borderRadius: 10, backgroundColor: colors.successTint,
+  },
+  contactText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.success },
+  collect: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    backgroundColor: colors.primaryTint, borderRadius: 14, padding: 16,
+  },
+  collectLabel: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 13, color: colors.textPrimary },
+  collectAmount: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 22, color: colors.textPrimary },
   linkText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 12, color: colors.success },
   infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 },
   infoLabel: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, textTransform: 'uppercase' },
@@ -327,7 +376,11 @@ const styles = StyleSheet.create({
   timelineContent: { flex: 1, paddingBottom: 16 },
   timelineTime: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginTop: 2 },
   timelineNote: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary, marginTop: 4 },
-  actionButton: { borderRadius: 10, padding: 14, alignItems: 'center', marginBottom: 8 },
+  actionBar: {
+    paddingHorizontal: 16, paddingTop: 12, gap: 8, backgroundColor: colors.elevated,
+    borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.separator,
+  },
+  actionButton: { borderRadius: 10, padding: 14, alignItems: 'center' },
   actionButtonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15 },
   proofImage: { width: '100%', height: 120, borderRadius: 10, marginBottom: 4 },
   modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
@@ -339,6 +392,6 @@ const styles = StyleSheet.create({
     minHeight: 80, textAlignVertical: 'top', marginBottom: 16,
   },
   modalButton: { borderRadius: 10, padding: 14, alignItems: 'center', marginBottom: 12 },
-  modalButtonText: { fontFamily: 'IBMPlexSans_500Medium', color: colors.textOnPrimary, fontSize: 15 },
+  modalButtonText: { fontFamily: 'IBMPlexSans_500Medium', color: '#FFFFFF', fontSize: 15 },
   cancelText: { textAlign: 'center', fontFamily: 'IBMPlexSans_400Regular', color: colors.textSecondary, fontSize: 14 },
 });
