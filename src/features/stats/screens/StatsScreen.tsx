@@ -56,7 +56,7 @@ export default function StatsScreen() {
         <View style={{ width: 8 }} />
         <StatCard icon="close-outline" label="Failed" value={`${stats.failedDeliveries}`} color={colors.danger} flex={1} />
       </View>
-      <StatCard icon="cash-outline" label="Total Earnings" value={`LKR ${stats.totalEarnings.toFixed(2)}`} color={colors.success} mono />
+      <StatCard icon="cash-outline" label="Expenses Claimed" value={`LKR ${(stats.totalExpensesClaimed ?? 0).toFixed(2)}`} color={colors.success} mono />
       {stats.rating != null && (
         <StatCard icon="star-outline" label="Rating" value={stats.rating.toFixed(1)} color={colors.warning} />
       )}

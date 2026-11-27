@@ -46,15 +46,18 @@ export default function ProfileScreen() {
 
   async function saveProfile() {
     setSaving(true);
+    // The server accepts 0XXXXXXXXX only: convert +94 / 94 numbers, and leave an empty phone out.
+    const phoneNumber = phone.replace(/[\s-]/g, '').replace(/^(\+94|94)(?=\d{9}$)/, '0');
     try {
       await api.patch('/driver/profile', {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        phoneNumber: phone.trim(),
+        phoneNumber: phoneNumber || undefined,
         licenseNumber: license.trim(),
       });
+      if (phoneNumber) setPhone(phoneNumber);
       toast.show({ type: 'success', title: 'Profile updated' });
-      setProfile((prev) => prev ? { ...prev, firstName: firstName.trim(), lastName: lastName.trim(), phoneNumber: phone.trim(), licenseNumber: license.trim() } : prev);
+      setProfile((prev) => prev ? { ...prev, firstName: firstName.trim(), lastName: lastName.trim(), phoneNumber: phoneNumber || prev.phoneNumber, licenseNumber: license.trim() } : prev);
       setEditing(false);
     } catch (err: any) {
       Alert.alert('Error', err?.response?.data?.message || 'Failed to update');

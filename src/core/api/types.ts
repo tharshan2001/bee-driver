@@ -105,7 +105,8 @@ export interface DriverStats {
   totalDeliveries: number;
   completedDeliveries: number;
   failedDeliveries: number;
-  totalEarnings: number;
+  totalEarnings: number; // always 0 on the server; not shown
+  totalExpensesClaimed: number;
   rating?: number;
 }
 

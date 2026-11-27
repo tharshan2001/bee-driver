@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { getTokens, clearTokens, saveTokens, saveDriverId, getDriverId, saveAvailability } from '../core/storage/storage';
-import api, { onAuthExpired } from '../core/api/client';
+import { getTokens, clearTokens, saveTokens, saveDriverId, getDriverId, saveAvailability, getAvailability } from '../core/storage/storage';
+import api, { onAuthExpired, isSessionRejected } from '../core/api/client';
 import type { LoginResponse } from '../core/api/types';
 import { useLocationTracking } from '../features/location/hooks/useLocationTracking';
 import { useAppPermissions } from '../features/permissions/hooks/useAppPermissions';
@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             refreshToken: tokens.refreshToken,
           });
           const data = response.data?.data as LoginResponse;
-          if (data) {
+          if (data?.driverId) {
             await saveTokens(data.token, data.refreshToken);
             await saveDriverId(data.driverId);
             await saveAvailability(data.availability);
@@ -80,8 +80,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setupFcmDeepLinking();
             return;
           }
-        } catch {
-          await clearTokens();
+          await clearTokens(); // not a driver account
+        } catch (error) {
+          if (isSessionRejected(error)) {
+            await clearTokens();
+          } else {
+            // Offline or server down: stay signed in with what was saved last time.
+            const driverId = await getDriverId();
+            if (driverId) {
+              const availability = await getAvailability();
+              setState((prev) => ({ ...prev, isLoading: false, isAuthenticated: true, driverId, availability }));
+              registerFcmToken();
+              setupFcmDeepLinking();
+              return;
+            }
+          }
         }
       }
     } catch {}
@@ -90,10 +103,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     if (__DEV__) console.log('[Auth] Login attempt:', email);
-    const response = await api.post('/auth/login', { email, password });
+    // role: the server refuses accounts that aren't drivers.
+    const response = await api.post('/auth/login', { email, password, role: 'DRIVER' });
     if (__DEV__) console.log('[Auth] Login response:', JSON.stringify(response.data));
     const data = response.data?.data as LoginResponse;
     if (!data) throw new Error('Login failed: no data in response');
+    if (!data.driverId) throw new Error('This app is for drivers. Sign in with a driver account.');
 
     await saveTokens(data.token, data.refreshToken);
     await saveDriverId(data.driverId);

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { cacheData, getCachedData, getTokens } from '../../../core/storage/storage';
+import { cacheData, getCachedData, getTokens, onTokenChange } from '../../../core/storage/storage';
 import { startNativeLocation, stopNativeLocation, setNativeDriverId } from '../services/NativeLocationModule';
 
 const TRACKING_PREF_KEY = 'location-tracking-enabled';
@@ -20,6 +20,15 @@ export function useLocationTracking(isActive: boolean, driverId?: string) {
       setIsTracking(false);
     });
   }, [isActive, driverId]);
+
+  // The native service keeps the token it was started with, and the server rejects it once it
+  // expires. Hand it every new one so location keeps flowing.
+  useEffect(() => onTokenChange((accessToken) => {
+    if (!startedRef.current) return;
+    startNativeLocation(accessToken).catch((e) => {
+      if (__DEV__) console.warn('[Location] token update failed:', e);
+    });
+  }), []);
 
   async function initTracking(driverId: string) {
     if (startedRef.current) return;
