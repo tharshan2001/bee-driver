@@ -2,6 +2,14 @@ import { NativeModules, Platform } from 'react-native';
 
 const { NativeLocation } = NativeModules;
 
+// The service sends to the same server as the rest of the app.
+const API_URL = (process.env.EXPO_PUBLIC_API_URL ?? '').replace(/\/+$/, '');
+
+/** https://host/api -> wss://host/raw-ws/driver (http -> ws). */
+export function locationSocketUrl(apiUrl: string): string {
+  return apiUrl ? `${apiUrl.replace(/\/api$/, '').replace(/^http/, 'ws')}/raw-ws/driver` : '';
+}
+
 export interface LocationResult {
   latitude: number;
   longitude: number;
@@ -13,7 +21,7 @@ export interface LocationResult {
 }
 
 export interface NativeLocationModule {
-  start(authToken: string): Promise<boolean>;
+  start(authToken: string, apiUrl: string, wsUrl: string): Promise<boolean>;
   stop(): Promise<boolean>;
   isActive(): Promise<boolean>;
   getLastLocation(): Promise<LocationResult | null>;
@@ -21,8 +29,8 @@ export interface NativeLocationModule {
 }
 
 const Impl: NativeLocationModule = {
-  start: (authToken: string) =>
-    NativeLocation?.start(authToken) ?? Promise.reject(new Error('Native module not available')),
+  start: (authToken: string, apiUrl: string, wsUrl: string) =>
+    NativeLocation?.start(authToken, apiUrl, wsUrl) ?? Promise.reject(new Error('Native module not available')),
   stop: () =>
     NativeLocation?.stop() ?? Promise.reject(new Error('Native module not available')),
   isActive: () =>
@@ -36,7 +44,7 @@ const Impl: NativeLocationModule = {
 export const startNativeLocation = async (authToken: string): Promise<boolean> => {
   if (Platform.OS !== 'android') return false;
   try {
-    return await Impl.start(authToken);
+    return await Impl.start(authToken, API_URL, locationSocketUrl(API_URL));
   } catch (e) {
     if (__DEV__) console.warn('[NativeLocation] start failed:', e);
     throw e;
