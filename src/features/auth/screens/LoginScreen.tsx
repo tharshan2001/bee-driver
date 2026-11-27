@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   eyeBtn: { padding: 10 },
   errorText: { fontFamily: 'IBMPlexMono_500Medium', color: colors.danger, fontSize: 12, marginTop: 4 },
   forgotBtn: { alignItems: 'flex-end', marginTop: 8 },
-  forgotText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 13, color: colors.primary },
+  forgotText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 13, color: colors.primaryText },
   button: {
     backgroundColor: colors.primary,
     borderRadius: 10,

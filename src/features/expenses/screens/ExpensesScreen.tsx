@@ -9,7 +9,7 @@ import type { Expense } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
 import Badge from '../../../shared/components/StatusBadge';
 import EmptyState from '../../../shared/components/EmptyState';
-import { formatDate } from '../../../core/utils/helpers';
+import { formatDate, formatMoney } from '../../../core/utils/helpers';
 import { colors } from '../../../shared/theme';
 
 type Nav = RootStackNav;
@@ -76,7 +76,7 @@ export default function ExpensesScreen() {
               <Text style={styles.meta}>{item.category} • {formatDate(item.date)}</Text>
             </View>
             <View style={styles.itemRight}>
-              <Text style={styles.amount}>LKR {item.amount.toFixed(2)}</Text>
+              <Text style={styles.amount}>{formatMoney(item.amount)}</Text>
               <Badge status={item.status} compact />
             </View>
           </View>

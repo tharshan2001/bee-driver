@@ -41,6 +41,6 @@ const styles = StyleSheet.create({
   action: {
     fontFamily: 'IBMPlexSans_500Medium',
     fontSize: 13,
-    color: colors.primary,
+    color: colors.primaryText,
   },
 });

@@ -244,5 +244,5 @@ const styles = StyleSheet.create({
     fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary,
   },
   linkButton: { alignItems: 'center', marginTop: 16 },
-  linkText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.primary },
+  linkText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.primaryText },
 });

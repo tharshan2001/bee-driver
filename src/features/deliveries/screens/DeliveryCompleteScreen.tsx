@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     height: 180, borderWidth: 1.5, borderColor: colors.separator, borderRadius: 10,
     borderStyle: 'dashed', justifyContent: 'center', alignItems: 'center', backgroundColor: colors.surface, width: '100%',
   },
-  uploadText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 12, color: colors.primary, textTransform: 'uppercase' },
+  uploadText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 12, color: colors.primaryText, textTransform: 'uppercase' },
   previewImage: { width: '100%', height: 200, borderRadius: 10, marginBottom: 8 },
   signaturePad: { height: 250, borderRadius: 10, borderWidth: 1, borderColor: colors.separator },
   signaturePreview: { width: '100%', height: 200, borderRadius: 10, marginBottom: 8, backgroundColor: colors.surface },

@@ -9,6 +9,7 @@ export const colors = {
   /* Brand */
   primary: '#FFC107',
   primaryDeep: '#D4A000',
+  primaryText: '#8A6100', // the brand yellow, dark enough for text on white
   primaryTint: '#FFF3CD',
 
   /* Status */
@@ -21,16 +22,16 @@ export const colors = {
 
   /* Text */
   textPrimary: '#1D1D1F',
-  textSecondary: '#86868B',
-  textTertiary: '#AEAEB2',
-  textOnPrimary: '#FFFFFF',
+  textSecondary: '#5F5F66',
+  textTertiary: '#6E6E73',
+  textOnPrimary: '#1D1D1F', // white on the yellow is unreadable outdoors
 
   /* Separator (hairline, rarely used) */
   separator: '#E5E5EA',
 
   /* Tab bar */
   tabActive: '#FFC107',
-  tabInactive: '#AEAEB2',
+  tabInactive: '#6E6E73',
   tabBarBg: '#FFFFFF',
 
   /* Misc */
@@ -41,5 +42,5 @@ export const colors = {
   kraft: '#FFFFFF',
   paper: '#F5F5F7',
   border: '#E5E5EA',
-  textMuted: '#AEAEB2',
+  textMuted: '#6E6E73',
 };

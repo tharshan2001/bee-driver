@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   },
   avatarImage: { width: 72, height: 72, borderRadius: 36 },
   avatarText: {
-    fontFamily: 'SpaceGrotesk_700Bold', fontSize: 24, color: colors.primary,
+    fontFamily: 'SpaceGrotesk_700Bold', fontSize: 24, color: colors.primaryText,
   },
   profileName: {
     fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, color: colors.textPrimary,

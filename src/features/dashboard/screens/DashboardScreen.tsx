@@ -104,7 +104,7 @@ export default function DashboardScreen() {
             <Ionicons name="location-outline" size={24} color={colors.primary} style={{ marginBottom: 8 }} />
             <Text style={styles.actionLabel}>LOCATION</Text>
           </Touchable>
-          <Touchable onPress={() => navigation.navigate('MainTabs')} style={styles.actionCard}>
+          <Touchable onPress={() => navigation.navigate('MainTabs', { screen: 'Deliveries' } as any)} style={styles.actionCard}>
             <Ionicons name="cube-outline" size={24} color="#2196F3" style={{ marginBottom: 8 }} />
             <Text style={styles.actionLabel}>DELIVERIES</Text>
           </Touchable>

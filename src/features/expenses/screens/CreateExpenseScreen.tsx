@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   dropdownItem: { padding: 14, borderBottomWidth: 1, borderBottomColor: colors.separator },
   dropdownItemActive: { backgroundColor: colors.primaryTint },
   dropdownText: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary },
-  dropdownTextActive: { color: colors.primary, fontFamily: 'IBMPlexSans_500Medium' },
+  dropdownTextActive: { color: colors.primaryText, fontFamily: 'IBMPlexSans_500Medium' },
   amountInput: {
     borderBottomWidth: 1, borderBottomColor: colors.separator, paddingVertical: 8,
     fontFamily: 'IBMPlexMono_500Medium', fontSize: 22, color: colors.textPrimary,
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   receiptPreview: { width: '100%', height: 150, borderRadius: 10, marginBottom: 8 },
   removeText: { fontFamily: 'IBMPlexSans_400Regular', color: colors.danger, textAlign: 'center' },
   uploadBtn: { backgroundColor: colors.surface, borderRadius: 10, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: colors.separator, borderStyle: 'dashed', flexDirection: 'row', justifyContent: 'center' },
-  uploadBtnText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 12, color: colors.primary },
+  uploadBtnText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 12, color: colors.primaryText },
   submitBtn: { backgroundColor: colors.primary, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 16 },
   submitBtnText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary },
 });

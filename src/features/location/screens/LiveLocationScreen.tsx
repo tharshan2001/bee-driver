@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14, borderRadius: 10,
   },
   actionText: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: '#fff',
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textOnPrimary,
     textTransform: 'uppercase',
   },
   errorText: {
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     borderRadius: 10, marginTop: 8,
   },
   retryText: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: '#fff',
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textOnPrimary,
     textTransform: 'uppercase',
   },
   errorActions: {
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     borderRadius: 10, marginTop: 8, borderWidth: 1, borderColor: colors.primary,
   },
   settingsText: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.primary,
+    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.primaryText,
     textTransform: 'uppercase',
   },
 });

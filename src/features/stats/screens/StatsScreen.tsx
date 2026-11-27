@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { formatMoney } from '../../../core/utils/helpers';
+import { Ionicons } from '@expo/vector-icons';
 import { View, Text, ScrollView, RefreshControl, StyleSheet, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../../../core/api/client';
@@ -51,13 +53,13 @@ export default function StatsScreen() {
       contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 16 }]}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
-      <StatCard icon="car-outline" label="Total Deliveries" value={`${stats.totalDeliveries}`} color={colors.primary} />
+      <StatCard icon="car-outline" label="Total Deliveries" value={`${stats.totalDeliveries}`} color={colors.primaryText} />
       <View style={styles.row}>
         <StatCard icon="checkmark-outline" label="Completed" value={`${stats.completedDeliveries}`} color={colors.success} flex={1} />
         <View style={{ width: 8 }} />
         <StatCard icon="close-outline" label="Failed" value={`${stats.failedDeliveries}`} color={colors.danger} flex={1} />
       </View>
-      <StatCard icon="cash-outline" label="Expenses Claimed" value={`LKR ${(stats.totalExpensesClaimed ?? 0).toFixed(2)}`} color={colors.success} mono />
+      <StatCard icon="cash-outline" label="Expenses Claimed" value={formatMoney(stats.totalExpensesClaimed ?? 0)} color={colors.success} mono />
       {stats.rating != null && (
         <StatCard icon="star-outline" label="Rating" value={stats.rating.toFixed(1)} color={colors.warning} />
       )}
@@ -77,7 +79,7 @@ function StatCard({ icon, label, value, color, flex, mono }: {
   return (
     <View style={[styles.statCard, flex ? { flex } : undefined]}>
       <View style={[styles.statIconBox, { borderColor: color }]}>
-        <Text style={{ fontSize: 18 }}>{/* placeholder for icon */}</Text>
+        <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={20} color={color} />
       </View>
       <View style={{ flex: 1 }}>
         <Text style={styles.statLabel}>{label}</Text>
