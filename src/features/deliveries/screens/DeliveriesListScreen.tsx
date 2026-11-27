@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, FlatList, RefreshControl, StyleSheet, ActivityIndicator } from 'react-native';
 import Touchable from '../../../shared/components/Touchable';
 import Appear from '../../../shared/components/Appear';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../../../core/api/client';
 import { cacheData, getCachedData } from '../../../core/storage/storage';
@@ -48,6 +48,9 @@ export default function DeliveriesListScreen() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const filterRef = useRef(filter);
+  filterRef.current = filter;
+
   const fetchDeliveries = useCallback(async (pageNum: number, append = false) => {
     setError(null);
     const cacheKey = `deliveries_${filter || 'all'}_page_${pageNum}`;
@@ -58,7 +61,8 @@ export default function DeliveriesListScreen() {
       const pageData = res.data?.data as PageResponse<any>;
       if (pageData) {
         if (append) {
-          setData((prev) => [...prev, ...pageData.content]);
+          // Rows can move between pages as statuses change; don't show one twice.
+          setData((prev) => [...prev, ...pageData.content.filter((n) => !prev.some((p) => p.orderId === n.orderId))]);
         } else {
           setData(pageData.content);
         }
@@ -87,6 +91,23 @@ export default function DeliveriesListScreen() {
     setPage(0);
     fetchDeliveries(0);
   }, [filter, fetchDeliveries]);
+
+  // Coming back (e.g. from a delivery): reload the rows already shown, keeping the place in the list.
+  const loadedPages = useRef(1);
+  loadedPages.current = page + 1;
+  const seen = useRef(false);
+  useFocusEffect(useCallback(() => {
+    if (!seen.current) { seen.current = true; return; } // the first load is the effect above
+    api.get('/driver/deliveries', {
+      params: { status: filterRef.current, page: 0, size: Math.min(200, loadedPages.current * 20) },
+    }).then((res) => {
+      const pageData = res.data?.data as PageResponse<any> | undefined;
+      if (pageData && res.config.params.status === filterRef.current) {
+        setData(pageData.content);
+        setHasMore(!pageData.last);
+      }
+    }).catch(() => {}); // keep what is on screen
+  }, []));
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -155,7 +176,7 @@ export default function DeliveriesListScreen() {
       ) : (
         <FlatList
           data={data}
-          keyExtractor={(item, idx) => `${item.orderId}-${idx}`}
+          keyExtractor={(item) => item.orderId}
           renderItem={renderItem}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           onEndReached={loadMore}
