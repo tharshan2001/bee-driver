@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, Alert, Image, TextInput, LayoutAnimation, Platform, UIManager } from 'react-native';
+import React, { useRef, useState } from 'react';
+import {
+  View, Text, ScrollView, StyleSheet, Alert, Image, TextInput,
+  LayoutAnimation, Platform, UIManager,
+} from 'react-native';
 import { haptics } from '../../../shared/haptics';
 import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,7 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
-import SignatureView from 'react-native-signature-canvas';
+import SignatureView, { type SignatureViewRef } from 'react-native-signature-canvas';
 import api from '../../../core/api/client';
 import Card from '../../../shared/components/Card';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -23,8 +26,8 @@ type CompleteRoute = RouteProp<RootStackParamList, 'DeliveryComplete'>;
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 const steps = [
-  { title: 'Delivery Photo', subtitle: 'Take a photo of the delivered items', icon: 'camera-outline' as const },
-  { title: 'Customer Signature', subtitle: 'Ask the customer to sign', icon: 'create-outline' as const },
+  { title: 'Delivery Photo', subtitle: 'Required: a photo of the delivered items', icon: 'camera-outline' as const },
+  { title: 'Customer Signature', subtitle: 'Required: ask the customer to sign', icon: 'create-outline' as const },
   { title: 'Driver Notes', subtitle: 'Optional notes about the delivery', icon: 'document-text-outline' as const },
   { title: 'Review & Submit', subtitle: 'Confirm and submit', icon: 'checkmark-circle-outline' as const },
 ];
@@ -42,6 +45,7 @@ export default function DeliveryCompleteScreen() {
   const [signatureBase64, setSignatureBase64] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
+  const signaturePad = useRef<SignatureViewRef>(null);
 
   async function pickPhoto() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -69,9 +73,16 @@ export default function DeliveryCompleteScreen() {
     ]);
   }
 
+  // The pad hides its own buttons, so Next asks it for the drawing; it answers here.
   function handleSignature(sig: string) {
     setSignatureBase64(sig);
     setSignature('captured');
+    moveTo(2);
+  }
+
+  function moveTo(next: number) {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setStep(next);
   }
 
   function handleSignatureClear() {
@@ -80,27 +91,18 @@ export default function DeliveryCompleteScreen() {
   }
 
   async function handleSubmit() {
+    if (!photo || !signatureBase64) {
+      haptics.error();
+      toast.show({ type: 'error', title: !photo ? 'Add a delivery photo' : 'Add the customer signature' });
+      moveTo(!photo ? 0 : 1);
+      return;
+    }
     setLoading(true);
     try {
       const formData = new FormData();
-      if (photo) {
-        formData.append('photo', {
-          uri: photo,
-          type: 'image/jpeg',
-          name: 'delivery_photo.jpg',
-        } as any);
-      }
-      if (signatureBase64) {
-        formData.append('signature', {
-          uri: signatureBase64,
-          type: 'image/png',
-          name: 'signature.png',
-        } as any);
-      }
+      formData.append('photo', { uri: photo, type: 'image/jpeg', name: 'delivery_photo.jpg' } as any);
+      formData.append('signature', { uri: signatureBase64, type: 'image/png', name: 'signature.png' } as any);
       if (notes.trim()) formData.append('driverNotes', notes.trim());
-      // Photo, signature and notes are all optional, but Android refuses to send a multipart body
-      // with no parts. The server ignores this field.
-      if (!photo && !signatureBase64 && !notes.trim()) formData.append('noAttachments', 'true');
 
       await api.post(`/driver/deliveries/${orderId}/complete`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -118,17 +120,24 @@ export default function DeliveryCompleteScreen() {
   }
 
   function goNext() {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    if (step === 0 && !photo) {
+      haptics.error();
+      toast.show({ type: 'error', title: 'Add a delivery photo to continue' });
+      return;
+    }
+    if (step === 1 && !signature) {
+      signaturePad.current?.readSignature(); // answers through onOK or onEmpty
+      return;
+    }
     if (step === 3) {
       handleSubmit();
     } else {
-      setStep(step + 1);
+      moveTo(step + 1);
     }
   }
 
   function goBack() {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setStep(step - 1);
+    moveTo(step - 1);
   }
 
   function renderStep() {
@@ -166,9 +175,14 @@ export default function DeliveryCompleteScreen() {
                 </Touchable>
               </View>
             ) : (
+              <View>
               <SignatureView
+                ref={signaturePad}
                 onOK={handleSignature}
-                onEmpty={() => Alert.alert('Error', 'Please sign first')}
+                onEmpty={() => {
+                  haptics.error();
+                  toast.show({ type: 'error', title: 'Ask the customer to sign to continue' });
+                }}
                 descriptionText="Sign here"
                 clearText="Clear"
                 confirmText="Save"
@@ -177,6 +191,10 @@ export default function DeliveryCompleteScreen() {
                 webStyle={`.m-signature-pad--footer { display: none; } .m-signature-pad { border: none; }`}
                 style={styles.signaturePad}
               />
+              <Touchable onPress={() => signaturePad.current?.clearSignature()}>
+                <Text style={styles.removeText}>Clear</Text>
+              </Touchable>
+              </View>
             )}
           </Card>
         );
@@ -205,7 +223,7 @@ export default function DeliveryCompleteScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 16 }}>
+    <ScrollView style={styles.container} contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 16 }} scrollEnabled={step !== 1}>
       <View style={styles.progressRow}>
         {steps.map((_, idx) => (
           <View
