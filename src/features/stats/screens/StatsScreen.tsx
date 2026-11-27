@@ -15,6 +15,7 @@ export default function StatsScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchStats = useCallback(async () => {
+    setError(null);
     try {
       const res = await api.get('/driver/stats');
       if (res.data?.success && res.data?.data) setStats(res.data.data);
@@ -34,7 +35,7 @@ export default function StatsScreen() {
   }, [fetchStats]);
 
   if (loading) return <View style={styles.center}><ActivityIndicator size="large" color={colors.primary} /></View>;
-  if (error) return <ErrorScreen message={error} onRetry={() => setLoading(true)} />;
+  if (error) return <ErrorScreen message={error} onRetry={() => { setLoading(true); fetchStats(); }} />;
   if (!stats) return null;
 
   const completionRate = stats.totalDeliveries > 0
