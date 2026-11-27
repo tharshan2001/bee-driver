@@ -36,6 +36,8 @@ export interface DriverDelivery {
   photoUrl?: string;
   signatureUrl?: string;
   driverNotes?: string;
+  /** What the office wrote for whoever delivers this order. */
+  deliveryNotes?: string;
 }
 
 export interface CustomerInfo {
