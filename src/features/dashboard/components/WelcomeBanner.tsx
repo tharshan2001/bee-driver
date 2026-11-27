@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
-import { VideoView, useVideoPlayer } from 'expo-video';
+import Bee from '../../../shared/components/Bee';
 import { colors } from '../../../shared/theme';
 
 interface WelcomeBannerProps {
@@ -10,16 +10,6 @@ interface WelcomeBannerProps {
 }
 
 export default function WelcomeBanner({ name }: WelcomeBannerProps) {
-  const player = useVideoPlayer(require('../../../../assets/buzz-wave.mp4'), (player) => {
-    player.loop = true;
-    player.muted = true;
-    player.play();
-  });
-
-  useEffect(() => {
-    player.play();
-  }, [player]);
-
   return (
     <View style={styles.card}>
       <LinearGradient
@@ -40,14 +30,7 @@ export default function WelcomeBanner({ name }: WelcomeBannerProps) {
             <Text style={styles.greeting}>Welcome back</Text>
             <Text style={styles.name}>{name}</Text>
           </View>
-          <View style={styles.routeSketch}>
-            <VideoView
-              style={styles.mascotVideo}
-              player={player}
-              contentFit="contain"
-              nativeControls={false}
-            />
-          </View>
+          <Bee height={96} />
         </View>
       </LinearGradient>
     </View>
@@ -76,7 +59,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   body: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -91,16 +75,5 @@ const styles = StyleSheet.create({
     fontFamily: 'SpaceGrotesk_700Bold',
     fontSize: 22,
     color: colors.textPrimary,
-  },
-  routeSketch: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
-    overflow: 'hidden',
-    backgroundColor: 'rgba(255,255,255,0.3)',
-  },
-  mascotVideo: {
-    width: 80,
-    height: 80,
   },
 });

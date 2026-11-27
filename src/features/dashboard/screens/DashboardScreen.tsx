@@ -97,7 +97,7 @@ export default function DashboardScreen() {
 
         <WelcomeBanner name={dashboard?.driverName?.split(' ')[0] || 'Driver'} />
 
-        <SectionHeader title="QUICK ACTIONS" />
+        <SectionHeader title="Quick actions" />
 
         <View style={styles.actionsRow}>
           <Touchable onPress={() => navigation.navigate('LiveLocation')} style={styles.actionCard}>
@@ -121,7 +121,7 @@ export default function DashboardScreen() {
 
       {recentDeliveries.length > 0 && (
         <View style={styles.recentSection}>
-          <SectionHeader title="RECENT DELIVERIES" actionLabel="View all" onAction={() => navigation.navigate('MainTabs', { screen: 'Deliveries' } as any)} />
+          <SectionHeader title="Recent" actionLabel="View all" onAction={() => navigation.navigate('MainTabs', { screen: 'Deliveries' } as any)} />
           <FlatList
             data={recentDeliveries}
             renderItem={renderRecentItem}

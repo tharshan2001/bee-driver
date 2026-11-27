@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import Touchable from '../../../shared/components/Touchable';
+import { haptics } from '../../../shared/haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../../context/AuthContext';
 import api from '../../../core/api/client';
 import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
+import Bee from '../../../shared/components/Bee';
 
 export default function SetPasswordScreen() {
   const insets = useSafeAreaInsets();
@@ -24,14 +26,17 @@ export default function SetPasswordScreen() {
   async function handleSetPassword() {
     setError('');
     if (!currentPassword || !newPassword) {
+      haptics.error();
       setError('All fields are required');
       return;
     }
     if (newPassword.length < 6) {
+      haptics.error();
       setError('New password must be at least 6 characters');
       return;
     }
     if (newPassword !== confirmPassword) {
+      haptics.error();
       setError('Passwords do not match');
       return;
     }
@@ -40,9 +45,11 @@ export default function SetPasswordScreen() {
     try {
       await api.post('/auth/change-password', { currentPassword, newPassword });
       clearMustChangePassword();
+      haptics.success();
       toast.show({ type: 'success', title: 'Password set successfully' });
     } catch (err: any) {
       const msg = err?.response?.data?.message || err?.message || 'Failed to set password';
+      haptics.error();
       setError(msg.replace('Exception: ', ''));
     } finally {
       setLoading(false);
@@ -58,10 +65,8 @@ export default function SetPasswordScreen() {
         contentContainerStyle={[styles.content, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 16 }]}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.stamp}>
-          <View style={styles.stampRing}>
-            <Text style={styles.stampText}>BD</Text>
-          </View>
+        <View style={{ alignItems: 'center', marginBottom: 16 }}>
+          <Bee height={110} />
         </View>
 
         <Text style={styles.title}>Set Your Password</Text>
@@ -147,17 +152,6 @@ function PasswordField({ label, value, onChange, placeholder, visible, toggle }:
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   content: { flexGrow: 1, paddingHorizontal: 24 },
-  stamp: {
-    width: 48, height: 48, borderRadius: 10, borderWidth: 2, borderColor: colors.textPrimary,
-    justifyContent: 'center', alignItems: 'center', marginBottom: 24,
-  },
-  stampRing: {
-    width: 40, height: 40, borderRadius: 8, borderWidth: 1, borderColor: colors.textTertiary,
-    justifyContent: 'center', alignItems: 'center',
-  },
-  stampText: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 14, color: colors.textPrimary,
-  },
   title: {
     fontFamily: 'SpaceGrotesk_700Bold', fontSize: 24, color: colors.textPrimary,
   },
@@ -169,14 +163,7 @@ const styles = StyleSheet.create({
     fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary,
     marginBottom: 4, marginTop: 16, textTransform: 'uppercase',
   },
-  input: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separator,
-    paddingVertical: 10,
-    fontSize: 16,
-    fontFamily: 'IBMPlexSans_400Regular',
-    color: colors.textPrimary,
-  },
+  input: { backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, fontFamily: 'IBMPlexSans_400Regular', color: colors.textPrimary, },
   passwordRow: { flexDirection: 'row', alignItems: 'center' },
   passwordInput: { flex: 1 },
   eyeBtn: { padding: 10 },

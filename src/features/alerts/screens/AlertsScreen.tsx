@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, FlatList, RefreshControl, StyleSheet, Alert, Platform } from 'react-native';
 import Touchable from '../../../shared/components/Touchable';
+import { haptics } from '../../../shared/haptics';
 import Appear from '../../../shared/components/Appear';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -161,8 +162,10 @@ export default function AlertsScreen() {
     try {
       await api.patch('/alerts/read-all');
       setData((prev) => prev.map((a) => ({ ...a, read: true })));
+      haptics.success();
       toast.show({ type: 'success', title: 'All alerts marked as read' });
     } catch (err: any) {
+      haptics.error();
       toast.show({ type: 'error', title: err?.response?.data?.message || 'Failed to mark all as read' });
     }
   }
@@ -233,13 +236,10 @@ const styles = StyleSheet.create({
   markAllText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textSecondary },
   card: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: colors.surface, borderRadius: 12,
-    paddingHorizontal: 14, paddingVertical: 14,
-    marginBottom: 8,
+    backgroundColor: colors.elevated, borderRadius: 10, padding: 14, marginBottom: 12,
+    boxShadow: '0px 2px 12px rgba(0,0,0,0.08)',
   },
-  cardUnread: {
-    borderLeftWidth: 3, borderLeftColor: colors.primary,
-  },
+  cardUnread: {}, // the dot beside the title marks unread
   iconCircle: {
     width: 36, height: 36, borderRadius: 18,
     alignItems: 'center', justifyContent: 'center',

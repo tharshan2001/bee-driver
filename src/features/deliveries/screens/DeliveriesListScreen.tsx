@@ -193,7 +193,8 @@ const styles = StyleSheet.create({
   },
   item: {
     flexDirection: 'row', alignItems: 'center',
-    paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: colors.separator,
+    backgroundColor: colors.elevated, borderRadius: 10, padding: 14, marginBottom: 12,
+    boxShadow: '0px 2px 12px rgba(0,0,0,0.08)',
   },
   itemLeft: { flex: 1 },
   orderNumber: {

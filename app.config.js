@@ -38,7 +38,7 @@ module.exports = {
     userInterfaceStyle: 'light',
     splash: {
       image: './assets/splash-icon.png',
-      backgroundColor: '#EDE6D3',
+      backgroundColor: '#FFF3CD', // the same tint as the in-app launch screen
       resizeMode: 'contain',
     },
     ios: {

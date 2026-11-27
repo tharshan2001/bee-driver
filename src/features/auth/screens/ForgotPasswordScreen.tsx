@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import Touchable from '../../../shared/components/Touchable';
+import { haptics } from '../../../shared/haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -58,10 +59,12 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     try {
       await api.post('/auth/forgot-password', { email: email.trim() });
+      haptics.confirm();
       toast.show({ type: 'info', title: 'OTP sent', message: 'Check your email and phone for the OTP.' });
       setStep('otp');
     } catch (err: any) {
       const msg = err?.response?.data?.message || 'Failed to send OTP';
+      haptics.error();
       toast.show({ type: 'error', title: msg });
     } finally {
       setLoading(false);
@@ -76,10 +79,12 @@ export default function ForgotPasswordScreen() {
       const token = res.data?.data?.resetToken;
       if (!token) throw new Error('No reset token received');
       setResetToken(token);
+      haptics.confirm();
       toast.show({ type: 'success', title: 'Verified', message: 'Create your new password.' });
       setStep('reset');
     } catch (err: any) {
       const msg = err?.response?.data?.message || err?.message || 'Invalid OTP';
+      haptics.error();
       toast.show({ type: 'error', title: msg });
     } finally {
       setLoading(false);
@@ -91,10 +96,12 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     try {
       await api.post('/auth/reset-password', { resetToken, newPassword });
+      haptics.success();
       toast.show({ type: 'success', title: 'Password reset', message: 'Please sign in.' });
       navigation.goBack();
     } catch (err: any) {
       const msg = err?.response?.data?.message || 'Failed to reset password';
+      haptics.error();
       toast.show({ type: 'error', title: msg });
     } finally {
       setLoading(false);
@@ -219,15 +226,8 @@ const styles = StyleSheet.create({
     fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary,
     marginBottom: 4, marginTop: 16, textTransform: 'uppercase',
   },
-  input: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separator,
-    paddingVertical: 10,
-    fontSize: 16,
-    fontFamily: 'IBMPlexSans_400Regular',
-    color: colors.textPrimary,
-  },
-  inputError: { borderBottomColor: colors.danger },
+  input: { backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, fontFamily: 'IBMPlexSans_400Regular', color: colors.textPrimary, },
+  inputError: { borderWidth: 1, borderColor: colors.danger },
   passwordRow: { flexDirection: 'row', alignItems: 'center' },
   passwordInput: { flex: 1 },
   eyeBtn: { padding: 10 },

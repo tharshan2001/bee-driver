@@ -383,11 +383,7 @@ const styles = StyleSheet.create({
   modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
   modalContent: { backgroundColor: colors.elevated, borderTopLeftRadius: 14, borderTopRightRadius: 14, padding: 24 },
   modalTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, color: colors.textPrimary, marginBottom: 16 },
-  modalInput: {
-    borderBottomWidth: 1, borderBottomColor: colors.separator, paddingVertical: 8,
-    fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary,
-    minHeight: 80, textAlignVertical: 'top', marginBottom: 16,
-  },
+  modalInput: { backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary, minHeight: 80, textAlignVertical: 'top', marginBottom: 16, },
   modalButton: { borderRadius: 10, padding: 14, alignItems: 'center', marginBottom: 12 },
   modalButtonText: { fontFamily: 'IBMPlexSans_500Medium', color: '#FFFFFF', fontSize: 15 },
   cancelText: { textAlign: 'center', fontFamily: 'IBMPlexSans_400Regular', color: colors.textSecondary, fontSize: 14 },

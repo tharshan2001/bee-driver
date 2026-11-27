@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { haptics } from '../../../shared/haptics';
 import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,8 @@ import { useAuth } from '../../../context/AuthContext';
 import type { RootStackNav } from '../../../navigation/types';
 import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
+import Bee from '../../../shared/components/Bee';
+import { useKeyboardHeight } from '../../../shared/useKeyboardHeight';
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
@@ -18,6 +20,9 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [typingPassword, setTypingPassword] = useState(false);
+  // The screen draws behind the keyboard, so make room for it ourselves.
+  const keyboard = useKeyboardHeight();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
@@ -37,6 +42,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await login(email.trim(), password);
+      haptics.confirm();
     } catch (err: any) {
       let msg: string = err?.response?.data?.message || err?.message || 'Login failed';
       if (msg.startsWith('Invalid role for login')) msg = 'This app is for drivers. Sign in with a driver account.';
@@ -48,19 +54,18 @@ export default function LoginScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView contentContainerStyle={[styles.content, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]} keyboardShouldPersistTaps="handled">
-        <View style={styles.stamp}>
-          <View style={styles.stampRing}>
-            <Text style={styles.stampText}>BD</Text>
-          </View>
+    <View style={styles.container}>
+      <ScrollView
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + 16, paddingBottom: keyboard || insets.bottom + 16 },
+          keyboard > 0 && { justifyContent: 'flex-start', paddingTop: insets.top }]}
+        keyboardShouldPersistTaps="handled">
+        <View style={[styles.mascot, keyboard > 0 && { marginBottom: 0 }]}>
+          {/* Eyelids down while a hidden password is being typed. */}
+          <Bee height={keyboard ? 90 : 150} eyesClosed={typingPassword && !showPassword} />
         </View>
 
         <Text style={styles.title}>Sign in</Text>
-        <Text style={styles.subtitle}>Enter your driver credentials</Text>
+        <Text style={[styles.subtitle, keyboard > 0 && { marginBottom: 0 }]}>Enter your driver credentials</Text>
 
         <View style={styles.form}>
           <Text style={styles.label}>EMAIL</Text>
@@ -82,10 +87,13 @@ export default function LoginScreen() {
               value={password}
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
+              onFocus={() => setTypingPassword(true)}
+              onBlur={() => setTypingPassword(false)}
               placeholder="Enter password"
               placeholderTextColor={colors.textTertiary}
             />
-            <Touchable onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
+            <Touchable onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}
+              accessibilityRole="button" accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}>
               <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
             </Touchable>
           </View>
@@ -111,24 +119,14 @@ export default function LoginScreen() {
           </Touchable>
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   content: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24 },
-  stamp: {
-    width: 48, height: 48, borderRadius: 10, borderWidth: 2, borderColor: colors.textPrimary,
-    justifyContent: 'center', alignItems: 'center', marginBottom: 24,
-  },
-  stampRing: {
-    width: 40, height: 40, borderRadius: 8, borderWidth: 1, borderColor: colors.textTertiary,
-    justifyContent: 'center', alignItems: 'center',
-  },
-  stampText: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 14, color: colors.textPrimary,
-  },
+  mascot: { alignItems: 'center', marginBottom: 16 },
   title: {
     fontFamily: 'SpaceGrotesk_700Bold', fontSize: 24, color: colors.textPrimary,
   },
@@ -140,15 +138,8 @@ const styles = StyleSheet.create({
     fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary,
     marginBottom: 4, marginTop: 16, textTransform: 'uppercase',
   },
-  input: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors.separator,
-    paddingVertical: 10,
-    fontSize: 16,
-    fontFamily: 'IBMPlexSans_400Regular',
-    color: colors.textPrimary,
-  },
-  inputError: { borderBottomColor: colors.danger },
+  input: { backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, fontFamily: 'IBMPlexSans_400Regular', color: colors.textPrimary, },
+  inputError: { borderWidth: 1, borderColor: colors.danger },
   passwordRow: { flexDirection: 'row', alignItems: 'center' },
   passwordInput: { flex: 1 },
   eyeBtn: { padding: 10 },

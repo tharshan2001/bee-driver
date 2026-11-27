@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TextInput, StyleSheet, Alert, Image } from 'react-native';
 import Touchable from '../../../shared/components/Touchable';
+import { haptics } from '../../../shared/haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -55,10 +56,12 @@ export default function ProfileScreen() {
         licenseNumber: license.trim(),
       });
       if (phoneNumber) setPhone(phoneNumber);
+      haptics.success();
       toast.show({ type: 'success', title: 'Profile updated' });
       setProfile((prev) => prev ? { ...prev, firstName: firstName.trim(), lastName: lastName.trim(), phoneNumber: phoneNumber || prev.phoneNumber, licenseNumber: license.trim() } : prev);
       setEditing(false);
     } catch (err: any) {
+      haptics.error();
       Alert.alert('Error', err?.response?.data?.message || 'Failed to update');
     } finally {
       setSaving(false);
@@ -89,8 +92,10 @@ export default function ProfileScreen() {
         if (res.data?.success && res.data?.data) {
           setProfile(res.data.data as DriverProfile);
         }
+        haptics.success();
         toast.show({ type: 'success', title: 'Profile photo updated' });
       } catch (err: any) {
+        haptics.error();
         Alert.alert('Error', err?.response?.data?.message || 'Failed to upload photo');
       }
     }
@@ -190,7 +195,7 @@ const styles = StyleSheet.create({
   formCard: { backgroundColor: colors.elevated, marginTop: 16, padding: 16, borderRadius: 10, marginHorizontal: 16, shadowColor: colors.shadow, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
   fieldGroup: { marginBottom: 16 },
   fieldLabel: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginBottom: 4, textTransform: 'uppercase' },
-  fieldInput: { borderBottomWidth: 1, borderBottomColor: colors.separator, paddingVertical: 8, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
+  fieldInput: { backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
   saveButton: { backgroundColor: colors.primary, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 8 },
   saveButtonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary },
   infoCard: { backgroundColor: colors.elevated, marginTop: 16, padding: 16, borderRadius: 10, marginHorizontal: 16, shadowColor: colors.shadow, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
