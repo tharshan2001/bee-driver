@@ -1,8 +1,9 @@
 import React, { useRef, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, Alert, Image, TextInput,
-  LayoutAnimation, Platform, UIManager,
 } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
+import SuccessOverlay from '../../../shared/components/SuccessOverlay';
 import { haptics } from '../../../shared/haptics';
 import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,10 +18,6 @@ import Card from '../../../shared/components/Card';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
-
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 type CompleteRoute = RouteProp<RootStackParamList, 'DeliveryComplete'>;
 type Nav = NativeStackNavigationProp<RootStackParamList>;
@@ -45,6 +42,7 @@ export default function DeliveryCompleteScreen() {
   const [signatureBase64, setSignatureBase64] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
   const signaturePad = useRef<SignatureViewRef>(null);
 
   async function pickPhoto() {
@@ -81,7 +79,6 @@ export default function DeliveryCompleteScreen() {
   }
 
   function moveTo(next: number) {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setStep(next);
   }
 
@@ -109,8 +106,7 @@ export default function DeliveryCompleteScreen() {
       });
 
       haptics.success();
-      toast.show({ type: 'success', title: 'Delivery completed', message: 'The delivery has been successfully completed.' });
-      navigation.goBack();
+      setDone(true); // the overlay leaves the screen when it has been seen
     } catch (err: any) {
       haptics.error();
       toast.show({ type: 'error', title: err?.response?.data?.message || 'Submission failed' });
@@ -223,7 +219,7 @@ export default function DeliveryCompleteScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ padding: 16, paddingBottom: insets.bottom + 16 }} scrollEnabled={step !== 1}>
+    <ScrollView style={styles.container} contentContainerStyle={[{ padding: 16, paddingBottom: insets.bottom + 16 }, done && styles.finished]} scrollEnabled={step !== 1}>
       <View style={styles.progressRow}>
         {steps.map((_, idx) => (
           <View
@@ -244,7 +240,10 @@ export default function DeliveryCompleteScreen() {
         </View>
       </View>
 
-      <View style={styles.stepContent}>{renderStep()}</View>
+      {/* The signature pad is a WebView, which is left unanimated. */}
+      <Animated.View key={step} entering={step === 1 ? undefined : FadeIn.duration(200)} style={styles.stepContent}>
+        {renderStep()}
+      </Animated.View>
 
       <View style={styles.navRow}>
         {step > 0 && (
@@ -262,6 +261,8 @@ export default function DeliveryCompleteScreen() {
           </Text>
         </Touchable>
       </View>
+
+      <SuccessOverlay visible={done} title="Delivery completed" onDone={() => navigation.goBack()} />
     </ScrollView>
   );
 }
@@ -284,6 +285,7 @@ function ReviewRow({ icon, label, done, detail }: { icon: keyof typeof Ionicons.
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
+  finished: { opacity: 0 }, // the form must not flash back as the success overlay fades
   progressRow: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginBottom: 24, marginTop: 8 },
   progressDot: { width: 40, height: 4, borderRadius: 2 },
   progressDotCompleted: { backgroundColor: colors.primary },

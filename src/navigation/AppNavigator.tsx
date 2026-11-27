@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useReducedMotion } from 'react-native-reanimated';
 import { colors } from '../shared/theme';
 
 import DashboardScreen from '../features/dashboard/screens/DashboardScreen';
@@ -39,6 +40,7 @@ function MainTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
+        animation: 'fade',
         tabBarIcon: ({ focused }) => {
           const icons = tabIcons[route.name];
           return (
@@ -70,9 +72,14 @@ function MainTabs() {
 }
 
 export default function AppNavigator() {
+  const reduceMotion = useReducedMotion();
+  // Pages slide in from the side; a task you start and finish (complete, new expense) comes up from below.
+  const push = reduceMotion ? 'fade' as const : 'slide_from_right' as const;
+  const task = reduceMotion ? 'fade' as const : 'slide_from_bottom' as const;
+
   return (
     <View style={{ flex: 1 }}>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator screenOptions={{ headerShown: false, animation: push }}>
       <Stack.Screen name="MainTabs" component={MainTabs} />
       <Stack.Screen
         name="DeliveryDetail"
@@ -82,7 +89,7 @@ export default function AppNavigator() {
       <Stack.Screen
         name="DeliveryComplete"
         component={DeliveryCompleteScreen}
-        options={{ headerShown: true, headerTitle: 'Complete Delivery', headerBackTitle: 'Back' }}
+        options={{ headerShown: true, headerTitle: 'Complete Delivery', headerBackTitle: 'Back', animation: task }}
       />
       <Stack.Screen
         name="Profile"
@@ -102,7 +109,7 @@ export default function AppNavigator() {
       <Stack.Screen
         name="CreateExpense"
         component={CreateExpenseScreen}
-        options={{ headerShown: true, headerTitle: 'New Expense', headerBackTitle: 'Back' }}
+        options={{ headerShown: true, headerTitle: 'New Expense', headerBackTitle: 'Back', animation: task }}
       />
       <Stack.Screen
         name="Stats"

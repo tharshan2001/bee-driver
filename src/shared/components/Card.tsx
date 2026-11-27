@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { View, StyleSheet, ViewStyle, Platform } from 'react-native';
 import Touchable from './Touchable';
 import { colors } from '../theme';
 
@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
   base: {
     borderRadius: 10,
     boxShadow: '0px 2px 12px rgba(0,0,0,0.08)',
-    elevation: 3,
+    // Android 9+ draws boxShadow. Elevation on top of it shows as a dark frame while a card fades in.
+    elevation: Platform.OS === 'android' && Number(Platform.Version) < 28 ? 3 : 0,
   },
 });
