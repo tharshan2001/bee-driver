@@ -85,6 +85,9 @@ export default function MoreScreen() {
             {profile ? `${profile.firstName} ${profile.lastName}` : 'Driver'}
           </Text>
           <Text style={styles.profileEmail}>{profile?.email || ''}</Text>
+          <Touchable onPress={() => navigation.navigate('EditProfile')} style={styles.editLink} accessibilityRole="button">
+            <Text style={styles.editLinkText}>Edit profile</Text>
+          </Touchable>
 
           <View style={styles.statusRow}>
             <View style={styles.statusLeft}>
@@ -163,14 +166,16 @@ const styles = StyleSheet.create({
   profileName: {
     fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, color: colors.textPrimary,
   },
+  editLink: { paddingVertical: 8, paddingHorizontal: 12 },
+  editLinkText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 13, color: colors.primaryText },
   profileEmail: {
     fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textTertiary,
     marginTop: 2,
   },
   statusRow: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    width: '100%', marginTop: 16, backgroundColor: colors.surface,
-    paddingHorizontal: 16, paddingVertical: 12, borderRadius: 10,
+    width: '100%', marginTop: 16, backgroundColor: colors.elevated,
+    paddingHorizontal: 16, paddingVertical: 12, borderRadius: 10, boxShadow: '0px 2px 12px rgba(0,0,0,0.08)',
   },
   statusLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   statusDot: { width: 8, height: 8, borderRadius: 4 },

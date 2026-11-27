@@ -6,7 +6,8 @@ export type RootStackParamList = {
   MainTabs: undefined;
   DeliveryDetail: { orderId: string };
   DeliveryComplete: { orderId: string };
-  Profile: undefined;
+  Profile: undefined; // the tab
+  EditProfile: undefined;
   ChangePassword: undefined;
   Expenses: undefined;
   CreateExpense: undefined;

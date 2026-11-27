@@ -78,7 +78,8 @@ export interface DriverProfile {
   phoneNumber?: string;
   licenseNumber?: string;
   photoUrl?: string;
-  memberSince: string;
+  createdAt?: string;
+  memberSince?: string;
 }
 
 export interface Expense {

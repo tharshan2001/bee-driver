@@ -148,7 +148,7 @@ export default function DeliveryDetailScreen() {
           <Touchable style={styles.contactButton} accessibilityRole="button" accessibilityLabel={`Call ${delivery.customer.phone}`}
             onPress={() => openLink(`tel:${delivery.customer.phone}`, "Couldn't open the phone")}>
             <Ionicons name="call-outline" size={18} color={colors.success} />
-            <Text style={styles.contactText}>Call {delivery.customer.phone}</Text>
+            <Text style={styles.contactText}>Call</Text>
           </Touchable>
           <Touchable style={styles.contactButton} accessibilityRole="button" accessibilityLabel="Navigate to the address"
             onPress={() => openLink(mapUrl(delivery.customer.address), "Couldn't open a map")}>
@@ -274,7 +274,7 @@ export default function DeliveryDetailScreen() {
             style={[
               styles.actionButton,
               { backgroundColor: btn.color },
-              btn.outline && { borderWidth: 1.5, borderColor: colors.danger },
+              btn.outline && styles.linkAction,
             ]}
             onPress={btn.action}
           >
@@ -378,12 +378,13 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.separator,
   },
   actionButton: { borderRadius: 10, padding: 14, alignItems: 'center' },
+  linkAction: { paddingVertical: 10, marginBottom: 0 }, // a quiet text link under the main action
   actionButtonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15 },
   proofImage: { width: '100%', height: 120, borderRadius: 10, marginBottom: 4 },
   modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
   modalContent: { backgroundColor: colors.elevated, borderTopLeftRadius: 14, borderTopRightRadius: 14, padding: 24 },
-  modalTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, color: colors.textPrimary, marginBottom: 16 },
-  modalInput: { backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary, minHeight: 80, textAlignVertical: 'top', marginBottom: 16, },
+  modalTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 22, color: colors.textPrimary, marginBottom: 12 },
+  modalInput: { backgroundColor: colors.surface, borderRadius: 10, padding: 14, minHeight: 90, marginBottom: 16, textAlignVertical: 'top', fontFamily: 'IBMPlexSans_400Regular', fontSize: 15, color: colors.textPrimary },
   modalButton: { borderRadius: 10, padding: 14, alignItems: 'center', marginBottom: 12 },
   modalButtonText: { fontFamily: 'IBMPlexSans_500Medium', color: '#FFFFFF', fontSize: 15 },
   cancelText: { textAlign: 'center', fontFamily: 'IBMPlexSans_400Regular', color: colors.textSecondary, fontSize: 14 },

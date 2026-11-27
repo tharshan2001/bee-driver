@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TextInput, StyleSheet, Alert, Image } from 'react-native';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, Alert, Image } from 'react-native';
 import Touchable from '../../../shared/components/Touchable';
 import { haptics } from '../../../shared/haptics';
-import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
@@ -10,19 +9,17 @@ import api from '../../../core/api/client';
 import type { DriverProfile } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
 import { formatDate } from '../../../core/utils/helpers';
-import { useAuth } from '../../../context/AuthContext';
 import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
+import TextField from '../../../shared/components/TextField';
 
 type Nav = RootStackNav;
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<Nav>();
-  const { logout } = useAuth();
   const toast = useToast();
   const [profile, setProfile] = useState<DriverProfile | null>(null);
-  const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -59,20 +56,12 @@ export default function ProfileScreen() {
       haptics.success();
       toast.show({ type: 'success', title: 'Profile updated' });
       setProfile((prev) => prev ? { ...prev, firstName: firstName.trim(), lastName: lastName.trim(), phoneNumber: phoneNumber || prev.phoneNumber, licenseNumber: license.trim() } : prev);
-      setEditing(false);
     } catch (err: any) {
       haptics.error();
       Alert.alert('Error', err?.response?.data?.message || 'Failed to update');
     } finally {
       setSaving(false);
     }
-  }
-
-  async function handleLogout() {
-    Alert.alert('Logout', 'Are you sure?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Logout', style: 'destructive', onPress: logout },
-    ]);
   }
 
   async function pickPhoto() {
@@ -101,73 +90,46 @@ export default function ProfileScreen() {
     }
   }
 
+  // Save sits in the header, always within reach.
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Touchable onPress={saveProfile} disabled={saving || !profile} accessibilityRole="button">
+          <Text style={styles.save}>{saving ? 'Saving…' : 'Save'}</Text>
+        </Touchable>
+      ),
+    });
+  });
+
   if (!profile) return <View style={styles.center}><Text style={{ fontFamily: 'IBMPlexSans_400Regular' }}>Loading...</Text></View>;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}>
-      <View style={styles.headerSection}>
-        <Touchable onPress={pickPhoto}>
-          <View style={styles.avatar}>
-            {profile.photoUrl ? (
-              <Image source={{ uri: profile.photoUrl }} style={styles.avatarImage} />
-            ) : (
-              <Text style={styles.avatarText}>{profile.firstName[0]}{profile.lastName[0]}</Text>
-            )}
-            <View style={styles.cameraIcon}>
-              <Ionicons name="camera-outline" size={12} color={colors.textPrimary} />
-            </View>
-          </View>
-        </Touchable>
-        <Touchable onPress={() => setEditing(!editing)}>
-          <Text style={styles.editText}>{editing ? 'Cancel' : 'Edit'}</Text>
-        </Touchable>
-      </View>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: insets.bottom + 24 }}
+      keyboardShouldPersistTaps="handled">
+      <Touchable style={styles.headerSection} onPress={pickPhoto} accessibilityRole="button" accessibilityLabel="Change photo">
+        <View style={styles.avatar}>
+          {profile.photoUrl ? (
+            <Image source={{ uri: profile.photoUrl }} style={styles.avatarImage} />
+          ) : (
+            <Text style={styles.avatarText}>{profile.firstName[0]}{profile.lastName[0]}</Text>
+          )}
+        </View>
+        <Text style={styles.link}>Change photo</Text>
+      </Touchable>
 
-      <View style={styles.formCard}>
-        <InputField label="FIRST NAME" value={firstName} onChange={setFirstName} editable={editing} />
-        <InputField label="LAST NAME" value={lastName} onChange={setLastName} editable={editing} />
-        <InputField label="PHONE NUMBER" value={phone} onChange={setPhone} editable={editing} keyboardType="phone-pad" />
-        <InputField label="LICENSE NUMBER" value={license} onChange={setLicense} editable={editing} />
+      <TextField label="FIRST NAME" value={firstName} onChangeText={setFirstName} />
+      <TextField label="LAST NAME" value={lastName} onChangeText={setLastName} />
+      <TextField label="PHONE NUMBER" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
+      <TextField label="LICENSE NUMBER" value={license} onChangeText={setLicense} />
 
-        {editing && (
-          <Touchable style={styles.saveButton} onPress={saveProfile} disabled={saving}>
-            <Text style={styles.saveButtonText}>{saving ? 'Saving...' : 'Save changes'}</Text>
-          </Touchable>
+      <View style={{ marginTop: 16 }}>
+        <InfoRow label="EMAIL" value={profile.email} />
+        {/* The server sends createdAt. */}
+        {!!(profile.createdAt ?? profile.memberSince) && (
+          <InfoRow label="MEMBER SINCE" value={formatDate((profile.createdAt ?? profile.memberSince)!)} />
         )}
       </View>
-
-      <View style={styles.infoCard}>
-        <InfoRow label="EMAIL" value={profile.email} />
-        <InfoRow label="MEMBER SINCE" value={formatDate(profile.memberSince)} />
-      </View>
-
-      <Touchable style={styles.menuRow} onPress={() => navigation.navigate('ChangePassword')}>
-        <Ionicons name="key-outline" size={18} color={colors.textTertiary} style={{ marginRight: 12 }} />
-        <Text style={styles.menuText}>Change password</Text>
-        <Text style={{ color: colors.textTertiary, fontFamily: 'IBMPlexMono_500Medium', fontSize: 14 }}>›</Text>
-      </Touchable>
-
-      <Touchable style={styles.logoutRow} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Log out</Text>
-      </Touchable>
     </ScrollView>
-  );
-}
-
-function InputField({ label, value, onChange, editable, keyboardType }: {
-  label: string; value: string; onChange: (v: string) => void; editable: boolean; keyboardType?: any;
-}) {
-  return (
-    <View style={styles.fieldGroup}>
-      <Text style={styles.fieldLabel}>{label}</Text>
-      <TextInput
-        style={styles.fieldInput}
-        value={value}
-        onChangeText={onChange}
-        editable={editable}
-        keyboardType={keyboardType}
-      />
-    </View>
   );
 }
 
@@ -182,28 +144,17 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  headerSection: { alignItems: 'center', paddingVertical: 24 },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background },
+  headerSection: { alignItems: 'center', paddingVertical: 8, gap: 8 },
   avatar: {
-    width: 80, height: 80, borderRadius: 40, backgroundColor: colors.primaryTint,
-    justifyContent: 'center', alignItems: 'center', marginBottom: 8, overflow: 'hidden',
+    width: 72, height: 72, borderRadius: 36, backgroundColor: colors.primaryTint,
+    justifyContent: 'center', alignItems: 'center', overflow: 'hidden',
   },
-  avatarImage: { width: 80, height: 80, borderRadius: 40 },
-  avatarText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 24, color: colors.primaryText },
-  cameraIcon: { position: 'absolute', bottom: 2, right: 2, backgroundColor: colors.elevated, borderRadius: 10, shadowColor: colors.shadow, shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 1 }, padding: 4 },
-  editText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.primaryText },
-  formCard: { backgroundColor: colors.elevated, marginTop: 16, padding: 16, borderRadius: 10, marginHorizontal: 16, shadowColor: colors.shadow, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
-  fieldGroup: { marginBottom: 16 },
-  fieldLabel: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginBottom: 4, textTransform: 'uppercase' },
-  fieldInput: { backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
-  saveButton: { backgroundColor: colors.primary, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 8 },
-  saveButtonText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary },
-  infoCard: { backgroundColor: colors.elevated, marginTop: 16, padding: 16, borderRadius: 10, marginHorizontal: 16, shadowColor: colors.shadow, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
-  infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10 },
+  avatarImage: { width: 72, height: 72, borderRadius: 36 },
+  avatarText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 22, color: colors.primaryText },
+  link: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 13, color: colors.primaryText },
+  save: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.primaryText, paddingVertical: 8 },
+  infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8 },
   infoLabel: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, textTransform: 'uppercase' },
-  infoValue: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 13, color: colors.textPrimary },
-  menuRow: { flexDirection: 'row', alignItems: 'center', marginTop: 16, padding: 16, marginHorizontal: 16 },
-  menuText: { flex: 1, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
-  logoutRow: { marginTop: 8, padding: 16, alignItems: 'center', marginHorizontal: 16 },
-  logoutText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.danger },
+  infoValue: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary },
 });

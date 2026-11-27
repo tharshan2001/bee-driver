@@ -150,7 +150,7 @@ export default function DeliveryCompleteScreen() {
               </View>
             ) : (
               <Touchable style={styles.uploadArea} onPress={handlePhotoPick}>
-                <Ionicons name="camera-outline" size={32} color={colors.primary} style={{ marginBottom: 8 }} />
+                <Ionicons name="camera-outline" size={32} color={colors.primaryText} style={{ marginBottom: 8 }} />
                 <Text style={styles.uploadText}>Add photo</Text>
               </Touchable>
             )}
@@ -233,7 +233,7 @@ export default function DeliveryCompleteScreen() {
       </View>
 
       <View style={styles.stepHeader}>
-        <Ionicons name={steps[step].icon} size={22} color={colors.primary} style={{ marginRight: 12 }} />
+        <Ionicons name={steps[step].icon} size={22} color={colors.primaryText} style={{ marginRight: 12 }} />
         <View style={{ flex: 1 }}>
           <Text style={styles.stepTitle}>{steps[step].title}</Text>
           <Text style={styles.stepSubtitle}>{steps[step].subtitle}</Text>
@@ -292,12 +292,12 @@ const styles = StyleSheet.create({
   progressDotCurrent: { backgroundColor: colors.primary, height: 4 },
   progressDotInactive: { backgroundColor: colors.separator },
   stepHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
-  stepTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 18, color: colors.textPrimary },
+  stepTitle: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 22, color: colors.textPrimary },
   stepSubtitle: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary },
   stepContent: { minHeight: 200 },
   uploadArea: {
-    height: 180, borderWidth: 1.5, borderColor: colors.separator, borderRadius: 10,
-    borderStyle: 'dashed', justifyContent: 'center', alignItems: 'center', backgroundColor: colors.surface, width: '100%',
+    height: 180, borderRadius: 10,
+    justifyContent: 'center', alignItems: 'center', backgroundColor: colors.surface, width: '100%',
   },
   uploadText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 12, color: colors.primaryText, textTransform: 'uppercase' },
   previewImage: { width: '100%', height: 200, borderRadius: 10, marginBottom: 8 },

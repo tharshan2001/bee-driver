@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import Touchable from '../../../shared/components/Touchable';
 import { haptics } from '../../../shared/haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,6 +8,8 @@ import { useNavigation } from '@react-navigation/native';
 import api from '../../../core/api/client';
 import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
+import Button from '../../../shared/components/Button';
+import TextField, { fieldLabel } from '../../../shared/components/TextField';
 
 type Step = 'email' | 'otp' | 'reset';
 
@@ -21,8 +23,6 @@ export default function ForgotPasswordScreen() {
   const [resetToken, setResetToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showNew, setShowNew] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -113,20 +113,9 @@ export default function ForgotPasswordScreen() {
       return (
         <View style={styles.form}>
           <Text style={styles.description}>Enter your email and we will send a verification code.</Text>
-          <Text style={styles.label}>EMAIL</Text>
-          <TextInput
-            style={[styles.input, errors.email && styles.inputError]}
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            placeholder="driver@example.com"
-            placeholderTextColor={colors.textTertiary}
-          />
-          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-          <Touchable style={[styles.button, loading && styles.buttonDisabled]} onPress={handleSendOtp} disabled={loading}>
-            {loading ? <ActivityIndicator color={colors.textOnPrimary} /> : <Text style={styles.buttonText}>Send OTP</Text>}
-          </Touchable>
+          <TextField label="EMAIL" value={email} onChangeText={setEmail} error={errors.email}
+            keyboardType="email-address" autoCapitalize="none" placeholder="driver@example.com" />
+          <Button title="Send OTP" onPress={handleSendOtp} loading={loading} />
         </View>
       );
     }
@@ -135,20 +124,10 @@ export default function ForgotPasswordScreen() {
       return (
         <View style={styles.form}>
           <Text style={styles.description}>Enter the 6-digit code sent to your email/phone.</Text>
-          <Text style={styles.label}>VERIFICATION CODE</Text>
-          <TextInput
-            style={[styles.input, errors.otp && styles.inputError]}
-            value={otp}
-            onChangeText={setOtp}
-            keyboardType="number-pad"
-            maxLength={6}
-            placeholder="000000"
-            placeholderTextColor={colors.textTertiary}
-          />
+          <Text style={fieldLabel}>VERIFICATION CODE</Text>
+          <CodeInput value={otp} onChange={setOtp} error={!!errors.otp} />
           {errors.otp && <Text style={styles.errorText}>{errors.otp}</Text>}
-          <Touchable style={[styles.button, loading && styles.buttonDisabled]} onPress={handleVerifyOtp} disabled={loading}>
-            {loading ? <ActivityIndicator color={colors.textOnPrimary} /> : <Text style={styles.buttonText}>Verify</Text>}
-          </Touchable>
+          <Button title="Verify" onPress={handleVerifyOtp} loading={loading} />
           <Touchable style={styles.linkButton} onPress={() => setStep('email')}>
             <Text style={styles.linkText}>Back to email</Text>
           </Touchable>
@@ -159,90 +138,74 @@ export default function ForgotPasswordScreen() {
     return (
       <View style={styles.form}>
         <Text style={styles.description}>Create a new password for your account.</Text>
-        <Text style={styles.label}>NEW PASSWORD</Text>
-        <View style={styles.passwordRow}>
-          <TextInput
-            style={[styles.input, styles.passwordInput, errors.password && styles.inputError]}
-            value={newPassword}
-            onChangeText={setNewPassword}
-            secureTextEntry={!showNew}
-            placeholder="Min 8 chars, upper/lower/digit/symbol"
-            placeholderTextColor={colors.textTertiary}
-          />
-          <Touchable onPress={() => setShowNew((v) => !v)} style={styles.eyeBtn}>
-            <Ionicons name={showNew ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
-          </Touchable>
-        </View>
-        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-
-        <Text style={styles.label}>CONFIRM PASSWORD</Text>
-        <View style={styles.passwordRow}>
-          <TextInput
-            style={[styles.input, styles.passwordInput, errors.confirm && styles.inputError]}
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry={!showConfirm}
-            placeholder="Re-enter new password"
-            placeholderTextColor={colors.textTertiary}
-          />
-          <Touchable onPress={() => setShowConfirm((v) => !v)} style={styles.eyeBtn}>
-            <Ionicons name={showConfirm ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
-          </Touchable>
-        </View>
-        {errors.confirm && <Text style={styles.errorText}>{errors.confirm}</Text>}
-
-        <Touchable style={[styles.button, loading && styles.buttonDisabled]} onPress={handleResetPassword} disabled={loading}>
-          {loading ? <ActivityIndicator color={colors.textOnPrimary} /> : <Text style={styles.buttonText}>Reset Password</Text>}
-        </Touchable>
+        <TextField label="NEW PASSWORD" password value={newPassword} onChangeText={setNewPassword} error={errors.password}
+          placeholder="Min 8 chars, upper/lower/digit/symbol" />
+        <TextField label="CONFIRM PASSWORD" password value={confirmPassword} onChangeText={setConfirmPassword}
+          error={errors.confirm} placeholder="Re-enter new password" />
+        <Button title="Reset Password" onPress={handleResetPassword} loading={loading} />
       </View>
     );
   }
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <ScrollView contentContainerStyle={[styles.content, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 16 }]} keyboardShouldPersistTaps="handled">
-        <Touchable onPress={() => navigation.goBack()} style={styles.backBtn}>
+      <View style={[styles.bar, { marginTop: insets.top }]}>
+        <Touchable onPress={() => navigation.goBack()} style={styles.backBtn} accessibilityRole="button" accessibilityLabel="Back">
           <Ionicons name="arrow-back" size={22} color={colors.textPrimary} />
         </Touchable>
         <Text style={styles.title}>Forgot Password</Text>
+      </View>
+      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 16 }]} keyboardShouldPersistTaps="handled">
         {renderStep()}
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
+/** Six boxes showing what is typed into one hidden number field. */
+function CodeInput({ value, onChange, error }: { value: string; onChange: (v: string) => void; error: boolean }) {
+  return (
+    <View>
+      <View style={styles.boxes}>
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <View key={i} style={[styles.codeBox, i === value.length && styles.codeBoxNext, error && styles.codeBoxError]}>
+            <Text style={styles.codeDigit}>{value[i] ?? ''}</Text>
+          </View>
+        ))}
+      </View>
+      <TextInput
+        style={styles.codeHidden}
+        value={value}
+        onChangeText={(v) => onChange(v.replace(/\D/g, ''))}
+        keyboardType="number-pad"
+        maxLength={6}
+        caretHidden
+        autoFocus
+        textContentType="oneTimeCode"
+        accessibilityLabel="Verification code"
+      />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  content: { flexGrow: 1, paddingHorizontal: 24 },
-  backBtn: { marginBottom: 16 },
-  title: {
-    fontFamily: 'SpaceGrotesk_700Bold', fontSize: 24, color: colors.textPrimary, marginBottom: 8,
-  },
-  description: {
-    fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textSecondary, marginBottom: 24,
-  },
+  bar: { flexDirection: 'row', alignItems: 'center', minHeight: 56, paddingHorizontal: 8, gap: 8 },
+  backBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  title: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 17, color: colors.textPrimary },
+  content: { flexGrow: 1, paddingHorizontal: 16 },
+  description: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 15, color: colors.textPrimary, marginBottom: 2 },
   form: { width: '100%' },
-  label: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary,
-    marginBottom: 4, marginTop: 16, textTransform: 'uppercase',
+  errorText: { fontFamily: 'IBMPlexSans_400Regular', color: colors.danger, fontSize: 12, marginTop: 4 },
+  boxes: { flexDirection: 'row', gap: 8 },
+  codeBox: {
+    flex: 1, height: 52, borderRadius: 10, backgroundColor: colors.surface,
+    alignItems: 'center', justifyContent: 'center',
   },
-  input: { backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, fontFamily: 'IBMPlexSans_400Regular', color: colors.textPrimary, },
-  inputError: { borderWidth: 1, borderColor: colors.danger },
-  passwordRow: { flexDirection: 'row', alignItems: 'center' },
-  passwordInput: { flex: 1 },
-  eyeBtn: { padding: 10 },
-  errorText: { fontFamily: 'IBMPlexMono_500Medium', color: colors.danger, fontSize: 12, marginTop: 4 },
-  button: {
-    backgroundColor: colors.primary,
-    borderRadius: 10,
-    padding: 14,
-    alignItems: 'center',
-    marginTop: 32,
-  },
-  buttonDisabled: { opacity: 0.5 },
-  buttonText: {
-    fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary,
-  },
-  linkButton: { alignItems: 'center', marginTop: 16 },
-  linkText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 14, color: colors.primaryText },
+  codeBoxNext: { borderWidth: 1.5, borderColor: colors.primaryDeep },
+  codeBoxError: { borderWidth: 1, borderColor: colors.danger },
+  codeDigit: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 20, color: colors.textPrimary },
+  codeHidden: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0 },
+  linkButton: { alignItems: 'center', paddingVertical: 12 },
+  linkText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 13, color: colors.primaryText },
 });

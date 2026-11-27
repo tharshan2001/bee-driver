@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TextInput, StyleSheet, Alert, Image, Platform } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Alert, Image, Platform } from 'react-native';
 import { haptics } from '../../../shared/haptics';
 import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +11,8 @@ import api from '../../../core/api/client';
 import { formatDate } from '../../../core/utils/helpers';
 import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
+import Button from '../../../shared/components/Button';
+import TextField, { fieldLabel } from '../../../shared/components/TextField';
 
 // Must be values of the backend's ExpenseCategory.
 const categories = ['PETROL', 'MAINTENANCE', 'PARKING', 'TOLL', 'OTHER'];
@@ -31,7 +33,6 @@ export default function CreateExpenseScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [receipt, setReceipt] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showCategories, setShowCategories] = useState(false);
 
   async function pickReceipt() {
     const result = await ImagePicker.launchImageLibraryAsync({ quality: 0.8 });
@@ -85,48 +86,19 @@ export default function CreateExpenseScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 16 }]}>
-      <Field label="CATEGORY">
-        <Touchable style={styles.selector} onPress={() => setShowCategories(!showCategories)}>
-          <Text style={styles.selectorText}>{category}</Text>
-          <Text style={{ fontFamily: 'IBMPlexMono_500Medium', color: colors.textTertiary }}>▼</Text>
-        </Touchable>
-        {showCategories && (
-          <View style={styles.dropdown}>
-            {categories.map((c) => (
-              <Touchable
-                key={c}
-                style={[styles.dropdownItem, category === c && styles.dropdownItemActive]}
-                onPress={() => { setCategory(c); setShowCategories(false); }}
-              >
-                <Text style={[styles.dropdownText, category === c && styles.dropdownTextActive]}>{c}</Text>
-              </Touchable>
-            ))}
-          </View>
-        )}
-      </Field>
+    <ScrollView style={styles.container} contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 16 }]} keyboardShouldPersistTaps="handled">
+      <Text style={fieldLabel}>CATEGORY</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
+        {categories.map((c) => (
+          <Touchable key={c} style={[styles.chip, category === c && styles.chipOn]} onPress={() => setCategory(c)}
+            accessibilityRole="tab" accessibilityState={{ selected: category === c }}>
+            <Text style={[styles.chipText, category === c && styles.chipTextOn]}>{c}</Text>
+          </Touchable>
+        ))}
+      </ScrollView>
 
-      <Field label="AMOUNT (LKR)">
-        <TextInput
-          style={[styles.amountInput]}
-          value={amount}
-          onChangeText={setAmount}
-          keyboardType="decimal-pad"
-          placeholder="0.00"
-          placeholderTextColor={colors.textTertiary}
-        />
-      </Field>
-
-      <Field label="DESCRIPTION">
-        <TextInput
-          style={styles.textArea}
-          value={description}
-          onChangeText={setDescription}
-          multiline
-          placeholder="What was this for?"
-          placeholderTextColor={colors.textTertiary}
-        />
-      </Field>
+      <TextField label="AMOUNT (LKR)" value={amount} onChangeText={setAmount} keyboardType="decimal-pad" placeholder="0.00" />
+      <TextField label="DESCRIPTION" value={description} onChangeText={setDescription} multiline placeholder="What was this for?" />
 
       <Field label="DATE">
         <Touchable style={styles.selector} onPress={() => setShowDatePicker(true)}>
@@ -154,24 +126,22 @@ export default function CreateExpenseScreen() {
             </Touchable>
           </View>
         ) : (
-          <Touchable style={styles.uploadBtn} onPress={pickReceipt}>
-            <Ionicons name="camera-outline" size={18} color={colors.primary} style={{ marginRight: 6 }} />
-            <Text style={styles.uploadBtnText}>Upload Receipt</Text>
+          <Touchable style={styles.uploadBtn} onPress={pickReceipt} accessibilityRole="button">
+            <Ionicons name="image-outline" size={24} color={colors.primaryText} />
+            <Text style={styles.uploadBtnText}>UPLOAD RECEIPT</Text>
           </Touchable>
         )}
       </Field>
 
-      <Touchable style={styles.submitBtn} onPress={handleSubmit} disabled={loading}>
-        <Text style={styles.submitBtnText}>{loading ? 'Submitting...' : 'Submit Expense'}</Text>
-      </Touchable>
+      <Button title="Save Expense" onPress={handleSubmit} loading={loading} />
     </ScrollView>
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <View style={styles.fieldGroup}>
-      <Text style={styles.label}>{label}</Text>
+    <View>
+      <Text style={fieldLabel}>{label}</Text>
       {children}
     </View>
   );
@@ -179,22 +149,16 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  content: { padding: 24 },
-  fieldGroup: { marginBottom: 20 },
-  label: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary, marginBottom: 6, textTransform: 'uppercase' },
-  selector: { backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', },
-  selectorText: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary },
-  dropdown: { backgroundColor: colors.elevated, borderRadius: 10, marginTop: 4, overflow: 'hidden', shadowColor: colors.shadow, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
-  dropdownItem: { padding: 14, borderBottomWidth: 1, borderBottomColor: colors.separator },
-  dropdownItemActive: { backgroundColor: colors.primaryTint },
-  dropdownText: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textPrimary },
-  dropdownTextActive: { color: colors.primaryText, fontFamily: 'IBMPlexSans_500Medium' },
-  amountInput: { backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontFamily: 'IBMPlexMono_500Medium', fontSize: 22, color: colors.textPrimary, },
-  textArea: { borderBottomWidth: 1, borderBottomColor: colors.separator, paddingVertical: 8, fontFamily: 'IBMPlexSans_400Regular', fontSize: 16, color: colors.textPrimary, minHeight: 80, textAlignVertical: 'top' },
+  content: { paddingHorizontal: 16, paddingTop: 4 },
+  chips: { gap: 18 },
+  chip: { paddingVertical: 8, borderBottomWidth: 3, borderBottomColor: 'transparent' },
+  chipOn: { borderBottomColor: colors.primary },
+  chipText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary },
+  chipTextOn: { color: colors.textPrimary },
+  selector: { minHeight: 48, justifyContent: 'center', backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: 14 },
+  selectorText: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 15, color: colors.textPrimary },
   receiptPreview: { width: '100%', height: 150, borderRadius: 10, marginBottom: 8 },
   removeText: { fontFamily: 'IBMPlexSans_400Regular', color: colors.danger, textAlign: 'center' },
-  uploadBtn: { backgroundColor: colors.surface, borderRadius: 10, padding: 14, alignItems: 'center', borderWidth: 1, borderColor: colors.separator, borderStyle: 'dashed', flexDirection: 'row', justifyContent: 'center' },
+  uploadBtn: { height: 90, borderRadius: 10, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', gap: 6 },
   uploadBtnText: { fontFamily: 'IBMPlexMono_500Medium', fontSize: 12, color: colors.primaryText },
-  submitBtn: { backgroundColor: colors.primary, borderRadius: 10, padding: 14, alignItems: 'center', marginTop: 16 },
-  submitBtnText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary },
 });

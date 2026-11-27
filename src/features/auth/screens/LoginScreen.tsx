@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { haptics } from '../../../shared/haptics';
 import Touchable from '../../../shared/components/Touchable';
-import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../context/AuthContext';
@@ -10,6 +9,8 @@ import type { RootStackNav } from '../../../navigation/types';
 import { useToast } from '../../../shared/context/ToastContext';
 import { colors } from '../../../shared/theme';
 import Bee from '../../../shared/components/Bee';
+import Button from '../../../shared/components/Button';
+import TextField from '../../../shared/components/TextField';
 import { useKeyboardHeight } from '../../../shared/useKeyboardHeight';
 
 export default function LoginScreen() {
@@ -68,36 +69,26 @@ export default function LoginScreen() {
         <Text style={[styles.subtitle, keyboard > 0 && { marginBottom: 0 }]}>Enter your driver credentials</Text>
 
         <View style={styles.form}>
-          <Text style={styles.label}>EMAIL</Text>
-          <TextInput
-            style={[styles.input, errors.email && styles.inputError]}
+          <TextField
+            label="EMAIL"
             value={email}
             onChangeText={setEmail}
+            error={errors.email}
             keyboardType="email-address"
             autoCapitalize="none"
             placeholder="driver@example.com"
-            placeholderTextColor={colors.textTertiary}
           />
-          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-
-          <Text style={styles.label}>PASSWORD</Text>
-          <View style={styles.passwordRow}>
-            <TextInput
-              style={[styles.input, styles.passwordInput, errors.password && styles.inputError]}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
-              onFocus={() => setTypingPassword(true)}
-              onBlur={() => setTypingPassword(false)}
-              placeholder="Enter password"
-              placeholderTextColor={colors.textTertiary}
-            />
-            <Touchable onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}
-              accessibilityRole="button" accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}>
-              <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={colors.textTertiary} />
-            </Touchable>
-          </View>
-          {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+          <TextField
+            label="PASSWORD"
+            password
+            value={password}
+            onChangeText={setPassword}
+            error={errors.password}
+            onRevealChange={setShowPassword}
+            onFocus={() => setTypingPassword(true)}
+            onBlur={() => setTypingPassword(false)}
+            placeholder="Enter password"
+          />
 
           <Touchable
             style={styles.forgotBtn}
@@ -106,17 +97,7 @@ export default function LoginScreen() {
             <Text style={styles.forgotText}>Forgot Password?</Text>
           </Touchable>
 
-          <Touchable
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handleLogin}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color={colors.textOnPrimary} />
-            ) : (
-              <Text style={styles.buttonText}>Sign In</Text>
-            )}
-          </Touchable>
+          <Button title="Sign In" onPress={handleLogin} loading={loading} style={{ marginTop: 4 }} />
         </View>
       </ScrollView>
     </View>
@@ -125,36 +106,11 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  content: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24 },
+  content: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 16 },
   mascot: { alignItems: 'center', marginBottom: 16 },
-  title: {
-    fontFamily: 'SpaceGrotesk_700Bold', fontSize: 24, color: colors.textPrimary,
-  },
-  subtitle: {
-    fontFamily: 'IBMPlexSans_400Regular', fontSize: 14, color: colors.textSecondary, marginBottom: 32,
-  },
+  title: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: colors.textPrimary },
+  subtitle: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary, marginBottom: 18 },
   form: { width: '100%' },
-  label: {
-    fontFamily: 'IBMPlexMono_500Medium', fontSize: 11, color: colors.textTertiary,
-    marginBottom: 4, marginTop: 16, textTransform: 'uppercase',
-  },
-  input: { backgroundColor: colors.surface, borderRadius: 10, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, fontFamily: 'IBMPlexSans_400Regular', color: colors.textPrimary, },
-  inputError: { borderWidth: 1, borderColor: colors.danger },
-  passwordRow: { flexDirection: 'row', alignItems: 'center' },
-  passwordInput: { flex: 1 },
-  eyeBtn: { padding: 10 },
-  errorText: { fontFamily: 'IBMPlexMono_500Medium', color: colors.danger, fontSize: 12, marginTop: 4 },
-  forgotBtn: { alignItems: 'flex-end', marginTop: 8 },
+  forgotBtn: { alignSelf: 'flex-end', paddingVertical: 12 },
   forgotText: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 13, color: colors.primaryText },
-  button: {
-    backgroundColor: colors.primary,
-    borderRadius: 10,
-    padding: 14,
-    alignItems: 'center',
-    marginTop: 32,
-  },
-  buttonDisabled: { opacity: 0.5 },
-  buttonText: {
-    fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textOnPrimary,
-  },
 });

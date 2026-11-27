@@ -53,10 +53,10 @@ export default function StatsScreen() {
       contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 16 }]}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
-      <StatCard icon="car-outline" label="Total Deliveries" value={`${stats.totalDeliveries}`} color={colors.primaryText} />
+      <StatCard icon="car-outline" label="Total Deliveries" value={`${stats.totalDeliveries}`} color={colors.textPrimary} />
       <View style={styles.row}>
         <StatCard icon="checkmark-outline" label="Completed" value={`${stats.completedDeliveries}`} color={colors.success} flex={1} />
-        <View style={{ width: 8 }} />
+        <View style={{ width: 12 }} />
         <StatCard icon="close-outline" label="Failed" value={`${stats.failedDeliveries}`} color={colors.danger} flex={1} />
       </View>
       <StatCard icon="cash-outline" label="Expenses Claimed" value={formatMoney(stats.totalExpensesClaimed ?? 0)} color={colors.success} mono />
@@ -64,10 +64,10 @@ export default function StatsScreen() {
         <StatCard icon="star-outline" label="Rating" value={stats.rating.toFixed(1)} color={colors.warning} />
       )}
 
-      <Card padding={16} style={{ marginTop: 8 }}>
+      <Card padding={16}>
         <Text style={styles.perfTitle}>Delivery Performance</Text>
-        <ProgressRow label="Completion Rate" value={completionRate} color={colors.success} />
-        <ProgressRow label="Failure Rate" value={failureRate} color={colors.danger} />
+        <ProgressRow label="Completion" value={completionRate} color={colors.success} />
+        <ProgressRow label="Failure" value={failureRate} color={colors.danger} />
       </Card>
     </ScrollView>
   );
@@ -78,7 +78,7 @@ function StatCard({ icon, label, value, color, flex, mono }: {
 }) {
   return (
     <View style={[styles.statCard, flex ? { flex } : undefined]}>
-      <View style={[styles.statIconBox, { borderColor: color }]}>
+      <View style={styles.statIconBox}>
         <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={20} color={color} />
       </View>
       <View style={{ flex: 1 }}>
@@ -106,19 +106,18 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   content: { padding: 16 },
-  row: { flexDirection: 'row', marginBottom: 8 },
+  row: { flexDirection: 'row' },
   statCard: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: colors.elevated,
-    padding: 16, borderRadius: 10, marginBottom: 8,
-    shadowColor: colors.shadow, shadowOpacity: 0.08, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 3,
+    padding: 16, borderRadius: 10, marginBottom: 12, boxShadow: '0px 2px 12px rgba(0,0,0,0.08)',
   },
-  statIconBox: { width: 36, height: 36, borderRadius: 10, borderWidth: 1.5, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  statIconBox: { width: 40, height: 40, borderRadius: 10, backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
   statLabel: { fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary },
   statValue: { fontFamily: 'SpaceGrotesk_700Bold', fontSize: 22 },
   perfTitle: { fontFamily: 'IBMPlexSans_500Medium', fontSize: 15, color: colors.textPrimary, marginBottom: 16 },
   progressRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  progressLabel: { width: 120, fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary },
-  progressBar: { flex: 1, height: 6, backgroundColor: colors.surface, borderRadius: 3, marginHorizontal: 12 },
-  progressFill: { height: 6, borderRadius: 3 },
+  progressLabel: { width: 76, fontFamily: 'IBMPlexSans_400Regular', fontSize: 13, color: colors.textSecondary },
+  progressBar: { flex: 1, height: 8, backgroundColor: colors.surface, borderRadius: 3, marginHorizontal: 12 },
+  progressFill: { height: 8, borderRadius: 3 },
   progressValue: { width: 48, textAlign: 'right', fontFamily: 'IBMPlexMono_500Medium', fontSize: 12 },
 });

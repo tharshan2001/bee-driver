@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
-import { View, Text, RefreshControl, StyleSheet, FlatList } from 'react-native';
+import { View, Text, RefreshControl, StyleSheet, ScrollView } from 'react-native';
 import Touchable from '../../../shared/components/Touchable';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -9,7 +9,6 @@ import type { DriverDashboard, DeliverySummary } from '../../../core/api/types';
 import type { RootStackNav } from '../../../navigation/types';
 import Badge from '../../../shared/components/StatusBadge';
 import SectionHeader from '../../../shared/components/SectionHeader';
-import ScreenContainer from '../../../shared/components/ScreenContainer';
 import ErrorScreen from '../../../shared/components/ErrorScreen';
 import WelcomeBanner from '../components/WelcomeBanner';
 import { timeAgo } from '../../../core/utils/helpers';
@@ -81,8 +80,8 @@ export default function DashboardScreen() {
   }
 
   return (
-    <View style={[styles.outer, { paddingTop: Math.min(insets.top, 12) }]}>
-      <ScreenContainer>
+    <View style={[styles.outer, { paddingTop: insets.top }]}>
+      <ScrollView contentContainerStyle={styles.content} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Dashboard</Text>
           <View style={styles.headerRight}>
@@ -101,11 +100,11 @@ export default function DashboardScreen() {
 
         <View style={styles.actionsRow}>
           <Touchable onPress={() => navigation.navigate('LiveLocation')} style={styles.actionCard}>
-            <Ionicons name="location-outline" size={24} color={colors.primary} style={{ marginBottom: 8 }} />
+            <Ionicons name="location-outline" size={24} color={colors.primaryText} style={{ marginBottom: 8 }} />
             <Text style={styles.actionLabel}>LOCATION</Text>
           </Touchable>
           <Touchable onPress={() => navigation.navigate('MainTabs', { screen: 'Deliveries' } as any)} style={styles.actionCard}>
-            <Ionicons name="cube-outline" size={24} color="#2196F3" style={{ marginBottom: 8 }} />
+            <Ionicons name="cube-outline" size={24} color={colors.textSecondary} style={{ marginBottom: 8 }} />
             <Text style={styles.actionLabel}>DELIVERIES</Text>
           </Touchable>
           <Touchable onPress={() => navigation.navigate('CreateExpense')} style={styles.actionCard}>
@@ -117,21 +116,14 @@ export default function DashboardScreen() {
             <Text style={styles.actionLabel}>STATS</Text>
           </Touchable>
         </View>
-      </ScreenContainer>
 
-      {recentDeliveries.length > 0 && (
-        <View style={styles.recentSection}>
-          <SectionHeader title="Recent" actionLabel="View all" onAction={() => navigation.navigate('MainTabs', { screen: 'Deliveries' } as any)} />
-          <FlatList
-            data={recentDeliveries}
-            renderItem={renderRecentItem}
-            keyExtractor={(item) => item.orderId}
-            nestedScrollEnabled
-            contentContainerStyle={{ paddingBottom: insets.bottom + 16 }}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-          />
-        </View>
-      )}
+        {recentDeliveries.length > 0 && (
+          <View>
+            <SectionHeader title="Recent" actionLabel="View all" onAction={() => navigation.navigate('MainTabs', { screen: 'Deliveries' } as any)} />
+            {recentDeliveries.map((item) => renderRecentItem({ item }))}
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -141,7 +133,7 @@ const styles = StyleSheet.create({
   outer: { flex: 1, backgroundColor: colors.background },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingVertical: 16,
+    paddingTop: 12, paddingBottom: 4,
   },
   headerTitle: {
     fontFamily: 'SpaceGrotesk_700Bold', fontSize: 28, color: colors.textPrimary,
@@ -156,7 +148,7 @@ const styles = StyleSheet.create({
     fontFamily: 'IBMPlexMono_500Medium', fontSize: 10, color: colors.textPrimary,
     textTransform: 'uppercase',
   },
-  recentSection: { flex: 1, paddingHorizontal: 20 },
+  content: { paddingHorizontal: 16, paddingBottom: 24 },
   recentRow: {
     flexDirection: 'row', alignItems: 'center', paddingVertical: 12,
     borderBottomWidth: 1, borderBottomColor: colors.separator,
